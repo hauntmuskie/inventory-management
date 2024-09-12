@@ -1,0 +1,212 @@
+<?xml version="1.0" encoding="UTF-8"?>
+
+<?import com.jfoenix.controls.JFXButton?>
+<?import com.jfoenix.controls.JFXComboBox?>
+<?import javafx.scene.control.Label?>
+<?import javafx.scene.control.TableColumn?>
+<?import javafx.scene.control.TableView?>
+<?import javafx.scene.control.TextField?>
+<?import javafx.scene.layout.AnchorPane?>
+<?import javafx.scene.layout.BorderPane?>
+<?import javafx.scene.layout.HBox?>
+<?import javafx.scene.layout.VBox?>
+<?import javafx.scene.text.Font?>
+
+<VBox maxHeight="-Infinity" maxWidth="-Infinity" minHeight="-Infinity" minWidth="-Infinity"
+   prefHeight="570.0" prefWidth="970.0" xmlns="http://javafx.com/javafx/22"
+   xmlns:fx="http://javafx.com/fxml/1"
+   fx:controller="com.lestarieragemilang.desktop.controller.CategoryController">
+   <children>
+      <AnchorPane minHeight="0.0" minWidth="0.0" prefHeight="180.0" prefWidth="200.0">
+         <children>
+            <BorderPane layoutX="108.0" layoutY="99.0" prefHeight="200.0" prefWidth="200.0"
+               AnchorPane.bottomAnchor="0.0" AnchorPane.leftAnchor="0.0"
+               AnchorPane.rightAnchor="0.0" AnchorPane.topAnchor="0.0">
+               <center>
+                  <AnchorPane prefHeight="200.0" prefWidth="200.0" BorderPane.alignment="CENTER">
+                     <children>
+                        <HBox alignment="CENTER_LEFT" layoutX="47.0" layoutY="111.0"
+                           prefHeight="50.0" prefWidth="450.0" spacing="15.0"
+                           AnchorPane.bottomAnchor="20.0" AnchorPane.leftAnchor="20.0"
+                           AnchorPane.topAnchor="200.0">
+                           <children>
+                              <Label text="SEARCH DATA">
+                                 <font>
+                                    <Font size="18.0" />
+                                 </font>
+                              </Label>
+                              <TextField fx:id="searchField" prefHeight="30.0" prefWidth="250.0"
+                                 style="-fx-background-radius: 7;" />
+                           </children>
+                        </HBox>
+                        <HBox alignment="CENTER" layoutX="20.0" layoutY="17.0" spacing="30.0"
+                           AnchorPane.leftAnchor="20.0" AnchorPane.rightAnchor="20.0"
+                           AnchorPane.topAnchor="20.0">
+                           <children>
+                              <HBox>
+                                 <children>
+                                    <VBox prefHeight="133.0" prefWidth="116.0" spacing="5.0">
+                                       <children>
+                                          <HBox alignment="CENTER_LEFT" prefHeight="40.0"
+                                             prefWidth="930.0" spacing="15.0">
+                                             <children>
+                                                <Label text="CATEGORY ID">
+                                                   <font>
+                                                      <Font size="18.0" />
+                                                   </font>
+                                                </Label>
+                                             </children>
+                                          </HBox>
+                                          <HBox alignment="CENTER_LEFT" prefHeight="40.0"
+                                             prefWidth="930.0" spacing="15.0">
+                                             <children>
+                                                <Label text="BRAND">
+                                                   <font>
+                                                      <Font size="18.0" />
+                                                   </font>
+                                                </Label>
+                                             </children>
+                                          </HBox>
+                                          <HBox alignment="CENTER_LEFT" prefHeight="40.0"
+                                             prefWidth="930.0" spacing="15.0">
+                                             <children>
+                                                <Label text="TYPE">
+                                                   <font>
+                                                      <Font size="18.0" />
+                                                   </font>
+                                                </Label>
+                                             </children>
+                                          </HBox>
+                                       </children>
+                                    </VBox>
+                                    <VBox alignment="BASELINE_LEFT" prefHeight="133.0"
+                                       prefWidth="200.0" spacing="20.0">
+                                       <children>
+                                          <TextField fx:id="categoryIdField" disable="true"
+                                             promptText="Auto-Generated"
+                                             style="-fx-background-radius: 7;" />
+                                          <JFXComboBox fx:id="brandComboBox" prefHeight="25.0"
+                                             prefWidth="200.0" style="-fx-background-radius: 7;" />
+                                          <JFXComboBox fx:id="typeComboBox" prefHeight="25.0"
+                                             prefWidth="200.0" style="-fx-background-radius: 7;" />
+                                       </children>
+                                    </VBox>
+                                 </children>
+                              </HBox>
+                              <HBox>
+                                 <children>
+                                    <VBox alignment="BASELINE_LEFT" prefHeight="133.0"
+                                       prefWidth="116.0" spacing="5.0">
+                                       <children>
+                                          <HBox alignment="CENTER_LEFT" prefHeight="40.0"
+                                             prefWidth="930.0" spacing="15.0">
+                                             <children>
+                                                <Label text="SIZE">
+                                                   <font>
+                                                      <Font size="18.0" />
+                                                   </font>
+                                                </Label>
+                                             </children>
+                                          </HBox>
+                                          <HBox alignment="CENTER_LEFT" prefHeight="40.0"
+                                             prefWidth="930.0" spacing="15.0">
+                                             <children>
+                                                <Label text="WEIGHT">
+                                                   <font>
+                                                      <Font size="18.0" />
+                                                   </font>
+                                                </Label>
+                                             </children>
+                                          </HBox>
+                                          <Label text="UNIT">
+                                             <font>
+                                                <Font size="18.0" />
+                                             </font>
+                                          </Label>
+                                       </children>
+                                    </VBox>
+                                    <VBox alignment="BASELINE_CENTER" prefHeight="133.0"
+                                       prefWidth="200.0" spacing="20.0">
+                                       <children>
+                                          <JFXComboBox fx:id="sizeComboBox" prefHeight="25.0"
+                                             prefWidth="200.0" style="-fx-background-radius: 7;" />
+                                          <TextField fx:id="weightField" prefHeight="25.0"
+                                             prefWidth="200.0" style="-fx-background-radius: 7;" />
+                                          <JFXComboBox fx:id="unitComboBox" prefHeight="25.0"
+                                             prefWidth="200.0" style="-fx-background-radius: 7;" />
+                                       </children>
+                                    </VBox>
+                                 </children>
+                              </HBox>
+                           </children>
+                        </HBox>
+                        <HBox alignment="CENTER_RIGHT" layoutX="687.0" layoutY="143.0"
+                           prefHeight="33.0" prefWidth="392.0" spacing="10.0"
+                           AnchorPane.bottomAnchor="20.0" AnchorPane.rightAnchor="20.0"
+                           AnchorPane.topAnchor="200.0">
+                           <children>
+                              <JFXButton buttonType="RAISED" onAction="#handleClear"
+                                 prefHeight="30.0" prefWidth="100.0"
+                                 style="-fx-background-color: #131313; -fx-background-radius: 10; -fx-cursor: HAND; -fx-text-fill: #E8E7DE; -fx-border-radius: 10; -fx-font-weight: bold;"
+                                 text="RESET" textFill="WHITE">
+                                 <font>
+                                    <Font size="14.0" />
+                                 </font>
+                              </JFXButton>
+                              <JFXButton buttonType="RAISED" onAction="#handleSave"
+                                 prefHeight="30.0" prefWidth="100.0"
+                                 style="-fx-background-color: #131313; -fx-background-radius: 10; -fx-cursor: HAND; -fx-text-fill: #E8E7DE; -fx-border-radius: 10; -fx-font-weight: bold;"
+                                 text="ADD" textFill="WHITE">
+                                 <font>
+                                    <Font size="14.0" />
+                                 </font>
+                              </JFXButton>
+                              <JFXButton fx:id="editButton" buttonType="RAISED"
+                                 onAction="#handleEdit" prefHeight="30.0" prefWidth="100.0"
+                                 style="-fx-background-color: #131313; -fx-background-radius: 10; -fx-cursor: HAND; -fx-text-fill: #E8E7DE; -fx-border-radius: 10; -fx-font-weight: bold;"
+                                 text="EDIT" textFill="WHITE">
+                                 <font>
+                                    <Font size="14.0" />
+                                 </font>
+                              </JFXButton>
+                              <JFXButton buttonType="RAISED" onAction="#handleDelete"
+                                 prefHeight="30.0" prefWidth="100.0"
+                                 style="-fx-background-color: #131313; -fx-background-radius: 10; -fx-cursor: HAND; -fx-text-fill: #E8E7DE; -fx-border-radius: 10; -fx-font-weight: bold;"
+                                 text="DELETE" textFill="WHITE">
+                                 <font>
+                                    <Font size="14.0" />
+                                 </font>
+                              </JFXButton>
+                           </children>
+                        </HBox>
+                     </children>
+                  </AnchorPane>
+               </center>
+               <bottom>
+                  <AnchorPane prefHeight="260.0" prefWidth="200.0" BorderPane.alignment="CENTER">
+                     <children>
+                        <TableView fx:id="categoryTable" layoutX="164.0" layoutY="47.0"
+                           prefHeight="200.0" prefWidth="200.0" AnchorPane.bottomAnchor="20.0"
+                           AnchorPane.leftAnchor="20.0" AnchorPane.rightAnchor="20.0"
+                           AnchorPane.topAnchor="0.0">
+                           <columns>
+                              <TableColumn fx:id="categoryIdColumn" prefWidth="75.0"
+                                 text="CATEGORY ID" />
+                              <TableColumn fx:id="brandColumn" prefWidth="75.0" text="BRAND" />
+                              <TableColumn fx:id="typeColumn" prefWidth="75.0" text="TYPE" />
+                              <TableColumn fx:id="sizeColumn" prefWidth="75.0" text="SIZE" />
+                              <TableColumn fx:id="weightColumn" prefWidth="75.0" text="WEIGHT" />
+                              <TableColumn fx:id="unitColumn" prefWidth="75.0" text="UNIT" />
+                           </columns>
+                           <columnResizePolicy>
+                              <TableView fx:constant="CONSTRAINED_RESIZE_POLICY" />
+                           </columnResizePolicy>
+                        </TableView>
+                     </children>
+                  </AnchorPane>
+               </bottom>
+            </BorderPane>
+         </children>
+      </AnchorPane>
+   </children>
+</VBox>
