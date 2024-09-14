@@ -132,7 +132,7 @@
                                              prefWidth="200.0" style="-fx-background-radius: 7;" />
                                           <TextField fx:id="weightField" prefHeight="25.0"
                                              prefWidth="200.0" style="-fx-background-radius: 7;" />
-                                          <JFXComboBox fx:id="unitComboBox" prefHeight="25.0"
+                                          <JFXComboBox fx:id="weightUnitComboBox" prefHeight="25.0"
                                              prefWidth="200.0" style="-fx-background-radius: 7;" />
                                        </children>
                                     </VBox>

@@ -2,11 +2,11 @@ package com.lestarieragemilang.desktop.controller;
 
 import com.jfoenix.controls.JFXButton;
 import com.jfoenix.controls.JFXTextArea;
-import com.lestarieragemilang.desktop.App;
 import com.lestarieragemilang.desktop.model.Supplier;
 import com.lestarieragemilang.desktop.repository.GenericDao;
 import com.lestarieragemilang.desktop.service.GenericService;
 import com.lestarieragemilang.desktop.utils.ClearFields;
+import com.lestarieragemilang.desktop.utils.HibernateUtil;
 import com.lestarieragemilang.desktop.utils.IdGenerator;
 import com.lestarieragemilang.desktop.utils.ShowAlert;
 import com.lestarieragemilang.desktop.utils.TableUtils;
@@ -16,64 +16,34 @@ import javafx.fxml.FXML;
 import javafx.scene.control.TableColumn;
 import javafx.scene.control.TableView;
 import javafx.scene.control.TextField;
+import javafx.scene.control.Alert.AlertType;
 import javafx.scene.layout.VBox;
 import org.hibernate.SessionFactory;
-import org.hibernate.cfg.Configuration;
 
 import java.util.List;
 import java.util.stream.Collectors;
 
-public class SupplierController {
+public class SupplierController extends HibernateUtil {
     @FXML
     private JFXButton editSupplierButtonText;
-
     @FXML
-    private TableColumn<Supplier, String> supplierAddressCol;
-
+    private TableColumn<Supplier, String> supplierAddressCol, supplierContactCol, supplierEmailCol, supplierIDCol,
+            supplierNameCol;
     @FXML
     private JFXTextArea supplierAddressField;
-
     @FXML
-    private VBox supplierAddressField1;
-
+    private VBox supplierAddressField1, supplierAddressField11;
     @FXML
-    private VBox supplierAddressField11;
-
-    @FXML
-    private TableColumn<Supplier, String> supplierContactCol;
-
-    @FXML
-    private TextField supplierContactField;
-
-    @FXML
-    private TableColumn<Supplier, String> supplierEmailCol;
-
-    @FXML
-    private TextField supplierEmailField;
-
-    @FXML
-    private TableColumn<Supplier, String> supplierIDCol;
-
-    @FXML
-    private TextField supplierIDIncrement;
-
-    @FXML
-    private TableColumn<Supplier, String> supplierNameCol;
-
-    @FXML
-    private TextField supplierNameField;
-
-    @FXML
-    private TextField supplierSearchField;
-
+    private TextField supplierContactField, supplierEmailField, supplierIDIncrement, supplierNameField,
+            supplierSearchField;
     @FXML
     private TableView<Supplier> supplierTable;
 
     private GenericService<Supplier> supplierService;
 
     public void initialize() {
-        SessionFactory sessionFactory = new Configuration().configure(
-                App.class.getResource("hibernate.cfg.xml")).buildSessionFactory();
+        SessionFactory sessionFactory = getSessionFactory();
+
         supplierService = new GenericService<>(new GenericDao<>(Supplier.class, sessionFactory), "SUP");
 
         initializeSupplierTable();
@@ -117,7 +87,10 @@ public class SupplierController {
     private void addSupplierButton(ActionEvent event) {
         String supplierId = supplierIDIncrement.getText();
         if (supplierIdExists(supplierId)) {
-            ShowAlert.showAlert("Supplier ID already exists.");
+            ShowAlert.showAlert(
+                    AlertType.WARNING,
+                    "Duplicate Supplier ID",
+                    "Supplier ID already exists.");
             generateAndSetSupplierId();
             return;
         }
@@ -138,7 +111,10 @@ public class SupplierController {
     private void editSupplierButton(ActionEvent event) {
         Supplier selectedSupplier = supplierTable.getSelectionModel().getSelectedItem();
         if (selectedSupplier == null) {
-            ShowAlert.showAlert("Please select a supplier to edit.");
+            ShowAlert.showAlert(
+                    AlertType.WARNING,
+                    "No Supplier Selected",
+                    "Please select a supplier to edit.");
             return;
         }
 
@@ -156,7 +132,10 @@ public class SupplierController {
     private void removeSupplierButton(ActionEvent event) {
         Supplier selectedSupplier = supplierTable.getSelectionModel().getSelectedItem();
         if (selectedSupplier == null) {
-            ShowAlert.showAlert("Please select a supplier to remove.");
+            ShowAlert.showAlert(
+                    AlertType.WARNING,
+                    "No Supplier Selected",
+                    "Please select a supplier to remove.");
             return;
         }
 

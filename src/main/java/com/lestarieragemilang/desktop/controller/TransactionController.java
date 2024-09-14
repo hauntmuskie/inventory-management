@@ -2,11 +2,11 @@ package com.lestarieragemilang.desktop.controller;
 
 import com.jfoenix.controls.JFXButton;
 import com.jfoenix.controls.JFXComboBox;
-import com.lestarieragemilang.desktop.App;
 import com.lestarieragemilang.desktop.model.*;
 import com.lestarieragemilang.desktop.repository.GenericDao;
 import com.lestarieragemilang.desktop.service.GenericService;
 import com.lestarieragemilang.desktop.utils.ClearFields;
+import com.lestarieragemilang.desktop.utils.HibernateUtil;
 import com.lestarieragemilang.desktop.utils.ShowAlert;
 import com.lestarieragemilang.desktop.utils.TableUtils;
 import javafx.collections.FXCollections;
@@ -14,16 +14,16 @@ import javafx.collections.ObservableList;
 import javafx.event.ActionEvent;
 import javafx.fxml.FXML;
 import javafx.scene.control.*;
+import javafx.scene.control.Alert.AlertType;
 import javafx.util.StringConverter;
 import org.hibernate.SessionFactory;
-import org.hibernate.cfg.Configuration;
 
 import java.math.BigDecimal;
 import java.time.LocalDate;
 import java.util.List;
 import java.util.stream.Collectors;
 
-public class TransactionController {
+public class TransactionController extends HibernateUtil {
     @FXML
     private TableColumn<Purchasing, String> buyBrandCol, buyInvoiceCol, buyOnSupplierNameCol, buyTypeCol;
     @FXML
@@ -75,8 +75,8 @@ public class TransactionController {
     private ObservableList<Sales> pendingSales = FXCollections.observableArrayList();
 
     public void initialize() {
-        SessionFactory sessionFactory = new Configuration().configure(
-                App.class.getResource("hibernate.cfg.xml")).buildSessionFactory();
+        SessionFactory sessionFactory = getSessionFactory();
+
         purchasingService = new GenericService<>(new GenericDao<>(Purchasing.class, sessionFactory), "PUR");
         salesService = new GenericService<>(new GenericDao<>(Sales.class, sessionFactory), "SAL");
         stockService = new GenericService<>(new GenericDao<>(Stock.class, sessionFactory), "STK");
@@ -287,7 +287,10 @@ public class TransactionController {
         }
         pendingPurchases.clear();
         updateBuyTotalPrice();
-        ShowAlert.showAlert("Purchases confirmed successfully.");
+        ShowAlert.showAlert(
+                AlertType.INFORMATION,
+                "Purchases confirmed successfully.",
+                "Purchases confirmed successfully.");
     }
 
     @FXML
@@ -298,7 +301,10 @@ public class TransactionController {
         }
         pendingSales.clear();
         updateSellTotalPrice();
-        ShowAlert.showAlert("Sales confirmed successfully.");
+        ShowAlert.showAlert(
+                AlertType.INFORMATION,
+                "Sales confirmed successfully.",
+                "Sales confirmed successfully.");
     }
 
     private void updateStockQuantity(Stock stock, int quantity, boolean isIncrease) {
@@ -311,7 +317,10 @@ public class TransactionController {
     private void editBuyButton(ActionEvent event) {
         Purchasing selectedPurchase = buyTable.getSelectionModel().getSelectedItem();
         if (selectedPurchase == null) {
-            ShowAlert.showAlert("Please select a purchase to edit.");
+            ShowAlert.showAlert(
+                    AlertType.WARNING,
+                    "No Purchase Selected",
+                    "Please select a purchase to edit.");
             return;
         }
 
@@ -330,7 +339,10 @@ public class TransactionController {
     private void editSellButton(ActionEvent event) {
         Sales selectedSale = sellTable.getSelectionModel().getSelectedItem();
         if (selectedSale == null) {
-            ShowAlert.showAlert("Please select a sale to edit.");
+            ShowAlert.showAlert(
+                    AlertType.WARNING,
+                    "No Sale Selected",
+                    "Please select a sale to edit.");
             return;
         }
 
@@ -349,7 +361,10 @@ public class TransactionController {
     private void removeBuyButton(ActionEvent event) {
         Purchasing selectedPurchase = buyTable.getSelectionModel().getSelectedItem();
         if (selectedPurchase == null) {
-            ShowAlert.showAlert("Please select a purchase to remove.");
+            ShowAlert.showAlert(
+                    AlertType.WARNING,
+                    "No Purchase Selected",
+                    "Please select a purchase to remove.");
             return;
         }
 
@@ -361,7 +376,10 @@ public class TransactionController {
     private void removeSellButton(ActionEvent event) {
         Sales selectedSale = sellTable.getSelectionModel().getSelectedItem();
         if (selectedSale == null) {
-            ShowAlert.showAlert("Please select a sale to remove.");
+            ShowAlert.showAlert(
+                    AlertType.WARNING,
+                    "No Sale Selected",
+                    "Please select a sale to remove.");
             return;
         }
 
@@ -401,7 +419,10 @@ public class TransactionController {
         if (buyDate.getValue() == null || buyStockIDDropdown.getValue() == null ||
                 supplierIDDropDown.getValue() == null || buyTotalField.getText().isEmpty() ||
                 buyPriceField.getText().isEmpty()) {
-            ShowAlert.showAlert("Please fill in all required fields.");
+            ShowAlert.showAlert(
+                    AlertType.INFORMATION,
+                    "Please fill in all required fields.",
+                    "Please fill in all required fields.");
             return false;
         }
         return true;
@@ -411,7 +432,11 @@ public class TransactionController {
         if (sellDate.getValue() == null || sellStockIDDropdown.getValue() == null ||
                 customerIDDropDown.getValue() == null || sellTotalField.getText().isEmpty() ||
                 sellPriceField.getText().isEmpty()) {
-            ShowAlert.showAlert("Please fill in all required fields.");
+            ShowAlert.showAlert(
+                    AlertType.INFORMATION,
+                    "Please fill in all required fields.",
+                    "Please fill in all required fields."
+            );
             return false;
         }
         return true;

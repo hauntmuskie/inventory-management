@@ -3,15 +3,16 @@ package com.lestarieragemilang.desktop.controller;
 import javafx.collections.FXCollections;
 import javafx.fxml.FXML;
 import javafx.scene.control.*;
+import javafx.scene.control.Alert.AlertType;
+
 import org.hibernate.SessionFactory;
-import org.hibernate.cfg.Configuration;
 
 import com.jfoenix.controls.JFXButton;
-import com.lestarieragemilang.desktop.App;
 import com.lestarieragemilang.desktop.model.Customer;
 import com.lestarieragemilang.desktop.repository.GenericDao;
 import com.lestarieragemilang.desktop.service.GenericService;
 import com.lestarieragemilang.desktop.utils.ClearFields;
+import com.lestarieragemilang.desktop.utils.HibernateUtil;
 import com.lestarieragemilang.desktop.utils.IdGenerator;
 import com.lestarieragemilang.desktop.utils.ShowAlert;
 import com.lestarieragemilang.desktop.utils.TableUtils;
@@ -19,29 +20,13 @@ import com.lestarieragemilang.desktop.utils.TableUtils;
 import java.util.List;
 import java.util.stream.Collectors;
 
-public class CustomerController {
+public class CustomerController extends HibernateUtil {
     @FXML
-    private TableColumn<Customer, String> customerAddressCol;
+    private TableColumn<Customer, String> customerAddressCol, customerContactCol, customerEmailCol, customerIDCol,
+            customerNameCol;
     @FXML
-    private TextField customerAddressField;
-    @FXML
-    private TableColumn<Customer, String> customerContactCol;
-    @FXML
-    private TextField customerContactField;
-    @FXML
-    private TableColumn<Customer, String> customerEmailCol;
-    @FXML
-    private TextField customerEmailField;
-    @FXML
-    private TableColumn<Customer, String> customerIDCol;
-    @FXML
-    private TextField customerIDIncrement;
-    @FXML
-    private TableColumn<Customer, String> customerNameCol;
-    @FXML
-    private TextField customerNameField;
-    @FXML
-    private TextField customerSearchField;
+    private TextField customerAddressField, customerContactField, customerEmailField, customerIDIncrement,
+            customerNameField, customerSearchField;
     @FXML
     private TableView<Customer> customerTable;
     @FXML
@@ -50,8 +35,8 @@ public class CustomerController {
     private GenericService<Customer> customerService;
 
     public void initialize() {
-        SessionFactory sessionFactory = new Configuration().configure(
-                App.class.getResource("hibernate.cfg.xml")).buildSessionFactory();
+        SessionFactory sessionFactory = getSessionFactory();
+
         customerService = new GenericService<>(new GenericDao<>(Customer.class, sessionFactory), "CUST");
 
         initializeCustomerTable();
@@ -95,7 +80,11 @@ public class CustomerController {
     private void addCustomerButton() {
         String customerId = customerIDIncrement.getText();
         if (customerIdExists(customerId)) {
-            ShowAlert.showAlert("Customer ID already exists.");
+            ShowAlert.showAlert(
+                    AlertType.WARNING,
+                    "Duplicate Customer ID",
+                    "Customer ID already exists."
+            );
             generateAndSetCustomerId();
             return;
         }
@@ -123,7 +112,10 @@ public class CustomerController {
     private void editCustomerButton() {
         Customer selectedCustomer = customerTable.getSelectionModel().getSelectedItem();
         if (selectedCustomer == null) {
-            ShowAlert.showAlert("Please select a customer to edit.");
+            ShowAlert.showAlert(
+                    AlertType.WARNING,
+                    "No Customer Selected",
+                    "Please select a customer to edit.");
             return;
         }
 
@@ -141,7 +133,10 @@ public class CustomerController {
     private void removeCustomerButton() {
         Customer selectedCustomer = customerTable.getSelectionModel().getSelectedItem();
         if (selectedCustomer == null) {
-            ShowAlert.showAlert("Please select a customer to remove.");
+            ShowAlert.showAlert(
+                    AlertType.WARNING,
+                    "No Customer Selected",
+                    "Please select a customer to remove.");
             return;
         }
 

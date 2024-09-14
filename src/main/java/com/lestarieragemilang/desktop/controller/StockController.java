@@ -3,18 +3,18 @@ package com.lestarieragemilang.desktop.controller;
 import javafx.collections.FXCollections;
 import javafx.fxml.FXML;
 import javafx.scene.control.*;
+import javafx.scene.control.Alert.AlertType;
 import javafx.util.StringConverter;
 import org.hibernate.SessionFactory;
-import org.hibernate.cfg.Configuration;
 
 import com.jfoenix.controls.JFXButton;
 import com.jfoenix.controls.JFXComboBox;
-import com.lestarieragemilang.desktop.App;
 import com.lestarieragemilang.desktop.model.Category;
 import com.lestarieragemilang.desktop.model.Stock;
 import com.lestarieragemilang.desktop.repository.GenericDao;
 import com.lestarieragemilang.desktop.service.GenericService;
 import com.lestarieragemilang.desktop.utils.ClearFields;
+import com.lestarieragemilang.desktop.utils.HibernateUtil;
 import com.lestarieragemilang.desktop.utils.IdGenerator;
 import com.lestarieragemilang.desktop.utils.ShowAlert;
 import com.lestarieragemilang.desktop.utils.TableUtils;
@@ -23,41 +23,20 @@ import java.math.BigDecimal;
 import java.util.List;
 import java.util.stream.Collectors;
 
-public class StockController {
+public class StockController extends HibernateUtil {
     @FXML
-    private TextField stockIDIncrement;
+    private TextField stockIDIncrement, stockQuantityField, stockBuyPriceField, stockSellPriceField, stockSearchField;
     @FXML
     private JFXComboBox<Category> categoryIDDropDown;
     @FXML
-    private TextField stockQuantityField;
-    @FXML
-    private TextField stockBuyPriceField;
-    @FXML
-    private TextField stockSellPriceField;
-    @FXML
-    private TextField stockSearchField;
-    @FXML
     private TableView<Stock> stockTable;
     @FXML
-    private TableColumn<Stock, String> stockIDCol;
-    @FXML
-    private TableColumn<Stock, String> stockOnCategoryIDCol;
-    @FXML
-    private TableColumn<Stock, String> stockBrandCol;
-    @FXML
-    private TableColumn<Stock, String> stockTypeCol;
-    @FXML
-    private TableColumn<Stock, String> stockSizeCol;
-    @FXML
-    private TableColumn<Stock, String> stockWeightCol;
-    @FXML
-    private TableColumn<Stock, String> stockUnitCol;
+    private TableColumn<Stock, String> stockIDCol, stockOnCategoryIDCol, stockBrandCol, stockTypeCol, stockSizeCol,
+            stockWeightCol, stockUnitCol;
     @FXML
     private TableColumn<Stock, Integer> stockQuantityCol;
     @FXML
-    private TableColumn<Stock, Double> stockBuyPriceCol;
-    @FXML
-    private TableColumn<Stock, Double> stockSellPriceCol;
+    private TableColumn<Stock, Double> stockBuyPriceCol, stockSellPriceCol;
     @FXML
     private JFXButton editStockButtonText;
 
@@ -65,8 +44,7 @@ public class StockController {
     private GenericService<Category> categoryService;
 
     public void initialize() {
-        SessionFactory sessionFactory = new Configuration().configure(
-                App.class.getResource("hibernate.cfg.xml")).buildSessionFactory();
+        SessionFactory sessionFactory = getSessionFactory();
         stockService = new GenericService<>(new GenericDao<>(Stock.class, sessionFactory), "STK");
         categoryService = new GenericService<>(new GenericDao<>(Category.class, sessionFactory), "CAT");
 
@@ -135,7 +113,10 @@ public class StockController {
     private void addStockButton() {
         String stockId = stockIDIncrement.getText();
         if (stockIdExists(stockId)) {
-            ShowAlert.showAlert("Stock ID already exists.");
+            ShowAlert.showAlert(
+                    AlertType.WARNING,
+                    "Stock ID Exists",
+                    "Stock ID already exists. Please generate a new one.");
             generateAndSetStockId();
             return;
         }
@@ -163,7 +144,10 @@ public class StockController {
     private void editStockButton() {
         Stock selectedStock = stockTable.getSelectionModel().getSelectedItem();
         if (selectedStock == null) {
-            ShowAlert.showAlert("Please select a stock to edit.");
+            ShowAlert.showAlert(
+                    AlertType.WARNING,
+                    "No Stock Selected",
+                    "Please select a stock to edit.");
             return;
         }
 
@@ -181,7 +165,10 @@ public class StockController {
     private void removeStockButton() {
         Stock selectedStock = stockTable.getSelectionModel().getSelectedItem();
         if (selectedStock == null) {
-            ShowAlert.showAlert("Please select a stock to remove.");
+            ShowAlert.showAlert(
+                    AlertType.WARNING,
+                    "No Stock Selected",
+                    "Please select a stock to remove.");
             return;
         }
 

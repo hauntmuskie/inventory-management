@@ -4,14 +4,15 @@ import javafx.collections.FXCollections;
 import javafx.collections.transformation.FilteredList;
 import javafx.fxml.FXML;
 import javafx.scene.control.*;
-import org.hibernate.SessionFactory;
-import org.hibernate.cfg.Configuration;
+import javafx.scene.control.Alert.AlertType;
 
-import com.lestarieragemilang.desktop.App;
+import org.hibernate.SessionFactory;
+
 import com.lestarieragemilang.desktop.model.Category;
 import com.lestarieragemilang.desktop.repository.GenericDao;
 import com.lestarieragemilang.desktop.service.GenericService;
 import com.lestarieragemilang.desktop.utils.ClearFields;
+import com.lestarieragemilang.desktop.utils.HibernateUtil;
 import com.lestarieragemilang.desktop.utils.ShowAlert;
 import com.lestarieragemilang.desktop.utils.TableUtils;
 
@@ -19,42 +20,24 @@ import java.math.BigDecimal;
 import java.util.List;
 import java.util.Random;
 
-public class CategoryController {
+public class CategoryController extends HibernateUtil {
     @FXML
-    private TextField categoryIdField;
+    private TextField categoryIdField, weightField, searchField;
     @FXML
-    private ComboBox<String> brandComboBox;
-    @FXML
-    private ComboBox<String> typeComboBox;
-    @FXML
-    private ComboBox<String> sizeComboBox;
-    @FXML
-    private TextField weightField;
-    @FXML
-    private ComboBox<String> weightUnitComboBox;
+    private ComboBox<String> brandComboBox, typeComboBox, sizeComboBox, weightUnitComboBox;
     @FXML
     private TableView<Category> categoryTable;
     @FXML
-    private TableColumn<Category, String> categoryIdColumn;
-    @FXML
-    private TableColumn<Category, String> brandColumn;
-    @FXML
-    private TableColumn<Category, String> productTypeColumn;
-    @FXML
-    private TableColumn<Category, String> sizeColumn;
+    private TableColumn<Category, String> categoryIdColumn, brandColumn, productTypeColumn, sizeColumn,
+            weightUnitColumn;
     @FXML
     private TableColumn<Category, BigDecimal> weightColumn;
-    @FXML
-    private TableColumn<Category, String> weightUnitColumn;
-    @FXML
-    private TextField searchField;
 
     private GenericService<Category> categoryService;
     private FilteredList<Category> filteredCategories;
 
     public void initialize() {
-        SessionFactory sessionFactory = new Configuration().configure(
-                App.class.getResource("hibernate.cfg.xml")).buildSessionFactory();
+        SessionFactory sessionFactory = getSessionFactory();
         categoryService = new GenericService<>(new GenericDao<>(Category.class, sessionFactory), "CAT");
 
         initializeComboBoxes();
@@ -97,8 +80,7 @@ public class CategoryController {
 
     private void initializeComboBoxes() {
         brandComboBox.setItems(FXCollections.observableArrayList("Nike", "Adidas", "Puma", "Reebok", "Under Armour"));
-        typeComboBox
-                .setItems(FXCollections.observableArrayList("Shoes", "T-shirt", "Shorts", "Jacket", "Socks"));
+        typeComboBox.setItems(FXCollections.observableArrayList("Shoes", "T-shirt", "Shorts", "Jacket", "Socks"));
         sizeComboBox.setItems(FXCollections.observableArrayList("XS", "S", "M", "L", "XL", "XXL"));
         weightUnitComboBox.setItems(FXCollections.observableArrayList("kg", "g", "lb", "oz"));
     }
@@ -143,7 +125,10 @@ public class CategoryController {
     private void handleSave() {
         String categoryId = categoryIdField.getText();
         if (categoryIdExists(categoryId)) {
-            ShowAlert.showAlert("Category ID already exists. Please try again.");
+            ShowAlert.showAlert(
+                    AlertType.WARNING,
+                    "Duplicate Category ID",
+                    "Category ID already exists.");
             generateAndSetCategoryId();
             return;
         }
@@ -165,7 +150,10 @@ public class CategoryController {
     private void handleUpdate() {
         Category selectedCategory = categoryTable.getSelectionModel().getSelectedItem();
         if (selectedCategory == null) {
-            ShowAlert.showAlert("Please select a category to update.");
+            ShowAlert.showAlert(
+                    AlertType.WARNING,
+                    "No Category Selected",
+                    "Please select a category to update.");
             return;
         }
 
@@ -187,7 +175,10 @@ public class CategoryController {
     private void handleDelete() {
         Category selectedCategory = categoryTable.getSelectionModel().getSelectedItem();
         if (selectedCategory == null) {
-            ShowAlert.showAlert("Please select a category to delete.");
+            ShowAlert.showAlert(
+                    AlertType.WARNING,
+                    "No Category Selected",
+                    "Please select a category to delete.");
             return;
         }
 
@@ -200,7 +191,10 @@ public class CategoryController {
     private void handleEdit() {
         Category selectedCategory = categoryTable.getSelectionModel().getSelectedItem();
         if (selectedCategory == null) {
-            ShowAlert.showAlert("Please select a category to edit.");
+            ShowAlert.showAlert(
+                    AlertType.WARNING,
+                    "No Category Selected",
+                    "Please select a category to edit.");
             return;
         }
 

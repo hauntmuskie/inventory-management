@@ -3,20 +3,20 @@ package com.lestarieragemilang.desktop.controller;
 import javafx.collections.FXCollections;
 import javafx.fxml.FXML;
 import javafx.scene.control.*;
+import javafx.scene.control.Alert.AlertType;
 import javafx.util.StringConverter;
 import org.hibernate.SessionFactory;
-import org.hibernate.cfg.Configuration;
 
 import com.jfoenix.controls.JFXButton;
 import com.jfoenix.controls.JFXComboBox;
 import com.jfoenix.controls.JFXRadioButton;
-import com.lestarieragemilang.desktop.App;
 import com.lestarieragemilang.desktop.model.Purchasing;
 import com.lestarieragemilang.desktop.model.Returns;
 import com.lestarieragemilang.desktop.model.Sales;
 import com.lestarieragemilang.desktop.repository.GenericDao;
 import com.lestarieragemilang.desktop.service.GenericService;
 import com.lestarieragemilang.desktop.utils.ClearFields;
+import com.lestarieragemilang.desktop.utils.HibernateUtil;
 import com.lestarieragemilang.desktop.utils.IdGenerator;
 import com.lestarieragemilang.desktop.utils.ShowAlert;
 import com.lestarieragemilang.desktop.utils.TableUtils;
@@ -25,43 +25,31 @@ import java.time.LocalDate;
 import java.util.List;
 import java.util.stream.Collectors;
 
-public class ReturnsController {
+public class ReturnsController extends HibernateUtil {
     @FXML
     private JFXButton editReturnButtonText;
     @FXML
     private DatePicker returnDate;
     @FXML
-    private TextField returnIDIncrement;
+    private TextField returnIDIncrement, returnReasonField, searchTextField;
     @FXML
     private JFXComboBox<Object> returnInvoicePurchasing;
     @FXML
-    private JFXRadioButton returnIsBuy;
-    @FXML
-    private JFXRadioButton returnIsSell;
-    @FXML
-    private TextArea returnReasonField;
+    private JFXRadioButton returnIsBuy, returnIsSell;
     @FXML
     private TableView<Returns> returnTable;
     @FXML
-    private TableColumn<Returns, String> returnIDCol;
+    private TableColumn<Returns, String> returnIDCol, returnInvoiceCol, returnTypeCol, returnReasonCol;
     @FXML
     private TableColumn<Returns, LocalDate> returnDateCol;
-    @FXML
-    private TableColumn<Returns, String> returnInvoiceCol;
-    @FXML
-    private TableColumn<Returns, String> returnTypeCol;
-    @FXML
-    private TableColumn<Returns, String> returnReasonCol;
-    @FXML
-    private TextField searchTextField;
 
     private GenericService<Returns> returnService;
     private GenericService<Purchasing> purchasingService;
     private GenericService<Sales> salesService;
 
     public void initialize() {
-        SessionFactory sessionFactory = new Configuration().configure(
-                App.class.getResource("hibernate.cfg.xml")).buildSessionFactory();
+        SessionFactory sessionFactory = getSessionFactory();
+
         returnService = new GenericService<>(new GenericDao<>(Returns.class, sessionFactory), "RTN");
         purchasingService = new GenericService<>(new GenericDao<>(Purchasing.class, sessionFactory), "PCH");
         salesService = new GenericService<>(new GenericDao<>(Sales.class, sessionFactory), "SLS");
@@ -149,7 +137,10 @@ public class ReturnsController {
     private void addReturnButton() {
         String returnId = returnIDIncrement.getText();
         if (returnIdExists(returnId)) {
-            ShowAlert.showAlert("Return ID already exists.");
+            ShowAlert.showAlert(
+                    AlertType.WARNING,
+                    "Duplicate Return ID",
+                    "Return ID already exists.");
             generateAndSetReturnId();
             return;
         }
@@ -166,7 +157,10 @@ public class ReturnsController {
             returnItem.setInvoiceNumber(((Sales) selectedInvoice).getInvoiceNumber());
             returnItem.setReturnType("Sell");
         } else {
-            ShowAlert.showAlert("Please select an invoice.");
+            ShowAlert.showAlert(
+                    AlertType.WARNING,
+                    "Missing Invoice",
+                    "Please select an invoice.");
             return;
         }
 
@@ -190,7 +184,10 @@ public class ReturnsController {
     private void editReturnButton() {
         Returns selectedReturn = returnTable.getSelectionModel().getSelectedItem();
         if (selectedReturn == null) {
-            ShowAlert.showAlert("Please select a return to edit.");
+            ShowAlert.showAlert(
+                    AlertType.WARNING,
+                    "No Return Selected",
+                    "Please select a return to edit.");
             return;
         }
 
@@ -204,7 +201,10 @@ public class ReturnsController {
             selectedReturn.setInvoiceNumber(((Sales) selectedInvoice).getInvoiceNumber());
             selectedReturn.setReturnType("Sell");
         } else {
-            ShowAlert.showAlert("Please select an invoice.");
+            ShowAlert.showAlert(
+                    AlertType.WARNING,
+                    "Missing Invoice",
+                    "Please select an invoice.");
             return;
         }
 
@@ -219,7 +219,10 @@ public class ReturnsController {
     private void removeReturnButton() {
         Returns selectedReturn = returnTable.getSelectionModel().getSelectedItem();
         if (selectedReturn == null) {
-            ShowAlert.showAlert("Please select a return to remove.");
+            ShowAlert.showAlert(
+                    AlertType.WARNING,
+                    "No Return Selected",
+                    "Please select a return to remove.");
             return;
         }
 
