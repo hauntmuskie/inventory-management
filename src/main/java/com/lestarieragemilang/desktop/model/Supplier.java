@@ -3,17 +3,17 @@ package com.lestarieragemilang.desktop.model;
 import jakarta.persistence.*;
 
 @Entity
-@Table(name = "customers")
-public class Customer {
+@Table(name = "suppliers")
+public class Supplier {
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long id;
 
-    @Column(name = "customer_id", unique = true, nullable = false)
-    private String customerId;
+    @Column(name = "supplier_id", unique = true, nullable = false)
+    private String supplierId;
 
-    @Column(name = "customer_name", nullable = false, length = 50)
-    private String customerName;
+    @Column(name = "supplier_name", nullable = false, length = 50)
+    private String supplierName;
 
     @Column(nullable = false, length = 50)
     private String contact;
@@ -33,20 +33,20 @@ public class Customer {
         this.id = id;
     }
 
-    public String getCustomerId() {
-        return customerId;
+    public String getSupplierId() {
+        return supplierId;
     }
 
-    public void setCustomerId(String customerId) {
-        this.customerId = customerId;
+    public void setSupplierId(String supplierId) {
+        this.supplierId = supplierId;
     }
 
-    public String getCustomerName() {
-        return customerName;
+    public String getSupplierName() {
+        return supplierName;
     }
 
-    public void setCustomerName(String customerName) {
-        this.customerName = customerName;
+    public void setSupplierName(String supplierName) {
+        this.supplierName = supplierName;
     }
 
     public String getContact() {

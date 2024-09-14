@@ -19,10 +19,11 @@ import com.lestarieragemilang.desktop.utils.IdGenerator;
 import com.lestarieragemilang.desktop.utils.ShowAlert;
 import com.lestarieragemilang.desktop.utils.TableUtils;
 
+import java.math.BigDecimal;
 import java.util.List;
 import java.util.stream.Collectors;
 
-public class StockForm {
+public class StockController {
     @FXML
     private TextField stockIDIncrement;
     @FXML
@@ -85,7 +86,7 @@ public class StockForm {
             @Override
             public String toString(Category category) {
                 return category != null
-                        ? category.getCategoryId() + " - " + category.getBrand() + " " + category.getType()
+                        ? category.getCategoryId() + " - " + category.getBrand() + " " + category.getProductType()
                         : "";
             }
 
@@ -101,12 +102,12 @@ public class StockForm {
                 TableUtils.createColumn("Stock ID", "stockId"),
                 TableUtils.createColumn("Category ID", "category.categoryId"),
                 TableUtils.createColumn("Brand", "category.brand"),
-                TableUtils.createColumn("Type", "category.type"),
+                TableUtils.createColumn("Type", "category.productType"),
                 TableUtils.createColumn("Size", "category.size"),
                 TableUtils.createColumn("Weight", "category.weight"),
-                TableUtils.createColumn("Unit", "category.unit"),
+                TableUtils.createColumn("Unit", "category.weightUnit"),
                 TableUtils.createColumn("Quantity", "quantity"),
-                TableUtils.createColumn("Buy Price", "purchasingPrice"),
+                TableUtils.createColumn("Buy Price", "purchasePrice"),
                 TableUtils.createColumn("Sell Price", "sellingPrice"));
         TableUtils.populateTable(stockTable, columns, stockService.findAll());
     }
@@ -143,8 +144,8 @@ public class StockForm {
         stock.setStockId(stockId);
         stock.setCategory(categoryIDDropDown.getValue());
         stock.setQuantity(Integer.parseInt(stockQuantityField.getText()));
-        stock.setPurchasingPrice(Double.parseDouble(stockBuyPriceField.getText()));
-        stock.setSellingPrice(Double.parseDouble(stockSellPriceField.getText()));
+        stock.setPurchasePrice(new BigDecimal(stockBuyPriceField.getText()));
+        stock.setSellingPrice(new BigDecimal(stockSellPriceField.getText()));
 
         stockService.save(stock);
         loadStocks();
@@ -168,8 +169,8 @@ public class StockForm {
 
         selectedStock.setCategory(categoryIDDropDown.getValue());
         selectedStock.setQuantity(Integer.parseInt(stockQuantityField.getText()));
-        selectedStock.setPurchasingPrice(Double.parseDouble(stockBuyPriceField.getText()));
-        selectedStock.setSellingPrice(Double.parseDouble(stockSellPriceField.getText()));
+        selectedStock.setPurchasePrice(new BigDecimal(stockBuyPriceField.getText()));
+        selectedStock.setSellingPrice(new BigDecimal(stockSellPriceField.getText()));
 
         stockService.update(selectedStock);
         loadStocks();
@@ -197,7 +198,7 @@ public class StockForm {
                 .filter(stock -> stock.getStockId().toLowerCase().contains(searchTerm) ||
                         stock.getCategory().getCategoryId().toLowerCase().contains(searchTerm) ||
                         stock.getCategory().getBrand().toLowerCase().contains(searchTerm) ||
-                        stock.getCategory().getType().toLowerCase().contains(searchTerm))
+                        stock.getCategory().getProductType().toLowerCase().contains(searchTerm))
                 .collect(Collectors.toList());
         stockTable.setItems(FXCollections.observableArrayList(filteredStocks));
     }

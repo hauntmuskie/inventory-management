@@ -10,7 +10,13 @@
         <property name="hibernate.show_sql">true</property>
         <property name="hibernate.hbm2ddl.auto">update</property>
 
-        <mapping class="com.lestarieragemilang.desktop.model.Category" />
+        <mapping class="com.lestarieragemilang.desktop.model.User" />
         <mapping class="com.lestarieragemilang.desktop.model.Stock" />
+        <mapping class="com.lestarieragemilang.desktop.model.Supplier" />
+        <mapping class="com.lestarieragemilang.desktop.model.Category" />
+        <mapping class="com.lestarieragemilang.desktop.model.Customer" />
+        <mapping class="com.lestarieragemilang.desktop.model.Purchasing" />
+        <mapping class="com.lestarieragemilang.desktop.model.Sales" />
+        <mapping class="com.lestarieragemilang.desktop.model.Returns" />
     </session-factory>
 </hibernate-configuration>

@@ -1,6 +1,6 @@
 package com.lestarieragemilang.desktop.utils;
 
-import javafx.beans.property.SimpleObjectProperty;
+import javafx.beans.property.SimpleStringProperty;
 import javafx.collections.FXCollections;
 import javafx.scene.control.TableColumn;
 import javafx.scene.control.TableView;
@@ -15,20 +15,19 @@ public class TableUtils {
         tableView.setItems(FXCollections.observableArrayList(data));
     }
 
-    public static <T, U> TableColumn<T, U> createColumn(String title, String property) {
-        TableColumn<T, U> column = new TableColumn<>(title);
+    public static <T> TableColumn<T, String> createColumn(String title, String property) {
+        TableColumn<T, String> column = new TableColumn<>(title);
         column.setCellValueFactory(
-                new Callback<TableColumn.CellDataFeatures<T, U>, javafx.beans.value.ObservableValue<U>>() {
-                    @SuppressWarnings("unchecked")
+                new Callback<TableColumn.CellDataFeatures<T, String>, javafx.beans.value.ObservableValue<String>>() {
                     @Override
-                    public javafx.beans.value.ObservableValue<U> call(TableColumn.CellDataFeatures<T, U> param) {
+                    public javafx.beans.value.ObservableValue<String> call(TableColumn.CellDataFeatures<T, String> param) {
                         try {
                             String[] properties = property.split("\\.");
                             Object value = param.getValue();
                             for (String prop : properties) {
                                 value = value.getClass().getMethod("get" + capitalize(prop)).invoke(value);
                             }
-                            return new SimpleObjectProperty<>((U) value);
+                            return new SimpleStringProperty(value != null ? value.toString() : "");
                         } catch (Exception e) {
                             e.printStackTrace();
                             return null;

@@ -1,0 +1,226 @@
+<?xml version="1.0" encoding="UTF-8"?>
+
+<?import com.jfoenix.controls.JFXButton?>
+<?import com.jfoenix.controls.JFXComboBox?>
+<?import com.jfoenix.controls.JFXRadioButton?>
+<?import javafx.scene.control.DatePicker?>
+<?import javafx.scene.control.Label?>
+<?import javafx.scene.control.TableColumn?>
+<?import javafx.scene.control.TableView?>
+<?import javafx.scene.control.TextArea?>
+<?import javafx.scene.control.TextField?>
+<?import javafx.scene.layout.AnchorPane?>
+<?import javafx.scene.layout.BorderPane?>
+<?import javafx.scene.layout.HBox?>
+<?import javafx.scene.layout.VBox?>
+<?import javafx.scene.text.Font?>
+
+<VBox maxHeight="-Infinity" maxWidth="-Infinity" minHeight="-Infinity" minWidth="-Infinity"
+   prefHeight="570.0" prefWidth="970.0" xmlns="http://javafx.com/javafx/22"
+   xmlns:fx="http://javafx.com/fxml/1"
+   fx:controller="com.lestarieragemilang.desktop.controller.ReturnsController">
+   <children>
+      <AnchorPane minHeight="0.0" minWidth="0.0" prefHeight="180.0" prefWidth="200.0">
+         <children>
+            <BorderPane layoutX="108.0" layoutY="99.0" prefHeight="200.0" prefWidth="200.0"
+               AnchorPane.bottomAnchor="0.0" AnchorPane.leftAnchor="0.0"
+               AnchorPane.rightAnchor="0.0" AnchorPane.topAnchor="0.0">
+               <center>
+                  <AnchorPane prefHeight="200.0" prefWidth="200.0" BorderPane.alignment="CENTER">
+                     <children>
+                        <HBox alignment="CENTER_LEFT" layoutX="47.0" layoutY="111.0"
+                           prefHeight="50.0" prefWidth="450.0" spacing="15.0"
+                           AnchorPane.bottomAnchor="20.0" AnchorPane.leftAnchor="20.0"
+                           AnchorPane.topAnchor="200.0">
+                           <children>
+                              <Label text="CARI DATA">
+                                 <font>
+                                    <Font size="18.0" />
+                                 </font>
+                              </Label>
+                              <TextField fx:id="searchTextField" prefHeight="32.0" prefWidth="250.0"
+                                 style="-fx-background-radius: 7;" />
+                              <JFXButton buttonType="RAISED" onAction="#searchingData"
+                                 prefHeight="30.0" prefWidth="60.0"
+                                 style="-fx-background-color: #131313; -fx-background-radius: 10; -fx-cursor: HAND; -fx-font-weight: bold; -fx-text-fill: #E8E7DE; -fx-border-radius: 10;"
+                                 text="CARI" textFill="WHITE">
+                                 <font>
+                                    <Font size="14.0" />
+                                 </font>
+                              </JFXButton>
+                           </children>
+                        </HBox>
+                        <HBox layoutX="20.0" layoutY="17.0" spacing="30.0">
+                           <children>
+                              <HBox>
+                                 <children>
+                                    <VBox prefHeight="133.0" prefWidth="116.0" spacing="5.0">
+                                       <children>
+                                          <HBox alignment="CENTER_LEFT" prefHeight="40.0"
+                                             prefWidth="930.0" spacing="15.0">
+                                             <children>
+                                                <Label text="TANGGAL PENGEMBALIAN">
+                                                   <font>
+                                                      <Font size="18.0" />
+                                                   </font>
+                                                </Label>
+                                             </children>
+                                          </HBox>
+                                          <HBox alignment="CENTER_LEFT" prefHeight="40.0"
+                                             prefWidth="930.0" spacing="15.0">
+                                             <children>
+                                                <Label text="ID PENGEMBALIAN">
+                                                   <font>
+                                                      <Font size="18.0" />
+                                                   </font>
+                                                </Label>
+                                             </children>
+                                          </HBox>
+                                       </children>
+                                    </VBox>
+                                    <VBox alignment="BASELINE_LEFT" prefHeight="133.0"
+                                       prefWidth="116.0" spacing="20.0">
+                                       <children>
+                                          <DatePicker fx:id="returnDate"
+                                             style="-fx-background-radius: 7;" />
+                                          <TextField fx:id="returnIDIncrement" disable="true"
+                                             promptText="Auto-Generated"
+                                             style="-fx-background-radius: 7;" />
+                                       </children>
+                                    </VBox>
+                                 </children>
+                              </HBox>
+                              <HBox prefHeight="87.0" prefWidth="232.0">
+                                 <children>
+                                    <VBox alignment="CENTER_LEFT" prefHeight="133.0"
+                                       prefWidth="255.0" spacing="5.0">
+                                       <children>
+                                          <HBox alignment="CENTER_LEFT" prefHeight="40.0"
+                                             prefWidth="148.0" spacing="15.0">
+                                             <children>
+                                                <Label prefHeight="27.0" prefWidth="186.0"
+                                                   text="JENIS PENGEMBALIAN">
+                                                   <font>
+                                                      <Font size="18.0" />
+                                                   </font>
+                                                </Label>
+                                             </children>
+                                          </HBox>
+                                          <VBox alignment="CENTER_LEFT" prefHeight="133.0"
+                                             prefWidth="116.0" spacing="20.0">
+                                             <children>
+                                                <JFXRadioButton fx:id="returnIsBuy" text="PEMBELIAN" />
+                                                <JFXRadioButton fx:id="returnIsSell"
+                                                   text="PENJUALAN" />
+                                             </children>
+                                          </VBox>
+                                       </children>
+                                    </VBox>
+                                 </children>
+                              </HBox>
+                              <HBox>
+                                 <children>
+                                    <VBox prefHeight="133.0" prefWidth="116.0" spacing="5.0">
+                                       <children>
+                                          <HBox alignment="CENTER_LEFT" prefHeight="40.0"
+                                             prefWidth="930.0" spacing="15.0">
+                                             <children>
+                                                <Label text="FAKTUR">
+                                                   <font>
+                                                      <Font size="18.0" />
+                                                   </font>
+                                                </Label>
+                                             </children>
+                                          </HBox>
+                                          <Label text="ALASAN">
+                                             <font>
+                                                <Font size="18.0" />
+                                             </font>
+                                          </Label>
+                                       </children>
+                                    </VBox>
+                                    <VBox alignment="CENTER" prefHeight="133.0" prefWidth="116.0"
+                                       spacing="20.0">
+                                       <children>
+                                          <JFXComboBox fx:id="returnInvoicePurchasing"
+                                             prefHeight="25.0" prefWidth="122.0"
+                                             style="-fx-background-radius: 10;" />
+                                          <TextArea fx:id="returnReasonField" prefHeight="200.0"
+                                             prefWidth="200.0" style="-fx-background-radius: 10;" />
+                                       </children>
+                                    </VBox>
+                                 </children>
+                              </HBox>
+                           </children>
+                        </HBox>
+                        <HBox alignment="CENTER_RIGHT" layoutX="687.0" layoutY="143.0"
+                           prefHeight="33.0" prefWidth="392.0" spacing="10.0"
+                           AnchorPane.bottomAnchor="20.0" AnchorPane.rightAnchor="20.0"
+                           AnchorPane.topAnchor="200.0">
+                           <children>
+                              <JFXButton buttonType="RAISED" onAction="#resetReturnButton"
+                                 prefHeight="30.0" prefWidth="97.0"
+                                 style="-fx-background-color: #131313; -fx-background-radius: 10; -fx-cursor: HAND; -fx-font-weight: bold; -fx-text-fill: #E8E7DE; -fx-border-radius: 10;"
+                                 text="RESET" textFill="WHITE">
+                                 <font>
+                                    <Font size="14.0" />
+                                 </font>
+                              </JFXButton>
+                              <JFXButton buttonType="RAISED" onAction="#addReturnButton"
+                                 prefHeight="30.0" prefWidth="124.0"
+                                 style="-fx-background-color: #131313; -fx-background-radius: 10; -fx-cursor: HAND; -fx-font-weight: bold; -fx-text-fill: #E8E7DE; -fx-border-radius: 10;"
+                                 text="TAMBAH" textFill="WHITE">
+                                 <font>
+                                    <Font size="14.0" />
+                                 </font>
+                              </JFXButton>
+                              <JFXButton fx:id="editReturnButtonText" buttonType="RAISED"
+                                 onAction="#editReturnButton" prefHeight="30.0" prefWidth="97.0"
+                                 style="-fx-background-color: #131313; -fx-background-radius: 10; -fx-cursor: HAND; -fx-font-weight: bold; -fx-text-fill: #E8E7DE; -fx-border-radius: 10;"
+                                 text="EDIT" textFill="WHITE">
+                                 <font>
+                                    <Font size="14.0" />
+                                 </font>
+                              </JFXButton>
+                              <JFXButton buttonType="RAISED" onAction="#removeReturnButton"
+                                 prefHeight="30.0" prefWidth="97.0"
+                                 style="-fx-background-color: #131313; -fx-background-radius: 10; -fx-cursor: HAND; -fx-font-weight: bold; -fx-text-fill: #E8E7DE; -fx-border-radius: 10;"
+                                 text="HAPUS" textFill="WHITE">
+                                 <font>
+                                    <Font size="14.0" />
+                                 </font>
+                              </JFXButton>
+                           </children>
+                        </HBox>
+                     </children>
+                  </AnchorPane>
+               </center>
+               <bottom>
+                  <AnchorPane prefHeight="260.0" prefWidth="200.0" BorderPane.alignment="CENTER">
+                     <children>
+                        <TableView fx:id="returnTable" layoutX="164.0" layoutY="47.0"
+                           prefHeight="200.0" prefWidth="200.0" AnchorPane.bottomAnchor="20.0"
+                           AnchorPane.leftAnchor="20.0" AnchorPane.rightAnchor="20.0"
+                           AnchorPane.topAnchor="0.0">
+                           <columns>
+                              <TableColumn fx:id="returnDateCol" prefWidth="75.0"
+                                 text="TANGGAL PENGEMBALIAN" />
+                              <TableColumn fx:id="returnIDCol" prefWidth="75.0"
+                                 text="ID PENGEMBALIAN" />
+                              <TableColumn fx:id="returnInvoiceCol" prefWidth="75.0" text="FAKTUR" />
+                              <TableColumn fx:id="returnTypeCol" prefWidth="75.0"
+                                 text="JENIS PENGEMBALIAN" />
+                              <TableColumn fx:id="returnReasonCol" prefWidth="75.0" text="ALASAN" />
+                           </columns>
+                           <columnResizePolicy>
+                              <TableView fx:constant="CONSTRAINED_RESIZE_POLICY" />
+                           </columnResizePolicy>
+                        </TableView>
+                     </children>
+                  </AnchorPane>
+               </bottom>
+            </BorderPane>
+         </children>
+      </AnchorPane>
+   </children>
+</VBox>

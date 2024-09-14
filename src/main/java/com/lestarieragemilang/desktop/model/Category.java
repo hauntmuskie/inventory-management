@@ -1,6 +1,7 @@
 package com.lestarieragemilang.desktop.model;
 
 import jakarta.persistence.*;
+import java.math.BigDecimal;
 
 @Entity
 @Table(name = "categories")
@@ -12,20 +13,20 @@ public class Category {
     @Column(name = "category_id", unique = true, nullable = false)
     private String categoryId;
 
-    @Column(nullable = false)
+    @Column(nullable = false, length = 50)
     private String brand;
 
-    @Column(nullable = false)
-    private String type;
+    @Column(name = "product_type", nullable = false, length = 50)
+    private String productType;
 
-    @Column(nullable = false)
+    @Column(length = 20)
     private String size;
 
-    @Column(nullable = false)
-    private Double weight;
+    @Column(precision = 10, scale = 2)
+    private BigDecimal weight;
 
-    @Column(nullable = false)
-    private String unit;
+    @Column(name = "weight_unit", length = 20)
+    private String weightUnit;
 
     // Getters and setters
     public Long getId() {
@@ -52,12 +53,12 @@ public class Category {
         this.brand = brand;
     }
 
-    public String getType() {
-        return type;
+    public String getProductType() {
+        return productType;
     }
 
-    public void setType(String type) {
-        this.type = type;
+    public void setProductType(String productType) {
+        this.productType = productType;
     }
 
     public String getSize() {
@@ -68,19 +69,19 @@ public class Category {
         this.size = size;
     }
 
-    public Double getWeight() {
+    public BigDecimal getWeight() {
         return weight;
     }
 
-    public void setWeight(Double weight) {
+    public void setWeight(BigDecimal weight) {
         this.weight = weight;
     }
 
-    public String getUnit() {
-        return unit;
+    public String getWeightUnit() {
+        return weightUnit;
     }
 
-    public void setUnit(String unit) {
-        this.unit = unit;
+    public void setWeightUnit(String weightUnit) {
+        this.weightUnit = weightUnit;
     }
 }

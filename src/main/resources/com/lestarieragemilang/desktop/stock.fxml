@@ -15,7 +15,7 @@
 <VBox maxHeight="-Infinity" maxWidth="-Infinity" minHeight="-Infinity" minWidth="-Infinity"
     prefHeight="570.0" prefWidth="970.0" xmlns="http://javafx.com/javafx/22"
     xmlns:fx="http://javafx.com/fxml/1"
-    fx:controller="com.lestarieragemilang.desktop.controller.StockForm">
+    fx:controller="com.lestarieragemilang.desktop.controller.StockController">
     <children>
         <AnchorPane minHeight="0.0" minWidth="0.0" prefHeight="180.0" prefWidth="200.0">
             <children>

@@ -1,6 +1,7 @@
 package com.lestarieragemilang.desktop.model;
 
 import jakarta.persistence.*;
+import java.math.BigDecimal;
 
 @Entity
 @Table(name = "stocks")
@@ -19,11 +20,11 @@ public class Stock {
     @Column(nullable = false)
     private Integer quantity;
 
-    @Column(name = "purchasing_price", nullable = false)
-    private Double purchasingPrice;
+    @Column(name = "purchase_price", nullable = false, precision = 10, scale = 2)
+    private BigDecimal purchasePrice;
 
-    @Column(name = "selling_price", nullable = false)
-    private Double sellingPrice;
+    @Column(name = "selling_price", nullable = false, precision = 10, scale = 2)
+    private BigDecimal sellingPrice;
 
     // Getters and setters
     public Long getId() {
@@ -58,19 +59,19 @@ public class Stock {
         this.quantity = quantity;
     }
 
-    public Double getPurchasingPrice() {
-        return purchasingPrice;
+    public BigDecimal getPurchasePrice() {
+        return purchasePrice;
     }
 
-    public void setPurchasingPrice(Double purchasingPrice) {
-        this.purchasingPrice = purchasingPrice;
+    public void setPurchasePrice(BigDecimal purchasePrice) {
+        this.purchasePrice = purchasePrice;
     }
 
-    public Double getSellingPrice() {
+    public BigDecimal getSellingPrice() {
         return sellingPrice;
     }
 
-    public void setSellingPrice(Double sellingPrice) {
+    public void setSellingPrice(BigDecimal sellingPrice) {
         this.sellingPrice = sellingPrice;
     }
 }

@@ -4,7 +4,6 @@ import javafx.collections.FXCollections;
 import javafx.collections.transformation.FilteredList;
 import javafx.fxml.FXML;
 import javafx.scene.control.*;
-import javafx.scene.control.cell.PropertyValueFactory;
 import org.hibernate.SessionFactory;
 import org.hibernate.cfg.Configuration;
 
@@ -14,7 +13,9 @@ import com.lestarieragemilang.desktop.repository.GenericDao;
 import com.lestarieragemilang.desktop.service.GenericService;
 import com.lestarieragemilang.desktop.utils.ClearFields;
 import com.lestarieragemilang.desktop.utils.ShowAlert;
+import com.lestarieragemilang.desktop.utils.TableUtils;
 
+import java.math.BigDecimal;
 import java.util.List;
 import java.util.Random;
 
@@ -30,7 +31,7 @@ public class CategoryController {
     @FXML
     private TextField weightField;
     @FXML
-    private ComboBox<String> unitComboBox;
+    private ComboBox<String> weightUnitComboBox;
     @FXML
     private TableView<Category> categoryTable;
     @FXML
@@ -38,13 +39,13 @@ public class CategoryController {
     @FXML
     private TableColumn<Category, String> brandColumn;
     @FXML
-    private TableColumn<Category, String> typeColumn;
+    private TableColumn<Category, String> productTypeColumn;
     @FXML
     private TableColumn<Category, String> sizeColumn;
     @FXML
-    private TableColumn<Category, Double> weightColumn;
+    private TableColumn<Category, BigDecimal> weightColumn;
     @FXML
-    private TableColumn<Category, String> unitColumn;
+    private TableColumn<Category, String> weightUnitColumn;
     @FXML
     private TextField searchField;
 
@@ -61,10 +62,8 @@ public class CategoryController {
         loadCategories();
         generateAndSetCategoryId();
 
-        // Disable the category ID field
         categoryIdField.setDisable(true);
 
-        // Initialize search functionality
         initializeSearch();
     }
 
@@ -82,14 +81,14 @@ public class CategoryController {
                     return true;
                 } else if (category.getBrand().toLowerCase().contains(lowerCaseFilter)) {
                     return true;
-                } else if (category.getType().toLowerCase().contains(lowerCaseFilter)) {
+                } else if (category.getProductType().toLowerCase().contains(lowerCaseFilter)) {
                     return true;
                 } else if (category.getSize().toLowerCase().contains(lowerCaseFilter)) {
                     return true;
                 } else if (String.valueOf(category.getWeight()).toLowerCase().contains(lowerCaseFilter)) {
                     return true;
                 } else
-                    return category.getUnit().toLowerCase().contains(lowerCaseFilter);
+                    return category.getWeightUnit().toLowerCase().contains(lowerCaseFilter);
             });
         });
 
@@ -98,29 +97,21 @@ public class CategoryController {
 
     private void initializeComboBoxes() {
         brandComboBox.setItems(FXCollections.observableArrayList("Nike", "Adidas", "Puma", "Reebok", "Under Armour"));
-        typeComboBox.setItems(FXCollections.observableArrayList("Shoes", "T-shirt", "Shorts", "Jacket", "Socks"));
+        typeComboBox
+                .setItems(FXCollections.observableArrayList("Shoes", "T-shirt", "Shorts", "Jacket", "Socks"));
         sizeComboBox.setItems(FXCollections.observableArrayList("XS", "S", "M", "L", "XL", "XXL"));
-        unitComboBox.setItems(FXCollections.observableArrayList("kg", "g", "lb", "oz"));
+        weightUnitComboBox.setItems(FXCollections.observableArrayList("kg", "g", "lb", "oz"));
     }
 
     private void initializeCategoryTable() {
-        categoryIdColumn.setCellValueFactory(new PropertyValueFactory<>("categoryId"));
-        brandColumn.setCellValueFactory(new PropertyValueFactory<>("brand"));
-        typeColumn.setCellValueFactory(new PropertyValueFactory<>("type"));
-        sizeColumn.setCellValueFactory(new PropertyValueFactory<>("size"));
-        weightColumn.setCellValueFactory(new PropertyValueFactory<>("weight"));
-        unitColumn.setCellValueFactory(new PropertyValueFactory<>("unit"));
-
-        categoryTable.getSelectionModel().selectedItemProperty().addListener((observable, oldValue, newValue) -> {
-            if (newValue != null) {
-                categoryIdField.setText(newValue.getCategoryId());
-                brandComboBox.setValue(newValue.getBrand());
-                typeComboBox.setValue(newValue.getType());
-                sizeComboBox.setValue(newValue.getSize());
-                weightField.setText(String.valueOf(newValue.getWeight()));
-                unitComboBox.setValue(newValue.getUnit());
-            }
-        });
+        List<TableColumn<Category, ?>> columns = List.of(
+                TableUtils.createColumn("Category ID", "categoryId"),
+                TableUtils.createColumn("Brand", "brand"),
+                TableUtils.createColumn("Type", "productType"),
+                TableUtils.createColumn("Size", "size"),
+                TableUtils.createColumn("Weight", "weight"),
+                TableUtils.createColumn("Unit", "weightUnit"));
+        TableUtils.populateTable(categoryTable, columns, categoryService.findAll());
     }
 
     private void loadCategories() {
@@ -160,15 +151,14 @@ public class CategoryController {
         Category category = new Category();
         category.setCategoryId(categoryId);
         category.setBrand(brandComboBox.getValue());
-        category.setType(typeComboBox.getValue());
+        category.setProductType(typeComboBox.getValue());
         category.setSize(sizeComboBox.getValue());
-        category.setWeight(Double.parseDouble(weightField.getText()));
-        category.setUnit(unitComboBox.getValue());
+        category.setWeight(new BigDecimal(weightField.getText()));
+        category.setWeightUnit(weightUnitComboBox.getValue());
 
         categoryService.save(category);
         loadCategories();
         clearFields();
-
     }
 
     @FXML
@@ -183,10 +173,10 @@ public class CategoryController {
         category.setId(selectedCategory.getId());
         category.setCategoryId(selectedCategory.getCategoryId());
         category.setBrand(brandComboBox.getValue());
-        category.setType(typeComboBox.getValue());
+        category.setProductType(typeComboBox.getValue());
         category.setSize(sizeComboBox.getValue());
-        category.setWeight(Double.parseDouble(weightField.getText()));
-        category.setUnit(unitComboBox.getValue());
+        category.setWeight(new BigDecimal(weightField.getText()));
+        category.setWeightUnit(weightUnitComboBox.getValue());
 
         categoryService.update(category);
         loadCategories();
@@ -216,15 +206,16 @@ public class CategoryController {
 
         categoryIdField.setText(selectedCategory.getCategoryId());
         brandComboBox.setValue(selectedCategory.getBrand());
-        typeComboBox.setValue(selectedCategory.getType());
+        typeComboBox.setValue(selectedCategory.getProductType());
         sizeComboBox.setValue(selectedCategory.getSize());
-        weightField.setText(String.valueOf(selectedCategory.getWeight()));
-        unitComboBox.setValue(selectedCategory.getUnit());
+        weightField.setText(selectedCategory.getWeight().toString());
+        weightUnitComboBox.setValue(selectedCategory.getWeightUnit());
     }
 
     @FXML
     private void handleClear() {
-        ClearFields.clearFields(categoryIdField, brandComboBox, typeComboBox, sizeComboBox, weightField, unitComboBox);
+        ClearFields.clearFields(categoryIdField, brandComboBox, typeComboBox, sizeComboBox, weightField,
+                weightUnitComboBox);
         generateAndSetCategoryId();
     }
 
