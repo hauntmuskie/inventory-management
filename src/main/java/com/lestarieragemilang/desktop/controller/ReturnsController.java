@@ -16,6 +16,7 @@ import com.lestarieragemilang.desktop.model.Sales;
 import com.lestarieragemilang.desktop.repository.GenericDao;
 import com.lestarieragemilang.desktop.service.GenericService;
 import com.lestarieragemilang.desktop.utils.ClearFields;
+import com.lestarieragemilang.desktop.utils.GenericEditPopup;
 import com.lestarieragemilang.desktop.utils.HibernateUtil;
 import com.lestarieragemilang.desktop.utils.IdGenerator;
 import com.lestarieragemilang.desktop.utils.ShowAlert;
@@ -31,7 +32,9 @@ public class ReturnsController extends HibernateUtil {
     @FXML
     private DatePicker returnDate;
     @FXML
-    private TextField returnIDIncrement, returnReasonField, searchTextField;
+    private TextField returnIDIncrement, searchTextField;
+    @FXML
+    private TextArea returnReasonField;
     @FXML
     private JFXComboBox<Object> returnInvoicePurchasing;
     @FXML
@@ -191,28 +194,40 @@ public class ReturnsController extends HibernateUtil {
             return;
         }
 
-        selectedReturn.setReturnDate(returnDate.getValue());
+        GenericEditPopup.create(Returns.class)
+                .withTitle("Edit Return")
+                .forItem(selectedReturn)
+                .addField("Return ID", new TextField(selectedReturn.getReturnId()), true)
+                .addField("Date", new DatePicker(selectedReturn.getReturnDate()))
+                .addField("Invoice", new ComboBox<>(returnInvoicePurchasing.getItems()))
+                .addField("Type", new TextField(selectedReturn.getReturnType()))
+                .addField("Reason", new TextArea(selectedReturn.getReason()))
+                .onSave((returnItem, fields) -> {
+                    returnItem.setReturnDate(((DatePicker) fields.get(1)).getValue());
 
-        Object selectedInvoice = returnInvoicePurchasing.getValue();
-        if (selectedInvoice instanceof Purchasing) {
-            selectedReturn.setInvoiceNumber(((Purchasing) selectedInvoice).getInvoiceNumber());
-            selectedReturn.setReturnType("Buy");
-        } else if (selectedInvoice instanceof Sales) {
-            selectedReturn.setInvoiceNumber(((Sales) selectedInvoice).getInvoiceNumber());
-            selectedReturn.setReturnType("Sell");
-        } else {
-            ShowAlert.showAlert(
-                    AlertType.WARNING,
-                    "Missing Invoice",
-                    "Please select an invoice.");
-            return;
-        }
+                    Object selectedInvoice = ((ComboBox<?>) fields.get(2)).getValue();
+                    if (selectedInvoice instanceof Purchasing) {
+                        returnItem.setInvoiceNumber(((Purchasing) selectedInvoice).getInvoiceNumber());
+                        returnItem.setReturnType("Buy");
+                    } else if (selectedInvoice instanceof Sales) {
+                        returnItem.setInvoiceNumber(((Sales) selectedInvoice).getInvoiceNumber());
+                        returnItem.setReturnType("Sell");
+                    } else {
+                        ShowAlert.showAlert(
+                                AlertType.WARNING,
+                                "Missing Invoice",
+                                "Please select an invoice.");
+                        return;
+                    }
 
-        selectedReturn.setReason(returnReasonField.getText());
-
-        returnService.update(selectedReturn);
-        loadReturns();
-        resetReturnButton();
+                    returnItem.setReason(((TextField) fields.get(4)).getText());
+                    returnService.update(returnItem);
+                })
+                .afterSave(() -> {
+                    loadReturns();
+                    resetReturnButton();
+                })
+                .show();
     }
 
     @FXML

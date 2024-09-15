@@ -28,6 +28,12 @@ public class Category {
     @Column(name = "weight_unit", length = 20)
     private String weightUnit;
 
+    // category to string
+    @Override
+    public String toString() {
+        return categoryId + " - " + brand;
+    }
+
     // Getters and setters
     public Long getId() {
         return id;

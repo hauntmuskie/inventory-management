@@ -6,6 +6,7 @@ import com.lestarieragemilang.desktop.model.Supplier;
 import com.lestarieragemilang.desktop.repository.GenericDao;
 import com.lestarieragemilang.desktop.service.GenericService;
 import com.lestarieragemilang.desktop.utils.ClearFields;
+import com.lestarieragemilang.desktop.utils.GenericEditPopup;
 import com.lestarieragemilang.desktop.utils.HibernateUtil;
 import com.lestarieragemilang.desktop.utils.IdGenerator;
 import com.lestarieragemilang.desktop.utils.ShowAlert;
@@ -118,14 +119,26 @@ public class SupplierController extends HibernateUtil {
             return;
         }
 
-        selectedSupplier.setSupplierName(supplierNameField.getText());
-        selectedSupplier.setContact(supplierContactField.getText());
-        selectedSupplier.setEmail(supplierEmailField.getText());
-        selectedSupplier.setAddress(supplierAddressField.getText());
-
-        supplierService.update(selectedSupplier);
-        loadSuppliers();
-        resetSupplierButton();
+        GenericEditPopup.create(Supplier.class)
+                .withTitle("Edit Supplier")
+                .forItem(selectedSupplier)
+                .addField("Supplier ID", new TextField(selectedSupplier.getSupplierId()), true)
+                .addField("Name", new TextField(selectedSupplier.getSupplierName()))
+                .addField("Contact", new TextField(selectedSupplier.getContact()))
+                .addField("Email", new TextField(selectedSupplier.getEmail()))
+                .addField("Address", new TextField(selectedSupplier.getAddress()))
+                .onSave((supplier, fields) -> {
+                    supplier.setSupplierName(((TextField) fields.get(1)).getText());
+                    supplier.setContact(((TextField) fields.get(2)).getText());
+                    supplier.setEmail(((TextField) fields.get(3)).getText());
+                    supplier.setAddress(((TextField) fields.get(4)).getText());
+                    supplierService.update(supplier);
+                })
+                .afterSave(() -> {
+                    loadSuppliers();
+                    resetSupplierButton();
+                })
+                .show();
     }
 
     @FXML

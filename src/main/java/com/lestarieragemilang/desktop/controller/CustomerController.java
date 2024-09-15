@@ -12,6 +12,7 @@ import com.lestarieragemilang.desktop.model.Customer;
 import com.lestarieragemilang.desktop.repository.GenericDao;
 import com.lestarieragemilang.desktop.service.GenericService;
 import com.lestarieragemilang.desktop.utils.ClearFields;
+import com.lestarieragemilang.desktop.utils.GenericEditPopup;
 import com.lestarieragemilang.desktop.utils.HibernateUtil;
 import com.lestarieragemilang.desktop.utils.IdGenerator;
 import com.lestarieragemilang.desktop.utils.ShowAlert;
@@ -83,8 +84,7 @@ public class CustomerController extends HibernateUtil {
             ShowAlert.showAlert(
                     AlertType.WARNING,
                     "Duplicate Customer ID",
-                    "Customer ID already exists."
-            );
+                    "Customer ID already exists.");
             generateAndSetCustomerId();
             return;
         }
@@ -119,14 +119,26 @@ public class CustomerController extends HibernateUtil {
             return;
         }
 
-        selectedCustomer.setCustomerName(customerNameField.getText());
-        selectedCustomer.setContact(customerContactField.getText());
-        selectedCustomer.setAddress(customerAddressField.getText());
-        selectedCustomer.setEmail(customerEmailField.getText());
-
-        customerService.update(selectedCustomer);
-        loadCustomers();
-        resetCustomerButton();
+        GenericEditPopup.create(Customer.class)
+                .withTitle("Edit Customer")
+                .forItem(selectedCustomer)
+                .addField("Customer ID", new TextField(selectedCustomer.getCustomerId()), true)
+                .addField("Name", new TextField(selectedCustomer.getCustomerName()))
+                .addField("Contact", new TextField(selectedCustomer.getContact()))
+                .addField("Address", new TextField(selectedCustomer.getAddress()))
+                .addField("Email", new TextField(selectedCustomer.getEmail()))
+                .onSave((customer, fields) -> {
+                    customer.setCustomerName(((TextField) fields.get(1)).getText());
+                    customer.setContact(((TextField) fields.get(2)).getText());
+                    customer.setAddress(((TextField) fields.get(3)).getText());
+                    customer.setEmail(((TextField) fields.get(4)).getText());
+                    customerService.update(customer);
+                })
+                .afterSave(() -> {
+                    loadCustomers();
+                    resetCustomerButton();
+                })
+                .show();
     }
 
     @FXML

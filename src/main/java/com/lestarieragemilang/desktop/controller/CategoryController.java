@@ -12,6 +12,7 @@ import com.lestarieragemilang.desktop.model.Category;
 import com.lestarieragemilang.desktop.repository.GenericDao;
 import com.lestarieragemilang.desktop.service.GenericService;
 import com.lestarieragemilang.desktop.utils.ClearFields;
+import com.lestarieragemilang.desktop.utils.GenericEditPopup;
 import com.lestarieragemilang.desktop.utils.HibernateUtil;
 import com.lestarieragemilang.desktop.utils.ShowAlert;
 import com.lestarieragemilang.desktop.utils.TableUtils;
@@ -187,6 +188,7 @@ public class CategoryController extends HibernateUtil {
         clearFields();
     }
 
+    @SuppressWarnings("unchecked")
     @FXML
     private void handleEdit() {
         Category selectedCategory = categoryTable.getSelectionModel().getSelectedItem();
@@ -198,12 +200,28 @@ public class CategoryController extends HibernateUtil {
             return;
         }
 
-        categoryIdField.setText(selectedCategory.getCategoryId());
-        brandComboBox.setValue(selectedCategory.getBrand());
-        typeComboBox.setValue(selectedCategory.getProductType());
-        sizeComboBox.setValue(selectedCategory.getSize());
-        weightField.setText(selectedCategory.getWeight().toString());
-        weightUnitComboBox.setValue(selectedCategory.getWeightUnit());
+        GenericEditPopup.create(Category.class)
+                .withTitle("Edit Category")
+                .forItem(selectedCategory)
+                .addField("Category ID", new TextField(selectedCategory.getCategoryId()), true)
+                .addField("Brand", new ComboBox<>(brandComboBox.getItems()))
+                .addField("Type", new ComboBox<>(typeComboBox.getItems()))
+                .addField("Size", new ComboBox<>(sizeComboBox.getItems()))
+                .addField("Weight", new TextField(selectedCategory.getWeight().toString()))
+                .addField("Weight Unit", new ComboBox<>(weightUnitComboBox.getItems()))
+                .onSave((category, fields) -> {
+                    category.setBrand(((ComboBox<String>) fields.get(1)).getValue());
+                    category.setProductType(((ComboBox<String>) fields.get(2)).getValue());
+                    category.setSize(((ComboBox<String>) fields.get(3)).getValue());
+                    category.setWeight(new BigDecimal(((TextField) fields.get(4)).getText()));
+                    category.setWeightUnit(((ComboBox<String>) fields.get(5)).getValue());
+                    categoryService.update(category);
+                })
+                .afterSave(() -> {
+                    loadCategories();
+                    clearFields();
+                })
+                .show();
     }
 
     @FXML

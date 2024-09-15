@@ -14,6 +14,7 @@ import com.lestarieragemilang.desktop.model.Stock;
 import com.lestarieragemilang.desktop.repository.GenericDao;
 import com.lestarieragemilang.desktop.service.GenericService;
 import com.lestarieragemilang.desktop.utils.ClearFields;
+import com.lestarieragemilang.desktop.utils.GenericEditPopup;
 import com.lestarieragemilang.desktop.utils.HibernateUtil;
 import com.lestarieragemilang.desktop.utils.IdGenerator;
 import com.lestarieragemilang.desktop.utils.ShowAlert;
@@ -140,6 +141,7 @@ public class StockController extends HibernateUtil {
         generateAndSetStockId();
     }
 
+    @SuppressWarnings("unchecked")
     @FXML
     private void editStockButton() {
         Stock selectedStock = stockTable.getSelectionModel().getSelectedItem();
@@ -151,14 +153,26 @@ public class StockController extends HibernateUtil {
             return;
         }
 
-        selectedStock.setCategory(categoryIDDropDown.getValue());
-        selectedStock.setQuantity(Integer.parseInt(stockQuantityField.getText()));
-        selectedStock.setPurchasePrice(new BigDecimal(stockBuyPriceField.getText()));
-        selectedStock.setSellingPrice(new BigDecimal(stockSellPriceField.getText()));
-
-        stockService.update(selectedStock);
-        loadStocks();
-        resetStockButton();
+        GenericEditPopup.create(Stock.class)
+        .withTitle("Edit Stock")
+        .forItem(selectedStock)
+        .addField("Stock ID", new TextField(selectedStock.getStockId()), true)
+        .addField("Category", new JFXComboBox<>(categoryIDDropDown.getItems()))
+        .addField("Quantity", new TextField(String.valueOf(selectedStock.getQuantity())))
+        .addField("Purchase Price", new TextField(selectedStock.getPurchasePrice().toString()))
+        .addField("Selling Price", new TextField(selectedStock.getSellingPrice().toString()))
+        .onSave((stock, fields) -> {
+            stock.setCategory(((JFXComboBox<Category>)fields.get(1)).getValue());
+            stock.setQuantity(Integer.parseInt(((TextField)fields.get(2)).getText()));
+            stock.setPurchasePrice(new BigDecimal(((TextField)fields.get(3)).getText()));
+            stock.setSellingPrice(new BigDecimal(((TextField)fields.get(4)).getText()));
+            stockService.update(stock);
+        })
+        .afterSave(() -> {
+            loadStocks();
+            resetStockButton();
+        })
+        .show();
     }
 
     @FXML
