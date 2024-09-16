@@ -41,6 +41,8 @@ public class AIController {
     private final Parser markdownParser;
     private final HtmlRenderer htmlRenderer;
 
+    private String cachedReport;
+
     public AIController() {
         Dotenv dotenv = Dotenv.load();
         this.apiKey = dotenv.get("GEMINI_API_KEY");
@@ -54,9 +56,41 @@ public class AIController {
     }
 
     @FXML
+    public void initialize() {
+        displayInitialMessage();
+    }
+
+    private void displayInitialMessage() {
+        String initialHtml = "<html><head>"
+                + "<style>"
+                + "@import url('https://fonts.googleapis.com/css2?family=Inter:wght@400;700&display=swap');"
+                + "body { font-family: 'Inter', sans-serif; display: flex; justify-content: center; align-items: center; height: 100vh; margin: 0; }"
+                + "</style></head><body>"
+                + "<p>Click the generate button to create an AI report.</p>"
+                + "</body></html>";
+
+        Platform.runLater(() -> aiResponseWebView.getEngine().loadContent(initialHtml));
+    }
+
+    private void displayLoadingMessage() {
+        String loadingHtml = "<html><head>"
+                + "<style>"
+                + "@import url('https://fonts.googleapis.com/css2?family=Inter:wght@400;700&display=swap');"
+                + "body { font-family: 'Inter', sans-serif; margin: 0; padding: 0; }"
+                + ".loader-container { position: fixed; top: 20px; left: 50%; transform: translateX(-50%); }"
+                + ".loader { border: 5px solid #f3f3f3; border-top: 5px solid #3498db; border-radius: 50%; width: 50px; height: 50px; animation: spin 1s linear infinite; }"
+                + "@keyframes spin { 0% { transform: rotate(0deg); } 100% { transform: rotate(360deg); } }"
+                + "</style></head><body>"
+                + "<div class='loader-container'><div class='loader'></div></div>"
+                + "</body></html>";
+
+        Platform.runLater(() -> aiResponseWebView.getEngine().loadContent(loadingHtml));
+    }
+
+    @FXML
     void aiGenerateReportButton(ActionEvent event) {
         aiGenerateButton.setDisable(true);
-        updateWebView("Generating report...");
+        displayLoadingMessage();
 
         CompletableFuture.runAsync(this::generateReport, executorService)
                 .exceptionally(e -> {
@@ -66,6 +100,11 @@ public class AIController {
     }
 
     private void generateReport() {
+        if (cachedReport != null) {
+            updateWebView(cachedReport);
+            return;
+        }
+
         String prompt = "Generate a brief report on the current state of AI technology. Use markdown formatting.";
 
         JsonObject requestBody = new JsonObject();
@@ -88,6 +127,7 @@ public class AIController {
 
             String generatedText = extractGeneratedText(jsonResponse);
             String htmlContent = convertMarkdownToHtml(generatedText);
+            cachedReport = htmlContent;
             updateWebView(htmlContent);
         } catch (IOException | InterruptedException e) {
             handleError("Error generating report: " + e.getMessage());
@@ -114,7 +154,11 @@ public class AIController {
 
     private void updateWebView(String htmlContent) {
         Platform.runLater(() -> {
-            aiResponseWebView.getEngine().loadContent(htmlContent);
+            String fontCss = "<link href='https://fonts.googleapis.com/css2?family=Inter:wght@400;700&display=swap' rel='stylesheet'>";
+            String styledHtmlContent = "<html><head>" + fontCss
+                    + "<style>body { font-family: 'Inter', sans-serif; padding: 20px; }</style></head><body>"
+                    + htmlContent + "</body></html>";
+            aiResponseWebView.getEngine().loadContent(styledHtmlContent);
             aiGenerateButton.setDisable(false);
         });
     }

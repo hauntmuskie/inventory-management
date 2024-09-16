@@ -6,8 +6,6 @@ import javafx.fxml.FXML;
 import javafx.scene.control.*;
 import javafx.scene.control.Alert.AlertType;
 
-import org.hibernate.SessionFactory;
-
 import com.lestarieragemilang.desktop.model.Category;
 import com.lestarieragemilang.desktop.repository.GenericDao;
 import com.lestarieragemilang.desktop.service.GenericService;
@@ -38,8 +36,7 @@ public class CategoryController extends HibernateUtil {
     private FilteredList<Category> filteredCategories;
 
     public void initialize() {
-        SessionFactory sessionFactory = getSessionFactory();
-        categoryService = new GenericService<>(new GenericDao<>(Category.class, sessionFactory), "CAT");
+        categoryService = new GenericService<>(new GenericDao<>(Category.class), "CAT");
 
         initializeComboBoxes();
         initializeCategoryTable();

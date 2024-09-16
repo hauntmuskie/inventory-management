@@ -5,8 +5,6 @@ import javafx.fxml.FXML;
 import javafx.scene.control.*;
 import javafx.scene.control.Alert.AlertType;
 
-import org.hibernate.SessionFactory;
-
 import com.jfoenix.controls.JFXButton;
 import com.lestarieragemilang.desktop.model.Customer;
 import com.lestarieragemilang.desktop.repository.GenericDao;
@@ -36,10 +34,7 @@ public class CustomerController extends HibernateUtil {
     private GenericService<Customer> customerService;
 
     public void initialize() {
-        SessionFactory sessionFactory = getSessionFactory();
-
-        customerService = new GenericService<>(new GenericDao<>(Customer.class, sessionFactory), "CUST");
-
+        customerService = new GenericService<>(new GenericDao<>(Customer.class), "CUST");
         initializeCustomerTable();
         loadCustomers();
         generateAndSetCustomerId();

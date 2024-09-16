@@ -5,8 +5,6 @@ import javafx.fxml.FXML;
 import javafx.scene.control.*;
 import javafx.scene.control.Alert.AlertType;
 import javafx.util.StringConverter;
-import org.hibernate.SessionFactory;
-
 import com.jfoenix.controls.JFXButton;
 import com.jfoenix.controls.JFXComboBox;
 import com.jfoenix.controls.JFXRadioButton;
@@ -51,11 +49,9 @@ public class ReturnsController extends HibernateUtil {
     private GenericService<Sales> salesService;
 
     public void initialize() {
-        SessionFactory sessionFactory = getSessionFactory();
-
-        returnService = new GenericService<>(new GenericDao<>(Returns.class, sessionFactory), "RTN");
-        purchasingService = new GenericService<>(new GenericDao<>(Purchasing.class, sessionFactory), "PCH");
-        salesService = new GenericService<>(new GenericDao<>(Sales.class, sessionFactory), "SLS");
+        returnService = new GenericService<>(new GenericDao<>(Returns.class), "RTN");
+        purchasingService = new GenericService<>(new GenericDao<>(Purchasing.class), "PCH");
+        salesService = new GenericService<>(new GenericDao<>(Sales.class), "SLS");
 
         initializeInvoiceComboBox();
         initializeReturnTable();

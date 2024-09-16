@@ -5,7 +5,7 @@ import javafx.fxml.FXML;
 import javafx.scene.control.*;
 import javafx.scene.control.Alert.AlertType;
 import javafx.util.StringConverter;
-import org.hibernate.SessionFactory;
+import org.hibernate.exception.ConstraintViolationException;
 
 import com.jfoenix.controls.JFXButton;
 import com.jfoenix.controls.JFXComboBox;
@@ -45,9 +45,8 @@ public class StockController extends HibernateUtil {
     private GenericService<Category> categoryService;
 
     public void initialize() {
-        SessionFactory sessionFactory = getSessionFactory();
-        stockService = new GenericService<>(new GenericDao<>(Stock.class, sessionFactory), "STK");
-        categoryService = new GenericService<>(new GenericDao<>(Category.class, sessionFactory), "CAT");
+        stockService = new GenericService<>(new GenericDao<>(Stock.class), "STK");
+        categoryService = new GenericService<>(new GenericDao<>(Category.class), "CAT");
 
         initializeCategoryComboBox();
         initializeStockTable();
@@ -149,30 +148,31 @@ public class StockController extends HibernateUtil {
             ShowAlert.showAlert(
                     AlertType.WARNING,
                     "No Stock Selected",
+                    null,
                     "Please select a stock to edit.");
             return;
         }
 
         GenericEditPopup.create(Stock.class)
-        .withTitle("Edit Stock")
-        .forItem(selectedStock)
-        .addField("Stock ID", new TextField(selectedStock.getStockId()), true)
-        .addField("Category", new JFXComboBox<>(categoryIDDropDown.getItems()))
-        .addField("Quantity", new TextField(String.valueOf(selectedStock.getQuantity())))
-        .addField("Purchase Price", new TextField(selectedStock.getPurchasePrice().toString()))
-        .addField("Selling Price", new TextField(selectedStock.getSellingPrice().toString()))
-        .onSave((stock, fields) -> {
-            stock.setCategory(((JFXComboBox<Category>)fields.get(1)).getValue());
-            stock.setQuantity(Integer.parseInt(((TextField)fields.get(2)).getText()));
-            stock.setPurchasePrice(new BigDecimal(((TextField)fields.get(3)).getText()));
-            stock.setSellingPrice(new BigDecimal(((TextField)fields.get(4)).getText()));
-            stockService.update(stock);
-        })
-        .afterSave(() -> {
-            loadStocks();
-            resetStockButton();
-        })
-        .show();
+                .withTitle("Edit Stock")
+                .forItem(selectedStock)
+                .addField("Stock ID", new TextField(selectedStock.getStockId()), true)
+                .addField("Category", new JFXComboBox<>(categoryIDDropDown.getItems()))
+                .addField("Quantity", new TextField(String.valueOf(selectedStock.getQuantity())))
+                .addField("Purchase Price", new TextField(selectedStock.getPurchasePrice().toString()))
+                .addField("Selling Price", new TextField(selectedStock.getSellingPrice().toString()))
+                .onSave((stock, fields) -> {
+                    stock.setCategory(((JFXComboBox<Category>) fields.get(1)).getValue());
+                    stock.setQuantity(Integer.parseInt(((TextField) fields.get(2)).getText()));
+                    stock.setPurchasePrice(new BigDecimal(((TextField) fields.get(3)).getText()));
+                    stock.setSellingPrice(new BigDecimal(((TextField) fields.get(4)).getText()));
+                    stockService.update(stock);
+                })
+                .afterSave(() -> {
+                    loadStocks();
+                    resetStockButton();
+                })
+                .show();
     }
 
     @FXML
@@ -180,15 +180,42 @@ public class StockController extends HibernateUtil {
         Stock selectedStock = stockTable.getSelectionModel().getSelectedItem();
         if (selectedStock == null) {
             ShowAlert.showAlert(
-                    AlertType.WARNING,
+                    AlertType.INFORMATION,
                     "No Stock Selected",
+                    null,
                     "Please select a stock to remove.");
             return;
         }
 
-        stockService.delete(selectedStock);
-        loadStocks();
-        resetStockButton();
+        if (!stockService.canDelete(selectedStock)) {
+            ShowAlert.showAlert(
+                    AlertType.ERROR,
+                    "Cannot Delete Stock",
+                    null,
+                    "This stock cannot be deleted because it is referenced by other records.");
+            return;
+        }
+
+        Alert confirmAlert = new Alert(AlertType.CONFIRMATION,
+                "Are you sure you want to delete this stock?",
+                ButtonType.YES, ButtonType.NO);
+        confirmAlert.setTitle("Confirm Deletion");
+        confirmAlert.showAndWait().ifPresent(response -> {
+            if (response == ButtonType.YES) {
+                try {
+                    stockService.delete(selectedStock);
+                    loadStocks();
+                    resetStockButton();
+                } catch (ConstraintViolationException e) {
+                    ShowAlert.showAlert(
+                            AlertType.ERROR,
+                            "Error Deleting Stock",
+                            null,
+                            "An unexpected error occurred while trying to delete the stock. " +
+                                    "It may be referenced by other records.");
+                }
+            }
+        });
     }
 
     @FXML

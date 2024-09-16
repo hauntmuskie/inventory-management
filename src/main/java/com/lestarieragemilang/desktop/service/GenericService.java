@@ -2,6 +2,8 @@ package com.lestarieragemilang.desktop.service;
 
 import java.util.List;
 
+import org.hibernate.exception.ConstraintViolationException;
+
 import com.lestarieragemilang.desktop.repository.GenericDao;
 
 public class GenericService<T> {
@@ -21,7 +23,16 @@ public class GenericService<T> {
         dao.update(entity);
     }
 
-    public void delete(T entity) {
+    public boolean canDelete(T entity) {
+        try {
+            dao.checkDeleteConstraints(entity);
+            return true;
+        } catch (ConstraintViolationException e) {
+            return false;
+        }
+    }
+
+    public void delete(T entity) throws ConstraintViolationException {
         dao.delete(entity);
     }
 

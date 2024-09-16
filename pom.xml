@@ -9,8 +9,8 @@
         <project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
         <maven.compiler.source>11</maven.compiler.source>
         <maven.compiler.target>11</maven.compiler.target>
-        <hibernate.version>6.6.0.Final</hibernate.version>
-        <mysql.version>8.0.33</mysql.version>
+        <hibernate.version>7.0.0.Beta1</hibernate.version>
+        <mysql.version>9.0.0</mysql.version>
     </properties>
     <dependencies>
         <dependency>
@@ -18,7 +18,7 @@
             <artifactId>javafx-controls</artifactId>
             <version>13</version>
         </dependency>
-        
+
         <dependency>
             <groupId>org.openjfx</groupId>
             <artifactId>javafx-fxml</artifactId>
@@ -50,6 +50,7 @@
             <artifactId>jmetro</artifactId>
             <version>11.6.16</version>
         </dependency>
+        
         <!-- Hibernate Core -->
         <dependency>
             <groupId>org.hibernate.orm</groupId>
@@ -57,10 +58,17 @@
             <version>${hibernate.version}</version>
         </dependency>
 
+        <!-- https://mvnrepository.com/artifact/org.hibernate.orm/hibernate-community-dialects -->
+        <dependency>
+            <groupId>org.hibernate.orm</groupId>
+            <artifactId>hibernate-community-dialects</artifactId>
+            <version>7.0.0.Beta1</version>
+        </dependency>
+
         <!-- MySQL Connector -->
         <dependency>
-            <groupId>mysql</groupId>
-            <artifactId>mysql-connector-java</artifactId>
+            <groupId>com.mysql</groupId>
+            <artifactId>mysql-connector-j</artifactId>
             <version>${mysql.version}</version>
         </dependency>
 
@@ -68,7 +76,7 @@
         <dependency>
             <groupId>jakarta.persistence</groupId>
             <artifactId>jakarta.persistence-api</artifactId>
-            <version>3.1.0</version>
+            <version>3.2.0</version>
         </dependency>
 
         <!-- SLF4J API -->

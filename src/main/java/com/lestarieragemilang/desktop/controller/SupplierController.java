@@ -19,7 +19,6 @@ import javafx.scene.control.TableView;
 import javafx.scene.control.TextField;
 import javafx.scene.control.Alert.AlertType;
 import javafx.scene.layout.VBox;
-import org.hibernate.SessionFactory;
 
 import java.util.List;
 import java.util.stream.Collectors;
@@ -43,9 +42,7 @@ public class SupplierController extends HibernateUtil {
     private GenericService<Supplier> supplierService;
 
     public void initialize() {
-        SessionFactory sessionFactory = getSessionFactory();
-
-        supplierService = new GenericService<>(new GenericDao<>(Supplier.class, sessionFactory), "SUP");
+        supplierService = new GenericService<>(new GenericDao<>(Supplier.class), "SUP");
 
         initializeSupplierTable();
         loadSuppliers();

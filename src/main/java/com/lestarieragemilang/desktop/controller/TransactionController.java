@@ -16,7 +16,6 @@ import javafx.fxml.FXML;
 import javafx.scene.control.*;
 import javafx.scene.control.Alert.AlertType;
 import javafx.util.StringConverter;
-import org.hibernate.SessionFactory;
 
 import java.math.BigDecimal;
 import java.time.LocalDate;
@@ -75,13 +74,11 @@ public class TransactionController extends HibernateUtil {
     private ObservableList<Sales> pendingSales = FXCollections.observableArrayList();
 
     public void initialize() {
-        SessionFactory sessionFactory = getSessionFactory();
-
-        purchasingService = new GenericService<>(new GenericDao<>(Purchasing.class, sessionFactory), "PUR");
-        salesService = new GenericService<>(new GenericDao<>(Sales.class, sessionFactory), "SAL");
-        stockService = new GenericService<>(new GenericDao<>(Stock.class, sessionFactory), "STK");
-        supplierService = new GenericService<>(new GenericDao<>(Supplier.class, sessionFactory), "SUP");
-        customerService = new GenericService<>(new GenericDao<>(Customer.class, sessionFactory), "CUS");
+        purchasingService = new GenericService<>(new GenericDao<>(Purchasing.class), "PUR");
+        salesService = new GenericService<>(new GenericDao<>(Sales.class), "SAL");
+        stockService = new GenericService<>(new GenericDao<>(Stock.class), "STK");
+        supplierService = new GenericService<>(new GenericDao<>(Supplier.class), "SUP");
+        customerService = new GenericService<>(new GenericDao<>(Customer.class), "CUS");
 
         initializeComboBoxes();
         initializeTables();
