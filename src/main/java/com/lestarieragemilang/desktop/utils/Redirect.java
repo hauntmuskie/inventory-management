@@ -20,7 +20,7 @@ public abstract class Redirect {
 
   protected abstract void animateFadeOut(Parent node, Runnable onFinished);
 
-  protected void loadScene(String page, AnchorPane anchorPane) throws IOException {
+  protected Parent loadScene(String page, AnchorPane anchorPane) throws IOException {
     if (anchorPane == null) {
       throw new IllegalArgumentException("anchorPane cannot be null");
     }
@@ -28,6 +28,7 @@ public abstract class Redirect {
     Parent root = sceneCache.computeIfAbsent(page, this::loadFXML);
     anchorPane.getChildren().setAll(root);
     animateFadeIn(anchorPane);
+    return root;
   }
 
   private Parent loadFXML(String page) {

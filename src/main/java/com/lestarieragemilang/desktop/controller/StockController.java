@@ -85,8 +85,8 @@ public class StockController extends HibernateUtil {
                 TableUtils.createColumn("Weight", "category.weight"),
                 TableUtils.createColumn("Unit", "category.weightUnit"),
                 TableUtils.createColumn("Quantity", "quantity"),
-                TableUtils.createColumn("Buy Price", "purchasePrice"),
-                TableUtils.createColumn("Sell Price", "sellingPrice"));
+                TableUtils.createFormattedColumn("Buy Price", "purchasePrice"),
+                TableUtils.createFormattedColumn("Sell Price", "sellingPrice"));
         TableUtils.populateTable(stockTable, columns, stockService.findAll());
     }
 

@@ -6,7 +6,6 @@ import javafx.animation.KeyFrame;
 import javafx.animation.Timeline;
 import javafx.fxml.FXML;
 import javafx.scene.Parent;
-import javafx.scene.control.Button;
 import javafx.scene.control.Label;
 import javafx.scene.input.MouseEvent;
 import javafx.scene.layout.AnchorPane;
@@ -16,7 +15,6 @@ import javafx.util.Duration;
 import java.io.IOException;
 import java.time.LocalDateTime;
 import java.time.format.DateTimeFormatter;
-import java.util.List;
 import java.util.Locale;
 
 public class Layout extends Redirect {
@@ -31,15 +29,12 @@ public class Layout extends Redirect {
     private static final DateTimeFormatter FORMATTER = DateTimeFormatter.ofPattern("dd MMMM yyyy '['HH:mm:ss']'",
             new Locale.Builder().setLanguageTag("id").build());
 
-    private Button currentActiveButton;
+    private JFXButton currentActiveButton;
 
     @FXML
     public void initialize() throws IOException {
-        loadScene("stokbesi", setScene);
+        loadScene("StokBesi", setScene);
         initializeClock();
-        // if (!navButtons.isDirtyEmpty()) {
-        // setActiveButton(navButtons.get(0));
-        // }
     }
 
     private void initializeClock() {
@@ -65,7 +60,8 @@ public class Layout extends Redirect {
                     .setStyle(
                             "-fx-background-color: #EEEEEE; -fx-background-radius: 10; -fx-text-fill: #333333; -fx-cursor: hand; -fx-font-weight: bold; -fx-border-radius: 10;");
         }
-        button.setStyle("-fx-background-color: #131313; -fx-background-radius: 10; -fx-text-fill: white; -fx-cursor: hand; -fx-font-weight: bold; -fx-border-radius: 10;");
+        button.setStyle(
+                "-fx-background-color: #131313; -fx-background-radius: 10; -fx-text-fill: white; -fx-cursor: hand; -fx-font-weight: bold; -fx-border-radius: 10;");
         currentActiveButton = button;
     }
 
@@ -83,21 +79,25 @@ public class Layout extends Redirect {
 
     @FXML
     void handleNavButtonClick(MouseEvent event) throws IOException {
-        JFXButton clickedButton = (JFXButton) event.getSource();
-        String buttonText = clickedButton.getText();
+        if (event.getSource() instanceof JFXButton) {
+            JFXButton clickedButton = (JFXButton) event.getSource();
+            String buttonText = clickedButton.getText();
 
-        // Use regex to remove spaces and keep capitalization
-        String sceneName = buttonText.replaceAll("\\s+", "");
+            // Use regex to remove spaces and keep capitalization
+            String sceneName = buttonText.replaceAll("\\s+", "");
 
-        System.out.println("Button clicked: " + buttonText);
-        System.out.println("Loading scene: " + sceneName);
+            System.out.println("Button clicked: " + buttonText);
+            System.out.println("Loading scene: " + sceneName);
 
-        try {
-            loadScene(sceneName.toLowerCase(), setScene);
-            setActiveButton(clickedButton);
-        } catch (IOException e) {
-            System.err.println("Error loading scene: " + sceneName);
-            e.printStackTrace();
+            try {
+                loadScene(sceneName.toLowerCase(), setScene);
+                setActiveButton(clickedButton);
+            } catch (IOException e) {
+                System.err.println("Error loading scene: " + sceneName);
+                e.printStackTrace();
+            }
+        } else {
+            System.err.println("Error: Event source is not a JFXButton");
         }
     }
 
