@@ -1,7 +1,5 @@
 package com.lestarieragemilang.desktop.repository;
 
-import jakarta.persistence.Column;
-import jakarta.persistence.Id;
 import jakarta.persistence.criteria.CriteriaBuilder;
 import jakarta.persistence.criteria.CriteriaQuery;
 import jakarta.persistence.criteria.Root;
@@ -15,7 +13,6 @@ import org.slf4j.LoggerFactory;
 
 import com.lestarieragemilang.desktop.utils.HibernateUtil;
 
-import java.lang.reflect.Field;
 import java.util.List;
 
 public class GenericDao<T> {
@@ -80,38 +77,27 @@ public class GenericDao<T> {
         }
     }
 
-    public String generateId(String prefix) {
+    public String generateId(String prefix, int bound) {
         try (Session session = sessionFactory.openSession()) {
-            CriteriaBuilder cb = session.getCriteriaBuilder();
-            CriteriaQuery<Long> query = cb.createQuery(Long.class);
-            Root<T> root = query.from(entityClass);
+            String generatedId;
+            boolean exists;
+            do {
+                generatedId = prefix + (int) (Math.random() * bound);
 
-            String idColumnName = getIdColumnName();
-            query.select(cb.max(cb.function("CAST", Long.class,
-                    cb.substring(root.get(idColumnName), 5))));
+                CriteriaBuilder cb = session.getCriteriaBuilder();
+                CriteriaQuery<Long> criteriaQuery = cb.createQuery(Long.class);
+                Root<T> root = criteriaQuery.from(entityClass);
 
-            Long maxId = session.createQuery(query).getSingleResult();
-            int newId = (maxId == null) ? 1 : maxId.intValue() + 1;
-            return String.format("%s-%03d", prefix, newId);
+                criteriaQuery.select(cb.literal(1L))
+                        .where(cb.equal(root.get("id"), generatedId));
+
+                exists = session.createQuery(criteriaQuery).uniqueResult() != null;
+            } while (exists);
+            return generatedId;
         } catch (Exception e) {
             logger.error("Error generating ID", e);
             throw new RuntimeException("Error generating ID", e);
         }
-    }
-
-    private String getIdColumnName() {
-        for (Field field : entityClass.getDeclaredFields()) {
-            if (field.isAnnotationPresent(Id.class)) {
-                if (field.isAnnotationPresent(Column.class)) {
-                    Column column = field.getAnnotation(Column.class);
-                    if (!column.name().isEmpty()) {
-                        return column.name();
-                    }
-                }
-                return field.getName();
-            }
-        }
-        throw new IllegalStateException("No @Id annotation found in " + entityClass.getSimpleName());
     }
 
     private void executeInsideTransaction(SessionAction action) {

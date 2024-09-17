@@ -13,16 +13,13 @@ import com.lestarieragemilang.desktop.model.Category;
 import com.lestarieragemilang.desktop.model.Stock;
 import com.lestarieragemilang.desktop.repository.GenericDao;
 import com.lestarieragemilang.desktop.service.GenericService;
-import com.lestarieragemilang.desktop.utils.ClearFields;
-import com.lestarieragemilang.desktop.utils.GenericEditPopup;
-import com.lestarieragemilang.desktop.utils.HibernateUtil;
-import com.lestarieragemilang.desktop.utils.IdGenerator;
-import com.lestarieragemilang.desktop.utils.ShowAlert;
-import com.lestarieragemilang.desktop.utils.TableUtils;
+import com.lestarieragemilang.desktop.utils.*;
 
 import java.math.BigDecimal;
 import java.util.List;
-import java.util.stream.Collectors;
+import java.util.Optional;
+import java.util.concurrent.CompletableFuture;
+import java.util.function.Predicate;
 
 public class StockController extends HibernateUtil {
     @FXML
@@ -32,40 +29,35 @@ public class StockController extends HibernateUtil {
     @FXML
     private TableView<Stock> stockTable;
     @FXML
-    private TableColumn<Stock, String> stockIDCol, stockOnCategoryIDCol, stockBrandCol, stockTypeCol, stockSizeCol,
-            stockWeightCol, stockUnitCol;
-    @FXML
-    private TableColumn<Stock, Integer> stockQuantityCol;
-    @FXML
-    private TableColumn<Stock, Double> stockBuyPriceCol, stockSellPriceCol;
-    @FXML
     private JFXButton editStockButtonText;
 
-    private GenericService<Stock> stockService;
-    private GenericService<Category> categoryService;
+    private final GenericService<Stock> stockService;
+    private final GenericService<Category> categoryService;
+
+    public StockController() {
+        this.stockService = new GenericService<>(new GenericDao<>(Stock.class), "STK");
+        this.categoryService = new GenericService<>(new GenericDao<>(Category.class), "CAT");
+    }
 
     public void initialize() {
-        stockService = new GenericService<>(new GenericDao<>(Stock.class), "STK");
-        categoryService = new GenericService<>(new GenericDao<>(Category.class), "CAT");
-
         initializeCategoryComboBox();
         initializeStockTable();
-        loadStocks();
+        CompletableFuture.runAsync(this::loadStocks);
         generateAndSetStockId();
-
-        // Disable the stock ID field
         stockIDIncrement.setDisable(true);
+        stockSearchField.textProperty().addListener((observable, oldValue, newValue) -> handleSearch());
     }
 
     private void initializeCategoryComboBox() {
         List<Category> categories = categoryService.findAll();
         categoryIDDropDown.setItems(FXCollections.observableArrayList(categories));
-        categoryIDDropDown.setConverter(new StringConverter<Category>() {
+        categoryIDDropDown.setValue(categories.get(0));
+        categoryIDDropDown.setConverter(new StringConverter<>() {
             @Override
             public String toString(Category category) {
-                return category != null
-                        ? category.getCategoryId() + " - " + category.getBrand() + " " + category.getProductType()
-                        : "";
+                return Optional.ofNullable(category)
+                        .map(c -> c.getCategoryId() + " - " + c.getBrand() + " " + c.getProductType())
+                        .orElse("");
             }
 
             @Override
@@ -92,7 +84,7 @@ public class StockController extends HibernateUtil {
 
     private void loadStocks() {
         List<Stock> stocks = stockService.findAll();
-        stockTable.setItems(FXCollections.observableArrayList(stocks));
+        javafx.application.Platform.runLater(() -> stockTable.setItems(FXCollections.observableArrayList(stocks)));
     }
 
     private void generateAndSetStockId() {
@@ -113,9 +105,7 @@ public class StockController extends HibernateUtil {
     private void addStockButton() {
         String stockId = stockIDIncrement.getText();
         if (stockIdExists(stockId)) {
-            ShowAlert.showAlert(
-                    AlertType.WARNING,
-                    "Stock ID Exists",
+            ShowAlert.showAlert(AlertType.WARNING, "Stock ID Exists",
                     "Stock ID already exists. Please generate a new one.");
             generateAndSetStockId();
             return;
@@ -128,15 +118,15 @@ public class StockController extends HibernateUtil {
         stock.setPurchasePrice(new BigDecimal(stockBuyPriceField.getText()));
         stock.setSellingPrice(new BigDecimal(stockSellPriceField.getText()));
 
-        stockService.save(stock);
-        loadStocks();
-        resetStockButton();
+        CompletableFuture.runAsync(() -> stockService.save(stock))
+                .thenRun(this::loadStocks)
+                .thenRun(this::resetStockButton);
     }
 
     @FXML
     private void resetStockButton() {
-        ClearFields.clearFields(
-                stockIDIncrement, categoryIDDropDown, stockQuantityField, stockBuyPriceField, stockSellPriceField);
+        ClearFields.clearFields(stockIDIncrement, categoryIDDropDown, stockQuantityField, stockBuyPriceField,
+                stockSellPriceField);
         generateAndSetStockId();
     }
 
@@ -145,11 +135,7 @@ public class StockController extends HibernateUtil {
     private void editStockButton() {
         Stock selectedStock = stockTable.getSelectionModel().getSelectedItem();
         if (selectedStock == null) {
-            ShowAlert.showAlert(
-                    AlertType.WARNING,
-                    "No Stock Selected",
-                    null,
-                    "Please select a stock to edit.");
+            ShowAlert.showAlert(AlertType.WARNING, "No Stock Selected", null, "Please select a stock to edit.");
             return;
         }
 
@@ -166,7 +152,7 @@ public class StockController extends HibernateUtil {
                     stock.setQuantity(Integer.parseInt(((TextField) fields.get(2)).getText()));
                     stock.setPurchasePrice(new BigDecimal(((TextField) fields.get(3)).getText()));
                     stock.setSellingPrice(new BigDecimal(((TextField) fields.get(4)).getText()));
-                    stockService.update(stock);
+                    CompletableFuture.runAsync(() -> stockService.update(stock));
                 })
                 .afterSave(() -> {
                     loadStocks();
@@ -179,40 +165,28 @@ public class StockController extends HibernateUtil {
     private void removeStockButton() {
         Stock selectedStock = stockTable.getSelectionModel().getSelectedItem();
         if (selectedStock == null) {
-            ShowAlert.showAlert(
-                    AlertType.INFORMATION,
-                    "No Stock Selected",
-                    null,
-                    "Please select a stock to remove.");
+            ShowAlert.showAlert(AlertType.INFORMATION, "No Stock Selected", null, "Please select a stock to remove.");
             return;
         }
 
         if (!stockService.canDelete(selectedStock)) {
-            ShowAlert.showAlert(
-                    AlertType.ERROR,
-                    "Cannot Delete Stock",
-                    null,
+            ShowAlert.showAlert(AlertType.ERROR, "Cannot Delete Stock", null,
                     "This stock cannot be deleted because it is referenced by other records.");
             return;
         }
 
-        Alert confirmAlert = new Alert(AlertType.CONFIRMATION,
-                "Are you sure you want to delete this stock?",
+        Alert confirmAlert = new Alert(AlertType.CONFIRMATION, "Are you sure you want to delete this stock?",
                 ButtonType.YES, ButtonType.NO);
         confirmAlert.setTitle("Confirm Deletion");
         confirmAlert.showAndWait().ifPresent(response -> {
             if (response == ButtonType.YES) {
                 try {
-                    stockService.delete(selectedStock);
-                    loadStocks();
-                    resetStockButton();
+                    CompletableFuture.runAsync(() -> stockService.delete(selectedStock))
+                            .thenRun(this::loadStocks)
+                            .thenRun(this::resetStockButton);
                 } catch (ConstraintViolationException e) {
-                    ShowAlert.showAlert(
-                            AlertType.ERROR,
-                            "Error Deleting Stock",
-                            null,
-                            "An unexpected error occurred while trying to delete the stock. " +
-                                    "It may be referenced by other records.");
+                    ShowAlert.showAlert(AlertType.ERROR, "Error Deleting Stock", null,
+                            "An unexpected error occurred while trying to delete the stock. It may be referenced by other records.");
                 }
             }
         });
@@ -220,14 +194,20 @@ public class StockController extends HibernateUtil {
 
     @FXML
     private void handleSearch() {
-        String searchTerm = stockSearchField.getText().toLowerCase();
+        String searchTerm = nullToEmpty(stockSearchField.getText()).toLowerCase();
         List<Stock> allStocks = stockService.findAll();
+        Predicate<Stock> searchPredicate = stock -> stock.getStockId().toLowerCase().contains(searchTerm) ||
+                stock.getCategory().getCategoryId().toLowerCase().contains(searchTerm) ||
+                stock.getCategory().getBrand().toLowerCase().contains(searchTerm) ||
+                stock.getCategory().getProductType().toLowerCase().contains(searchTerm);
+
         List<Stock> filteredStocks = allStocks.stream()
-                .filter(stock -> stock.getStockId().toLowerCase().contains(searchTerm) ||
-                        stock.getCategory().getCategoryId().toLowerCase().contains(searchTerm) ||
-                        stock.getCategory().getBrand().toLowerCase().contains(searchTerm) ||
-                        stock.getCategory().getProductType().toLowerCase().contains(searchTerm))
-                .collect(Collectors.toList());
+                .filter(searchPredicate)
+                .toList();
         stockTable.setItems(FXCollections.observableArrayList(filteredStocks));
+    }
+
+    private String nullToEmpty(String str) {
+        return str == null ? "" : str;
     }
 }

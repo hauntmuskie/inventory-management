@@ -9,10 +9,12 @@ import com.lestarieragemilang.desktop.repository.GenericDao;
 public class GenericService<T> {
     private final GenericDao<T> dao;
     private final String idPrefix;
+    private final int bound;
 
-    public GenericService(GenericDao<T> dao, String idPrefix) {
+    public GenericService(GenericDao<T> dao, String idPrefix, int bound) {
         this.dao = dao;
         this.idPrefix = idPrefix;
+        this.bound = bound;
     }
 
     public void save(T entity) {
@@ -45,6 +47,6 @@ public class GenericService<T> {
     }
 
     public String generateId() {
-        return dao.generateId(idPrefix);
+        return dao.generateId(idPrefix, bound);
     }
 }

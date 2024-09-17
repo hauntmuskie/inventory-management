@@ -91,13 +91,8 @@ public class Layout extends Redirect {
             System.out.println("Button clicked: " + buttonText);
             System.out.println("Loading scene: " + sceneName);
 
-            try {
-                loadScene(sceneName.toLowerCase(), setScene);
-                setActiveButton(clickedButton);
-            } catch (IOException e) {
-                System.err.println("Error loading scene: " + sceneName);
-                e.printStackTrace();
-            }
+            loadScene(sceneName.toLowerCase(), setScene);
+            setActiveButton(clickedButton);
         } else {
             System.err.println("Error: Event source is not a JFXButton");
         }

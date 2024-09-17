@@ -9,16 +9,25 @@
 <?import javafx.scene.text.Text?>
 <?import javafx.scene.web.WebView?>
 
-<StackPane maxHeight="570" maxWidth="970" prefHeight="570" prefWidth="970" style="-fx-background-color: #f5f5f5;" xmlns="http://javafx.com/javafx/22" xmlns:fx="http://javafx.com/fxml/1" fx:controller="com.lestarieragemilang.desktop.controller.AIController">
+<StackPane maxHeight="570" maxWidth="970" prefHeight="570" prefWidth="970"
+   style="-fx-background-color: #f5f5f5;" xmlns="http://javafx.com/javafx/24-ea+5"
+   xmlns:fx="http://javafx.com/fxml/1"
+   fx:controller="com.lestarieragemilang.desktop.controller.AIController">
    <VBox spacing="10" style="-fx-padding: 20;">
-      <HBox alignment="CENTER" spacing="10" style="-fx-background-color: #ffffff; -fx-padding: 10; -fx-effect: dropshadow(three-pass-box, rgba(0,0,0,0.1), 10, 0, 0, 5); -fx-background-radius: 8;">
+      <HBox alignment="CENTER" spacing="10"
+         style="-fx-background-color: #ffffff; -fx-padding: 10; -fx-effect: dropshadow(three-pass-box, rgba(0,0,0,0.1), 10, 0, 0, 5); -fx-background-radius: 8;">
          <Text style="-fx-font-size: 24px; -fx-font-weight: bold;" text="🤖 AI-Generated Report" />
       </HBox>
 
-      <JFXButton fx:id="aiGenerateButton" onAction="#aiGenerateReportButton" style="-fx-background-color: #4CAF50; -fx-text-fill: white; -fx-font-size: 14px; -fx-padding: 10 20; -fx-background-radius: 8; -fx-cursor: hand;" text="✨ Generate Magical Report ✨" />
+      <JFXButton fx:id="aiGenerateButton" onAction="#aiGenerateReportButton"
+         style="-fx-background-color: #4CAF50; -fx-text-fill: white; -fx-font-size: 14px; -fx-padding: 10 20; -fx-background-radius: 8; -fx-cursor: hand;"
+         text="✨ Generate Magical Report ✨" />
 
-      <ScrollPane fitToWidth="true" style="-fx-background-color: transparent; -fx-background: transparent; -fx-background-radius: 8;" VBox.vgrow="ALWAYS">
-         <VBox spacing="10" style="-fx-background-color: white; -fx-padding: 10; -fx-background-radius: 8;">
+      <ScrollPane fitToWidth="true"
+         style="-fx-background-color: transparent; -fx-background: transparent; -fx-background-radius: 8;"
+         VBox.vgrow="ALWAYS">
+         <VBox spacing="10"
+            style="-fx-background-color: white; -fx-padding: 10; -fx-background-radius: 8;">
             <Text style="-fx-font-size: 18px; -fx-font-weight: bold;" text="📝 Report Content:" />
             <Separator style="-fx-background-color: #e0e0e0;" />
             <WebView fx:id="aiResponseWebView" VBox.vgrow="ALWAYS" />
