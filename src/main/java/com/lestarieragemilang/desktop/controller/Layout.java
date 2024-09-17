@@ -2,6 +2,8 @@ package com.lestarieragemilang.desktop.controller;
 
 import com.jfoenix.controls.JFXButton;
 import com.lestarieragemilang.desktop.utils.Redirect;
+import com.lestarieragemilang.desktop.utils.ShowAlert;
+
 import javafx.animation.KeyFrame;
 import javafx.animation.Timeline;
 import javafx.fxml.FXML;
@@ -67,7 +69,7 @@ public class Layout extends Redirect {
 
     @FXML
     void isExitApp(MouseEvent event) {
-        if (showConfirmation("Exit", "Konfirmasi", "Apakah Anda yakin ingin keluar?")) {
+        if (ShowAlert.showConfirmation("Exit", "Konfirmasi", "Apakah Anda yakin ingin keluar?")) {
             System.exit(0);
         }
     }
@@ -103,7 +105,7 @@ public class Layout extends Redirect {
 
     @FXML
     void setSceneLogin(MouseEvent event) {
-        if (showConfirmation("Konfirmasi", "Login", "Apakah anda yakin ingin kembali ke halaman login?")) {
+        if (ShowAlert.showConfirmation("Konfirmasi", "Login", "Apakah anda yakin ingin kembali ke halaman login?")) {
             switchToLoginScene();
         }
     }

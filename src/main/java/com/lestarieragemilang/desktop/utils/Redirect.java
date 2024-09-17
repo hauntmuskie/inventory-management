@@ -9,40 +9,51 @@ import javafx.scene.control.Alert.AlertType;
 
 import java.io.IOException;
 import java.net.URL;
-import java.util.HashMap;
-import java.util.Map;
+import java.util.concurrent.ExecutionException;
+import java.util.concurrent.TimeUnit;
+
+import com.google.common.base.Preconditions;
+import com.google.common.cache.CacheBuilder;
+import com.google.common.cache.CacheLoader;
+import com.google.common.cache.LoadingCache;
 
 public abstract class Redirect {
   private static final String RESOURCE_PATH = "/com/lestarieragemilang/desktop/";
-  protected final Map<String, Parent> sceneCache = new HashMap<>();
+  protected final LoadingCache<String, Parent> sceneCache = CacheBuilder.newBuilder()
+      .expireAfterAccess(10, TimeUnit.MINUTES)
+      .build(new CacheLoader<String, Parent>() {
+
+        @SuppressWarnings("null")
+        @Override
+        public Parent load(String page) throws Exception {
+          return loadFXML(page);
+        }
+      });
 
   protected abstract void animateFadeIn(Parent node);
 
   protected abstract void animateFadeOut(Parent node, Runnable onFinished);
 
   protected Parent loadScene(String page, AnchorPane anchorPane) throws IOException {
-    if (anchorPane == null) {
-      throw new IllegalArgumentException("anchorPane cannot be null");
-    }
+    Preconditions.checkNotNull(anchorPane, "anchorPane cannot be null");
 
-    Parent root = sceneCache.computeIfAbsent(page, this::loadFXML);
-    anchorPane.getChildren().setAll(root);
-    animateFadeIn(anchorPane);
-    return root;
+    try {
+      Parent root = sceneCache.get(page);
+      anchorPane.getChildren().setAll(root);
+      animateFadeIn(anchorPane);
+      return root;
+    } catch (ExecutionException e) {
+      throw new IOException("Failed to load scene: " + page, e);
+    }
   }
 
-  private Parent loadFXML(String page) {
-    try {
-      String path = RESOURCE_PATH + page + ".fxml";
-      URL resource = getClass().getResource(path);
-      if (resource == null) {
-        throw new IOException("Resource not found: " + path);
-      }
-      return FXMLLoader.load(resource);
-    } catch (IOException e) {
-      ShowAlert.showAlert(AlertType.ERROR, "Error", "FXML Loading Error", "Failed to load FXML: " + page);
-      throw new RuntimeException("Failed to load FXML: " + page, e);
+  private Parent loadFXML(String page) throws IOException {
+    String path = RESOURCE_PATH + page + ".fxml";
+    URL resource = getClass().getResource(path);
+    if (resource == null) {
+      throw new IOException("Resource not found: " + path);
     }
+    return FXMLLoader.load(resource);
   }
 
   protected void switchScene(AnchorPane currentScene, String newSceneName, Runnable setNewScene) {
@@ -59,13 +70,5 @@ public abstract class Redirect {
       });
       delay.play();
     });
-  }
-
-  protected void showAlert(AlertType alertType, String title, String headerText, String... messages) {
-    ShowAlert.showAlert(alertType, title, headerText, messages);
-  }
-
-  protected boolean showConfirmation(String title, String headerText, String content) {
-    return ShowAlert.showConfirmation(title, headerText, content);
   }
 }

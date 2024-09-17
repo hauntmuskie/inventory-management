@@ -18,6 +18,7 @@ module com.lestarieragemilang.desktop {
     requires org.commonmark;
     requires javafx.web;
     requires org.slf4j;
+    requires com.google.common;
 
     opens com.lestarieragemilang.desktop to javafx.fxml;
     opens com.lestarieragemilang.desktop.controller to javafx.fxml;
