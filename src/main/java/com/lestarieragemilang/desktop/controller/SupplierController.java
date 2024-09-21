@@ -42,7 +42,7 @@ public class SupplierController extends HibernateUtil {
     private GenericService<Supplier> supplierService;
 
     public void initialize() {
-        supplierService = new GenericService<>(new GenericDao<>(Supplier.class), "SUP");
+        supplierService = new GenericService<>(new GenericDao<>(Supplier.class), "SUP", 3);
 
         initializeSupplierTable();
         loadSuppliers();

@@ -49,9 +49,9 @@ public class ReturnsController extends HibernateUtil {
     private GenericService<Sales> salesService;
 
     public void initialize() {
-        returnService = new GenericService<>(new GenericDao<>(Returns.class), "RTN");
-        purchasingService = new GenericService<>(new GenericDao<>(Purchasing.class), "PCH");
-        salesService = new GenericService<>(new GenericDao<>(Sales.class), "SLS");
+        returnService = new GenericService<>(new GenericDao<>(Returns.class), "RTN", 3);
+        purchasingService = new GenericService<>(new GenericDao<>(Purchasing.class), "PCH", 3);
+        salesService = new GenericService<>(new GenericDao<>(Sales.class), "SLS", 3);
 
         initializeInvoiceComboBox();
         initializeReturnTable();

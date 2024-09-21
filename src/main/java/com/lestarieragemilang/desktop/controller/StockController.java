@@ -35,8 +35,8 @@ public class StockController extends HibernateUtil {
     private final GenericService<Category> categoryService;
 
     public StockController() {
-        this.stockService = new GenericService<>(new GenericDao<>(Stock.class), "STK");
-        this.categoryService = new GenericService<>(new GenericDao<>(Category.class), "CAT");
+        this.stockService = new GenericService<>(new GenericDao<>(Stock.class), "STK", 3);
+        this.categoryService = new GenericService<>(new GenericDao<>(Category.class), "CAT", 3);
     }
 
     public void initialize() {

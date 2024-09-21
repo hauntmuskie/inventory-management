@@ -34,7 +34,7 @@ public class CustomerController extends HibernateUtil {
     private GenericService<Customer> customerService;
 
     public void initialize() {
-        customerService = new GenericService<>(new GenericDao<>(Customer.class), "CUST");
+        customerService = new GenericService<>(new GenericDao<>(Customer.class), "CUST", 3);
         initializeCustomerTable();
         loadCustomers();
         generateAndSetCustomerId();

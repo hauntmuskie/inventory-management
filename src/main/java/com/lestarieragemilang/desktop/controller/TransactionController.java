@@ -74,11 +74,11 @@ public class TransactionController extends HibernateUtil {
     private ObservableList<Sales> pendingSales = FXCollections.observableArrayList();
 
     public void initialize() {
-        purchasingService = new GenericService<>(new GenericDao<>(Purchasing.class), "PUR");
-        salesService = new GenericService<>(new GenericDao<>(Sales.class), "SAL");
-        stockService = new GenericService<>(new GenericDao<>(Stock.class), "STK");
-        supplierService = new GenericService<>(new GenericDao<>(Supplier.class), "SUP");
-        customerService = new GenericService<>(new GenericDao<>(Customer.class), "CUS");
+        purchasingService = new GenericService<>(new GenericDao<>(Purchasing.class), "PUR", 3);
+        salesService = new GenericService<>(new GenericDao<>(Sales.class), "SAL", 3);
+        stockService = new GenericService<>(new GenericDao<>(Stock.class), "STK", 3);
+        supplierService = new GenericService<>(new GenericDao<>(Supplier.class), "SUP", 3);
+        customerService = new GenericService<>(new GenericDao<>(Customer.class), "CUS", 3);
 
         initializeComboBoxes();
         initializeTables();

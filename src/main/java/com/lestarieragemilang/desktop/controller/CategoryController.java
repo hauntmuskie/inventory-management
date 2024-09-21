@@ -36,7 +36,7 @@ public class CategoryController extends HibernateUtil {
     private FilteredList<Category> filteredCategories;
 
     public void initialize() {
-        categoryService = new GenericService<>(new GenericDao<>(Category.class), "CAT");
+        categoryService = new GenericService<>(new GenericDao<>(Category.class), "CAT", 3);
 
         initializeComboBoxes();
         initializeCategoryTable();
