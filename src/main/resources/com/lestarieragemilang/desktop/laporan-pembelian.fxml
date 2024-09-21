@@ -1,0 +1,66 @@
+<?xml version="1.0" encoding="UTF-8"?>
+
+<?import com.jfoenix.controls.JFXButton?>
+<?import javafx.scene.control.DatePicker?>
+<?import javafx.scene.control.TableColumn?>
+<?import javafx.scene.control.TableView?>
+<?import javafx.scene.control.TextField?>
+<?import javafx.scene.layout.AnchorPane?>
+<?import javafx.scene.layout.VBox?>
+<?import javafx.scene.text.Font?>
+<?import javafx.scene.text.Text?>
+
+<VBox maxHeight="-Infinity" maxWidth="-Infinity" minHeight="-Infinity" minWidth="-Infinity"
+   prefHeight="570.0" prefWidth="970.0" xmlns="http://javafx.com/javafx/22"
+   xmlns:fx="http://javafx.com/fxml/1"
+   fx:controller="com.lestarieragemilang.desktop.controller.ReportPurchasing">
+   <children>
+      <AnchorPane prefHeight="573.0" prefWidth="970.0">
+         <children>
+            <TextField fx:id="BuyListSearchField" layoutX="360.0" layoutY="135.0" prefHeight="32.0"
+               prefWidth="250.0" promptText="Cari Faktur" style="-fx-background-radius: 5;" />
+            <JFXButton buttonType="RAISED" layoutX="423.0" layoutY="218.0"
+               onMouseClicked="#printJasperBuyList" prefHeight="30.0" prefWidth="122.0"
+               style="-fx-background-color: #131313; -fx-background-radius: 10; -fx-cursor: HAND; -fx-font-weight: bold; -fx-text-fill: white;"
+               text="PRINT DATA " textFill="WHITE">
+               <font>
+                  <Font size="14.0" />
+               </font>
+            </JFXButton>
+            <Text layoutX="294.0" layoutY="53.0" strokeType="OUTSIDE" strokeWidth="0.0"
+               text="LAPORAN PEMBELIAN" AnchorPane.topAnchor="14.0">
+               <font>
+                  <Font name="System Bold" size="36.0" />
+               </font>
+            </Text>
+            <TableView fx:id="buyTable" layoutY="346.0" prefHeight="300.0" prefWidth="930.0"
+               AnchorPane.bottomAnchor="10.0" AnchorPane.leftAnchor="20.0"
+               AnchorPane.rightAnchor="20.0">
+               <columns>
+                  <TableColumn fx:id="buyDateCol" prefWidth="75.0" text="TANGGAL PEMBELIAN" />
+                  <TableColumn fx:id="buyInvoiceCol" prefWidth="75.0" text="FAKTUR" />
+                  <TableColumn fx:id="buyOnSupplierNameCol" prefWidth="75.0" text="NAMA SUPPLIER" />
+                  <TableColumn fx:id="buyBrandCol" prefWidth="75.0" text="MEREK" />
+                  <TableColumn fx:id="buyTypeCol" prefWidth="75.0" text="JENIS" />
+                  <TableColumn fx:id="buyTotalCol" prefWidth="75.0" text="JUMLAH" />
+                  <TableColumn fx:id="buyPriceCol" prefWidth="75.0" text="HARGA" />
+                  <TableColumn fx:id="buySubTotalCol" prefWidth="75.0" text="SUB TOTAL" />
+               </columns>
+               <columnResizePolicy>
+                  <TableView fx:constant="CONSTRAINED_RESIZE_POLICY" />
+               </columnResizePolicy>
+            </TableView>
+            <DatePicker fx:id="BuyListDateFirstField" layoutX="294.0" layoutY="176.0"
+               prefHeight="32.0" promptText="Dari Tanggal" />
+            <DatePicker fx:id="BuyListDateSecondField" layoutX="502.0" layoutY="176.0"
+               prefHeight="32.0" promptText="Sampai Tanggal" />
+            <Text layoutX="375.0" layoutY="118.0" strokeType="OUTSIDE" strokeWidth="0.0"
+               text="Note : Pilih salah satu pencarian, search / date">
+               <font>
+                  <Font name="System Bold Italic" size="10.0" />
+               </font>
+            </Text>
+         </children>
+      </AnchorPane>
+   </children>
+</VBox>
