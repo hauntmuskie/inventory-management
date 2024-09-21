@@ -197,15 +197,26 @@ public class CategoryController extends HibernateUtil {
             return;
         }
 
+        ComboBox<String> brandComboBox = new ComboBox<>(this.brandComboBox.getItems());
+        ComboBox<String> typeComboBox = new ComboBox<>(this.typeComboBox.getItems());
+        ComboBox<String> sizeComboBox = new ComboBox<>(this.sizeComboBox.getItems());
+        ComboBox<String> weightUnitComboBox = new ComboBox<>(this.weightUnitComboBox.getItems());
+
+        // Set default values based on the selected category
+        brandComboBox.setValue(selectedCategory.getBrand());
+        typeComboBox.setValue(selectedCategory.getProductType());
+        sizeComboBox.setValue(selectedCategory.getSize());
+        weightUnitComboBox.setValue(selectedCategory.getWeightUnit());
+
         GenericEditPopup.create(Category.class)
                 .withTitle("Edit Category")
                 .forItem(selectedCategory)
                 .addField("Category ID", new TextField(selectedCategory.getCategoryId()), true)
-                .addField("Brand", new ComboBox<>(brandComboBox.getItems()))
-                .addField("Type", new ComboBox<>(typeComboBox.getItems()))
-                .addField("Size", new ComboBox<>(sizeComboBox.getItems()))
+                .addField("Brand", brandComboBox) // Use the pre-set brandComboBox
+                .addField("Type", typeComboBox) // Use the pre-set typeComboBox
+                .addField("Size", sizeComboBox) // Use the pre-set sizeComboBox
                 .addField("Weight", new TextField(selectedCategory.getWeight().toString()))
-                .addField("Weight Unit", new ComboBox<>(weightUnitComboBox.getItems()))
+                .addField("Weight Unit", weightUnitComboBox) // Use the pre-set weightUnitComboBox
                 .onSave((category, fields) -> {
                     category.setBrand(((ComboBox<String>) fields.get(1)).getValue());
                     category.setProductType(((ComboBox<String>) fields.get(2)).getValue());

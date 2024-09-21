@@ -135,6 +135,7 @@ public class ReportSales {
     SellListSearchField.textProperty().addListener((observable, oldValue, newValue) -> sellSearch());
   }
 
+  @SuppressWarnings("unused")
   private void addListeners() {
     SellListSearchField.textProperty().addListener((observable, oldValue, newValue) -> {
       if (!newValue.isEmpty()) {

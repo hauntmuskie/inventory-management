@@ -139,11 +139,21 @@ public class StockController extends HibernateUtil {
             return;
         }
 
+        JFXComboBox<Category> categoryComboBox = new JFXComboBox<>(categoryIDDropDown.getItems());
+
+        // Find the category in the list that matches the selectedStock's category by ID
+        for (Category category : categoryIDDropDown.getItems()) {
+            if (category.getId().equals(selectedStock.getCategory().getId())) {
+                categoryComboBox.setValue(category); // Set the matching category
+                break;
+            }
+        }
+
         GenericEditPopup.create(Stock.class)
                 .withTitle("Edit Stock")
                 .forItem(selectedStock)
                 .addField("Stock ID", new TextField(selectedStock.getStockId()), true)
-                .addField("Category", new JFXComboBox<>(categoryIDDropDown.getItems()))
+                .addField("Category", categoryComboBox) // Use the pre-set categoryComboBox
                 .addField("Quantity", new TextField(String.valueOf(selectedStock.getQuantity())))
                 .addField("Purchase Price", new TextField(selectedStock.getPurchasePrice().toString()))
                 .addField("Selling Price", new TextField(selectedStock.getSellingPrice().toString()))
