@@ -25,6 +25,11 @@ import org.commonmark.node.*;
 import org.commonmark.parser.Parser;
 import org.commonmark.renderer.html.HtmlRenderer;
 
+import com.lestarieragemilang.desktop.model.*;
+import com.lestarieragemilang.desktop.repository.GenericDao;
+import com.lestarieragemilang.desktop.service.GenericService;
+import java.util.List;
+
 public class AIController {
 
     @FXML
@@ -42,6 +47,10 @@ public class AIController {
     private final HtmlRenderer htmlRenderer;
 
     private String cachedReport;
+    private final GenericService<Stock> stockService;
+    private final GenericService<Sales> salesService;
+    private final GenericService<Purchasing> purchasingService;
+    private final GenericService<Returns> returnsService;
 
     public AIController() {
         Dotenv dotenv = Dotenv.load();
@@ -53,6 +62,10 @@ public class AIController {
         this.executorService = Executors.newSingleThreadExecutor();
         this.markdownParser = Parser.builder().build();
         this.htmlRenderer = HtmlRenderer.builder().build();
+        this.stockService = new GenericService<>(new GenericDao<>(Stock.class), "STK", 1000);
+        this.salesService = new GenericService<>(new GenericDao<>(Sales.class), "SLS", 1000);
+        this.purchasingService = new GenericService<>(new GenericDao<>(Purchasing.class), "PRC", 1000);
+        this.returnsService = new GenericService<>(new GenericDao<>(Returns.class), "RTN", 1000);
     }
 
     @FXML
@@ -99,13 +112,76 @@ public class AIController {
                 });
     }
 
+    private String generateDataPrompt() {
+        StringBuilder prompt = new StringBuilder();
+        prompt.append("Analisis data inventori berikut dan buat laporan bisnis yang komprehensif dalam bahasa Indonesia:\n\n");
+
+        // Add Stock Data
+        List<Stock> stocks = stockService.findAll();
+        prompt.append("Data Stok Saat Ini:\n");
+        for (Stock stock : stocks) {
+            prompt.append(String.format("- %s (ID: %s): Jumlah: %d, Harga Beli: Rp%.2f, Harga Jual: Rp%.2f\n",
+                    stock.getCategory().getBrand(),
+                    stock.getStockId(),
+                    stock.getQuantity(),
+                    stock.getPurchasePrice(),
+                    stock.getSellingPrice()));
+        }
+
+        // Add Sales Data
+        List<Sales> sales = salesService.findAll();
+        prompt.append("\nData Penjualan Terakhir:\n");
+        for (Sales sale : sales) {
+            prompt.append(String.format("- Faktur: %s, Tanggal: %s, Jumlah: %d, Total: Rp%.2f\n",
+                    sale.getInvoiceNumber(),
+                    sale.getSaleDate(),
+                    sale.getQuantity(),
+                    sale.getPriceTotal()));
+        }
+
+        // Add Purchase Data
+        List<Purchasing> purchases = purchasingService.findAll();
+        prompt.append("\nData Pembelian Terakhir:\n");
+        for (Purchasing purchase : purchases) {
+            prompt.append(String.format("- Faktur: %s, Tanggal: %s, Jumlah: %d, Total: Rp%.2f\n",
+                    purchase.getInvoiceNumber(),
+                    purchase.getPurchaseDate(),
+                    purchase.getQuantity(),
+                    purchase.getPriceTotal()));
+        }
+
+        // Add Returns Data
+        List<Returns> returns = returnsService.findAll();
+        prompt.append("\nData Retur Terakhir:\n");
+        for (Returns returnItem : returns) {
+            prompt.append(String.format("- ID Retur: %s, Tanggal: %s, Tipe: %s\n",
+                    returnItem.getReturnId(),
+                    returnItem.getReturnDate(),
+                    returnItem.getReturnType()));
+        }
+
+        prompt.append("\nBerikan analisis dalam bentuk narasi untuk:\n");
+        prompt.append("1. Ringkasan kondisi stok dan nilai inventori saat ini\n");
+        prompt.append("2. Identifikasi potensi kehabisan stok atau kelebihan stok\n");
+        prompt.append("3. Analisis performa penjualan dan tren\n");
+        prompt.append("4. Pola pembelian dan hubungan dengan supplier\n");
+        prompt.append("5. Analisis tingkat retur dan rekomendasi kontrol kualitas\n");
+        prompt.append("6. Metrik kinerja utama dan rekomendasi\n\n");
+        prompt.append("Berikan laporan dalam format naratif dengan poin-poin penting. Hindari penggunaan tabel. ");
+        prompt.append("Gunakan bahasa yang formal dan profesional. ");
+        prompt.append("Format menggunakan markdown dengan penekanan pada struktur narasi yang jelas.\n\n");
+        prompt.append("Cantumkan juga rekomendasi konkret untuk peningkatan bisnis.");
+
+        return prompt.toString();
+    }
+
     private void generateReport() {
         if (cachedReport != null) {
             updateWebView(cachedReport);
             return;
         }
 
-        String prompt = "Generate a brief report on the current state of AI technology. Use markdown formatting.";
+        String prompt = generateDataPrompt();
 
         JsonObject requestBody = new JsonObject();
         JsonObject content = new JsonObject();
@@ -156,7 +232,14 @@ public class AIController {
         Platform.runLater(() -> {
             String fontCss = "<link href='https://fonts.googleapis.com/css2?family=Inter:wght@400;700&display=swap' rel='stylesheet'>";
             String styledHtmlContent = "<html><head>" + fontCss
-                    + "<style>body { font-family: 'Inter', sans-serif; padding: 20px; }</style></head><body>"
+                    + "<style>"
+                    + "body { font-family: 'Inter', sans-serif; padding: 20px; line-height: 1.6; }"
+                    + "h1, h2, h3 { color: #2c3e50; margin-top: 1.5em; }"
+                    + "p { margin-bottom: 1em; text-align: justify; }"
+                    + "ul, ol { margin-bottom: 1em; }"
+                    + "li { margin-bottom: 0.5em; }"
+                    + ".highlight { background-color: #f8f9fa; padding: 15px; border-radius: 5px; margin: 1em 0; }"
+                    + "</style></head><body>"
                     + htmlContent + "</body></html>";
             aiResponseWebView.getEngine().loadContent(styledHtmlContent);
             aiGenerateButton.setDisable(false);

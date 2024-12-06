@@ -18,7 +18,7 @@ import jfxtras.styles.jmetro.Style;
 public class App extends Application {
 
     private static Scene scene;
-    private static final String INITIAL_SCENE = "layout";
+    private static final String INITIAL_SCENE = "login";
     private static final int WIDTH = 1200;
     private static final int HEIGHT = 650;
     private static final Logger LOGGER = Logger.getLogger(App.class.getName());

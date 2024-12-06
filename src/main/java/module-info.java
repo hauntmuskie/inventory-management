@@ -21,6 +21,7 @@ module com.lestarieragemilang.desktop {
     requires javafx.web;
     requires org.slf4j;
     requires com.google.common;
+    requires jbcrypt;
 
     opens com.lestarieragemilang.desktop to javafx.fxml;
     opens com.lestarieragemilang.desktop.controller to javafx.fxml;
