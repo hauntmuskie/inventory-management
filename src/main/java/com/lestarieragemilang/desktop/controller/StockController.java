@@ -1,5 +1,6 @@
 package com.lestarieragemilang.desktop.controller;
 
+import javafx.application.Platform;
 import javafx.collections.FXCollections;
 import javafx.fxml.FXML;
 import javafx.scene.control.*;
@@ -42,6 +43,7 @@ public class StockController extends HibernateUtil {
     public void initialize() {
         initializeCategoryComboBox();
         initializeStockTable();
+        initializeNumberFormatting();
         CompletableFuture.runAsync(this::loadStocks);
         generateAndSetStockId();
         stockIDIncrement.setDisable(true);
@@ -82,9 +84,16 @@ public class StockController extends HibernateUtil {
         TableUtils.populateTable(stockTable, columns, stockService.findAll());
     }
 
+    private void initializeNumberFormatting() {
+        NumberFormatter.applyNumberFormat(stockBuyPriceField);
+        NumberFormatter.applyNumberFormat(stockSellPriceField);
+    }
+
     private void loadStocks() {
-        List<Stock> stocks = stockService.findAll();
-        javafx.application.Platform.runLater(() -> stockTable.setItems(FXCollections.observableArrayList(stocks)));
+        CompletableFuture.runAsync(() -> {
+            List<Stock> stocks = stockService.findAll();
+            Platform.runLater(() -> stockTable.setItems(FXCollections.observableArrayList(stocks)));
+        });
     }
 
     private void generateAndSetStockId() {
@@ -115,19 +124,23 @@ public class StockController extends HibernateUtil {
         stock.setStockId(stockId);
         stock.setCategory(categoryIDDropDown.getValue());
         stock.setQuantity(Integer.parseInt(stockQuantityField.getText()));
-        stock.setPurchasePrice(new BigDecimal(stockBuyPriceField.getText()));
-        stock.setSellingPrice(new BigDecimal(stockSellPriceField.getText()));
+        stock.setPurchasePrice(new BigDecimal(NumberFormatter.getNumericValue(stockBuyPriceField.getText())));
+        stock.setSellingPrice(new BigDecimal(NumberFormatter.getNumericValue(stockSellPriceField.getText())));
 
         CompletableFuture.runAsync(() -> stockService.save(stock))
-                .thenRun(this::loadStocks)
-                .thenRun(this::resetStockButton);
+                .thenRun(() -> Platform.runLater(() -> {
+                    loadStocks();
+                    resetStockButton();
+                }));
     }
 
     @FXML
     private void resetStockButton() {
-        ClearFields.clearFields(stockIDIncrement, categoryIDDropDown, stockQuantityField, stockBuyPriceField,
-                stockSellPriceField);
-        generateAndSetStockId();
+        Platform.runLater(() -> {
+            ClearFields.clearFields(stockIDIncrement, categoryIDDropDown, stockQuantityField, stockBuyPriceField,
+                    stockSellPriceField);
+            generateAndSetStockId();
+        });
     }
 
     @SuppressWarnings("unchecked")
@@ -155,13 +168,15 @@ public class StockController extends HibernateUtil {
                 .addField("Stock ID", new TextField(selectedStock.getStockId()), true)
                 .addField("Category", categoryComboBox) // Use the pre-set categoryComboBox
                 .addField("Quantity", new TextField(String.valueOf(selectedStock.getQuantity())))
-                .addField("Purchase Price", new TextField(selectedStock.getPurchasePrice().toString()))
-                .addField("Selling Price", new TextField(selectedStock.getSellingPrice().toString()))
+                .addField("Purchase Price", createFormattedTextField(selectedStock.getPurchasePrice()))
+                .addField("Selling Price", createFormattedTextField(selectedStock.getSellingPrice()))
                 .onSave((stock, fields) -> {
                     stock.setCategory(((JFXComboBox<Category>) fields.get(1)).getValue());
                     stock.setQuantity(Integer.parseInt(((TextField) fields.get(2)).getText()));
-                    stock.setPurchasePrice(new BigDecimal(((TextField) fields.get(3)).getText()));
-                    stock.setSellingPrice(new BigDecimal(((TextField) fields.get(4)).getText()));
+                    stock.setPurchasePrice(
+                            new BigDecimal(NumberFormatter.getNumericValue(((TextField) fields.get(3)).getText())));
+                    stock.setSellingPrice(
+                            new BigDecimal(NumberFormatter.getNumericValue(((TextField) fields.get(4)).getText())));
                     CompletableFuture.runAsync(() -> stockService.update(stock));
                 })
                 .afterSave(() -> {
@@ -169,6 +184,12 @@ public class StockController extends HibernateUtil {
                     resetStockButton();
                 })
                 .show();
+    }
+
+    private TextField createFormattedTextField(BigDecimal value) {
+        TextField field = new TextField(NumberFormatter.formatValue(value));
+        NumberFormatter.applyNumberFormat(field);
+        return field;
     }
 
     @FXML
@@ -192,8 +213,10 @@ public class StockController extends HibernateUtil {
             if (response == ButtonType.YES) {
                 try {
                     CompletableFuture.runAsync(() -> stockService.delete(selectedStock))
-                            .thenRun(this::loadStocks)
-                            .thenRun(this::resetStockButton);
+                            .thenRun(() -> Platform.runLater(() -> {
+                                loadStocks();
+                                resetStockButton();
+                            }));
                 } catch (ConstraintViolationException e) {
                     ShowAlert.showAlert(AlertType.ERROR, "Error Deleting Stock", null,
                             "An unexpected error occurred while trying to delete the stock. It may be referenced by other records.");

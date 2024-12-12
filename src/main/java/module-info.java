@@ -16,8 +16,6 @@ module com.lestarieragemilang.desktop {
     requires com.jfoenix;
     requires java.naming;
     requires java.net.http;
-    requires com.google.gson;
-    requires org.commonmark;
     requires javafx.web;
     requires org.slf4j;
     requires com.google.common;

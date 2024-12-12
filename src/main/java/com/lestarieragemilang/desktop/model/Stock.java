@@ -26,12 +26,6 @@ public class Stock {
     @Column(name = "selling_price", nullable = false, precision = 10, scale = 2)
     private BigDecimal sellingPrice;
 
-    @Column(nullable = false)
-    private String brand;
-
-    @Column(nullable = false)
-    private String type;
-
     // Getters and setters
     public Long getId() {
         return id;
@@ -79,21 +73,5 @@ public class Stock {
 
     public void setSellingPrice(BigDecimal sellingPrice) {
         this.sellingPrice = sellingPrice;
-    }
-
-    public String getBrand() {
-        return brand;
-    }
-
-    public void setBrand(String brand) {
-        this.brand = brand;
-    }
-
-    public String getType() {
-        return type;
-    }
-
-    public void setType(String type) {
-        this.type = type;
     }
 }

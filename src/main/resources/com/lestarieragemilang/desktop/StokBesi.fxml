@@ -125,10 +125,13 @@
                                                     prefWidth="200.0" spacing="15.0">
                                                     <children>
                                                         <TextField fx:id="stockQuantityField"
+                                                            promptText="Enter quantity"
                                                             style="-fx-background-radius: 7;" />
                                                         <TextField fx:id="stockBuyPriceField"
+                                                            promptText="Enter purchase price"
                                                             style="-fx-background-radius: 7;" />
                                                         <TextField fx:id="stockSellPriceField"
+                                                            promptText="Enter selling price"
                                                             style="-fx-background-radius: 7;" />
                                                     </children>
                                                 </VBox>

@@ -2,6 +2,7 @@ package com.lestarieragemilang.desktop.model;
 
 import jakarta.persistence.*;
 import java.math.BigDecimal;
+import java.util.List;
 
 @Entity
 @Table(name = "categories")
@@ -27,6 +28,9 @@ public class Category {
 
     @Column(name = "weight_unit", length = 20)
     private String weightUnit;
+
+    @OneToMany(mappedBy = "category", fetch = FetchType.LAZY)
+    private List<Stock> stocks;
 
     // category to string
     @Override
@@ -89,5 +93,13 @@ public class Category {
 
     public void setWeightUnit(String weightUnit) {
         this.weightUnit = weightUnit;
+    }
+
+    public List<Stock> getStocks() {
+        return stocks;
+    }
+
+    public void setStocks(List<Stock> stocks) {
+        this.stocks = stocks;
     }
 }
