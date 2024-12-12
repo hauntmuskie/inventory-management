@@ -5,6 +5,7 @@ import javafx.scene.layout.AnchorPane;
 import javafx.animation.PauseTransition;
 import javafx.util.Duration;
 import javafx.scene.control.Alert.AlertType;
+import javafx.application.Platform;
 
 import java.io.IOException;
 
@@ -17,6 +18,18 @@ public abstract class Redirect {
   protected abstract void animateFadeOut(Parent node, Runnable onFinished);
 
   protected Parent loadScene(String page, AnchorPane anchorPane) throws IOException {
+    if (!Platform.isFxApplicationThread()) {
+      // If we're not on the FX thread, submit the work to it
+      Platform.runLater(() -> {
+        try {
+          loadScene(page, anchorPane);
+        } catch (IOException e) {
+          throw new RuntimeException(e);
+        }
+      });
+      return anchorPane;
+    }
+    
     Parent root = App.sceneManager.getScene(page);
     anchorPane.getChildren().setAll(root);
     animateFadeIn(anchorPane);

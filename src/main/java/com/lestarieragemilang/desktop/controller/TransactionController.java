@@ -99,6 +99,20 @@ public class TransactionController extends HibernateUtil {
         List<Customer> customers = customerService.findAll();
         customerIDDropDown.setItems(FXCollections.observableArrayList(customers));
 
+        // Set default values if lists are not empty
+        if (!stocks.isEmpty()) {
+            buyStockIDDropdown.setValue(stocks.get(0));
+            sellStockIDDropdown.setValue(stocks.get(0));
+        }
+        
+        if (!suppliers.isEmpty()) {
+            supplierIDDropDown.setValue(suppliers.get(0));
+        }
+        
+        if (!customers.isEmpty()) {
+            customerIDDropDown.setValue(customers.get(0));
+        }
+
         setupComboBoxConverters();
     }
 
@@ -106,7 +120,7 @@ public class TransactionController extends HibernateUtil {
         buyStockIDDropdown.setConverter(new StringConverter<>() {
             @Override
             public String toString(Stock stock) {
-                return stock != null ? stock.getStockId() : "";
+                return stock != null ? stock.getStockId() + " - " + stock.getCategory().getBrand() + " " + stock.getCategory().getProductType() : "";
             }
 
             @Override
@@ -118,7 +132,7 @@ public class TransactionController extends HibernateUtil {
         sellStockIDDropdown.setConverter(new StringConverter<>() {
             @Override
             public String toString(Stock stock) {
-                return stock != null ? stock.getStockId() : "";
+                return stock != null ? stock.getStockId() + " - " + stock.getCategory().getBrand() + " " + stock.getCategory().getProductType() : "";
             }
 
             @Override
@@ -130,7 +144,7 @@ public class TransactionController extends HibernateUtil {
         supplierIDDropDown.setConverter(new StringConverter<>() {
             @Override
             public String toString(Supplier supplier) {
-                return supplier != null ? supplier.getSupplierId() : "";
+                return supplier != null ? supplier.getSupplierId() + " - " + supplier.getSupplierName() : "";
             }
 
             @Override
@@ -142,7 +156,7 @@ public class TransactionController extends HibernateUtil {
         customerIDDropDown.setConverter(new StringConverter<>() {
             @Override
             public String toString(Customer customer) {
-                return customer != null ? customer.getCustomerId() : "";
+                return customer != null ? customer.getCustomerId() + " - " + customer.getCustomerName() : "";
             }
 
             @Override
@@ -160,9 +174,9 @@ public class TransactionController extends HibernateUtil {
                 TableUtils.createColumn("Invoice", "invoiceNumber"),
                 TableUtils.createColumn("Supplier", "supplier.supplierId"),
                 TableUtils.createColumn("Quantity", "quantity"),
-                TableUtils.createColumn("Price", "price"),
-                TableUtils.createColumn("Sub Total", "subTotal"),
-                TableUtils.createColumn("Total", "priceTotal"));
+                TableUtils.createFormattedColumn("Price", "price"),         // Changed to formatted
+                TableUtils.createFormattedColumn("Sub Total", "subTotal"), // Changed to formatted
+                TableUtils.createFormattedColumn("Total", "priceTotal"));  // Changed to formatted
         buyTable.getColumns().setAll(buyColumns);
         buyTable.setItems(pendingPurchases);
 
@@ -173,9 +187,9 @@ public class TransactionController extends HibernateUtil {
                 TableUtils.createColumn("Invoice", "invoiceNumber"),
                 TableUtils.createColumn("Customer", "customer.customerId"),
                 TableUtils.createColumn("Quantity", "quantity"),
-                TableUtils.createColumn("Price", "price"),
-                TableUtils.createColumn("Sub Total", "subTotal"),
-                TableUtils.createColumn("Total", "priceTotal"));
+                TableUtils.createFormattedColumn("Price", "price"),         // Changed to formatted
+                TableUtils.createFormattedColumn("Sub Total", "subTotal"), // Changed to formatted
+                TableUtils.createFormattedColumn("Total", "priceTotal"));  // Changed to formatted
         sellTable.getColumns().setAll(sellColumns);
         sellTable.setItems(pendingSales);
     }
@@ -388,14 +402,14 @@ public class TransactionController extends HibernateUtil {
         BigDecimal total = pendingPurchases.stream()
                 .map(Purchasing::getPriceTotal)
                 .reduce(BigDecimal.ZERO, BigDecimal::add);
-        buyTotalPrice.setText(total.toString());
+        buyTotalPrice.setText(TableUtils.formatCurrency(total));
     }
 
     private void updateSellTotalPrice() {
         BigDecimal total = pendingSales.stream()
                 .map(Sales::getPriceTotal)
                 .reduce(BigDecimal.ZERO, BigDecimal::add);
-        sellTotalPrice.setText(total.toString());
+        sellTotalPrice.setText(TableUtils.formatCurrency(total));
     }
 
     @FXML

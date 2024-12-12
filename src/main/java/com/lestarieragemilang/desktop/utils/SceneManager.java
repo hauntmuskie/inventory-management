@@ -5,6 +5,7 @@ import com.google.common.cache.CacheBuilder;
 import javafx.fxml.FXMLLoader;
 import javafx.scene.Parent;
 import javafx.concurrent.Task;
+import javafx.application.Platform;
 
 import java.io.IOException;
 import java.util.Arrays;
@@ -16,8 +17,17 @@ public class SceneManager {
     private static final long CACHE_EXPIRATION_TIME = 30;
     private final Cache<String, Parent> sceneCache;
 
+    // Add constants for scene names
+    public static final String LAYOUT = "layout";
+    public static final String STOK_BESI = "stokbesi";
+    public static final String KATEGORI = "kategori";
+    public static final String PELANGGAN = "pelanggan";
+    public static final String PENGEMBALIAN = "pengembalian";
+    public static final String SUPPLIER = "supplier";
+    public static final String TRANSAKSI = "transaksi";
+
     private static final List<String> SCENE_NAMES = Arrays.asList(
-            "layout", "stokbesi", "kategori", "pelanggan", "pengembalian", "stokbesi", "supplier", "transaksi");
+            LAYOUT, STOK_BESI, KATEGORI, PELANGGAN, PENGEMBALIAN, SUPPLIER, TRANSAKSI);
 
     public SceneManager() {
         this.sceneCache = CacheBuilder.newBuilder()
@@ -31,7 +41,12 @@ public class SceneManager {
             protected Void call() throws Exception {
                 for (String sceneName : SCENE_NAMES) {
                     try {
-                        loadScene(sceneName);
+                        String resourcePath = RESOURCE_PATH + sceneName + ".fxml";
+                        FXMLLoader loader = new FXMLLoader(getClass().getResource(resourcePath));
+                        // Load on background thread
+                        Parent root = loader.load();
+                        // Update cache on FX thread
+                        Platform.runLater(() -> sceneCache.put(sceneName, root));
                     } catch (IOException e) {
                         System.err.println("Failed to preload scene: " + sceneName);
                         e.printStackTrace();
@@ -58,5 +73,13 @@ public class SceneManager {
         Parent root = loader.load();
         sceneCache.put(sceneName, root);
         return root;
+    }
+
+    public void invalidateScene(String sceneName) {
+        sceneCache.invalidate(sceneName);
+    }
+
+    public void invalidateScenes(String... sceneNames) {
+        sceneCache.invalidateAll(Arrays.asList(sceneNames));
     }
 }

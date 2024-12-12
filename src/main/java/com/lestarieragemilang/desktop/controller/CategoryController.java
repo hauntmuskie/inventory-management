@@ -39,6 +39,7 @@ public class CategoryController extends HibernateUtil {
         categoryService = new GenericService<>(new GenericDao<>(Category.class), "CAT", 3);
 
         initializeComboBoxes();
+        setDefaultComboBoxValues(); // Add this line
         initializeCategoryTable();
         loadCategories();
         generateAndSetCategoryId();
@@ -46,6 +47,14 @@ public class CategoryController extends HibernateUtil {
         categoryIdField.setDisable(true);
 
         initializeSearch();
+    }
+
+    private void setDefaultComboBoxValues() {
+        // Set default values for combo boxes
+        brandComboBox.setValue("Nike");
+        typeComboBox.setValue("Shoes");
+        sizeComboBox.setValue("M");
+        weightUnitComboBox.setValue("kg");
     }
 
     private void initializeSearch() {

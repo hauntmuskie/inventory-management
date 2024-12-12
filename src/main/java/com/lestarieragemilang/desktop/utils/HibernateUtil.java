@@ -9,21 +9,28 @@ import com.lestarieragemilang.desktop.App;
 
 public class HibernateUtil {
     private static final Logger logger = LoggerFactory.getLogger(HibernateUtil.class);
-    private static final SessionFactory sessionFactory = buildSessionFactory();
+    private static SessionFactory sessionFactory;
+    private static boolean databaseAvailable = false;
 
-    private static SessionFactory buildSessionFactory() {
+    static {
         try {
-            return new Configuration().configure(
+            sessionFactory = new Configuration().configure(
                 App.class.getResource("hibernate.cfg.xml")
             ).buildSessionFactory();
-        } catch (Throwable ex) {
-            logger.error("Initial SessionFactory creation failed.", ex);
-            throw new ExceptionInInitializerError(ex);
+            databaseAvailable = true;
+        } catch (Exception e) {
+            logger.warn("Database connection failed. Application will run in limited mode.", e);
+            sessionFactory = null;
+            databaseAvailable = false;
         }
     }
 
     public static SessionFactory getSessionFactory() {
         return sessionFactory;
+    }
+
+    public static boolean isDatabaseAvailable() {
+        return databaseAvailable;
     }
 
     public static void shutdown() {

@@ -1,9 +1,12 @@
 package com.lestarieragemilang.desktop;
 
 import com.lestarieragemilang.desktop.utils.SceneManager;
+import com.lestarieragemilang.desktop.utils.HibernateUtil;
 import javafx.application.Application;
 import javafx.scene.Parent;
 import javafx.scene.Scene;
+import javafx.scene.control.Alert;
+import javafx.scene.control.Alert.AlertType;
 import javafx.stage.Stage;
 import javafx.stage.StageStyle;
 
@@ -18,7 +21,7 @@ import jfxtras.styles.jmetro.Style;
 public class App extends Application {
 
     private static Scene scene;
-    private static final String INITIAL_SCENE = "login";
+    private static final String INITIAL_SCENE = "layout";
     private static final int WIDTH = 1200;
     private static final int HEIGHT = 650;
     private static final Logger LOGGER = Logger.getLogger(App.class.getName());
@@ -29,6 +32,15 @@ public class App extends Application {
     public void start(Stage stage) {
         try {
             sceneManager = new SceneManager();
+
+            // Check database availability and show warning if needed
+            if (!HibernateUtil.isDatabaseAvailable()) {
+                Alert alert = new Alert(AlertType.WARNING);
+                alert.setTitle("Database Unavailable");
+                alert.setHeaderText("Database Connection Failed");
+                alert.setContentText("The application will run in limited mode without database access. Please ensure XAMPP is running for full functionality.");
+                alert.show();
+            }
 
             Parent root = sceneManager.getScene(INITIAL_SCENE);
 

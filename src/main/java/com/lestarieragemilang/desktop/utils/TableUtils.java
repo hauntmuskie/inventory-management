@@ -77,6 +77,11 @@ public class TableUtils {
         return column;
     }
 
+    public static String formatCurrency(BigDecimal value) {
+        NumberFormat currencyFormat = NumberFormat.getCurrencyInstance(new Locale("id", "ID"));
+        return currencyFormat.format(value);
+    }
+
     private static Object getPropertyValue(Object object, String property) throws Exception {
         String[] properties = property.split("\\.");
         for (String prop : properties) {
