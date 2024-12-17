@@ -18,31 +18,12 @@ import org.hibernate.Session;
 import org.hibernate.query.Query;
 
 import java.net.URL;
-import java.sql.SQLException;
 import java.util.List;
 
 public class ReportCategory {
 
   @FXML
-  private TableColumn<Category, String> brandCategoryCol;
-
-  @FXML
-  private TableColumn<Category, Integer> categoryIDCol;
-
-  @FXML
   private TableView<Category> categoryTable;
-
-  @FXML
-  private TableColumn<Category, String> sizeCategoryCol;
-
-  @FXML
-  private TableColumn<Category, String> typeCategoryCol;
-
-  @FXML
-  private TableColumn<Category, String> unitCategoryCol;
-
-  @FXML
-  private TableColumn<Category, String> weightCategoryCol;
 
   @FXML
   private TextField categorySearchField;
@@ -99,15 +80,21 @@ public class ReportCategory {
   @FXML
   void categorySearch() {
     String searchText = categorySearchField.getText().toLowerCase();
-    filteredData.setPredicate(category -> searchText.isEmpty() ||
-        category.getBrand().toLowerCase().contains(searchText) ||
-        category.getProductType().toLowerCase().contains(searchText) ||
-        category.getSize().toLowerCase().contains(searchText) ||
-        category.getWeightUnit().toLowerCase().contains(searchText));
+    filteredData.setPredicate(category -> {
+      if (searchText == null || searchText.isEmpty()) {
+        return true;
+      }
+      return category.getCategoryId().toLowerCase().contains(searchText) ||
+          category.getBrand().toLowerCase().contains(searchText) ||
+          category.getProductType().toLowerCase().contains(searchText) ||
+          category.getSize().toLowerCase().contains(searchText) ||
+          (category.getWeightUnit() != null && 
+           category.getWeightUnit().toLowerCase().contains(searchText));
+    });
   }
 
   @FXML
-  void initialize() throws SQLException {
+  void initialize() {
     List<Category> categories = fetchCategoriesFromDatabase();
     setupTable(categories);
     setupSearch();
@@ -125,12 +112,13 @@ public class ReportCategory {
 
   private void setupTable(List<Category> categories) {
     List<TableColumn<Category, ?>> columns = List.of(
-        TableUtils.createColumn("Brand", "categoryBrand"),
-        TableUtils.createColumn("Category ID", "categoryID"),
-        TableUtils.createColumn("Size", "categorySize"),
-        TableUtils.createColumn("Type", "categoryType"),
-        TableUtils.createColumn("Unit", "categoryUnit"),
-        TableUtils.createColumn("Weight", "categoryWeight"));
+        TableUtils.createColumn("Category ID", "categoryId"),
+        TableUtils.createColumn("Brand", "brand"),
+        TableUtils.createColumn("Product Type", "productType"),
+        TableUtils.createColumn("Size", "size"),
+        TableUtils.createColumn("Weight", "weight"),
+        TableUtils.createColumn("Weight Unit", "weightUnit")
+    );
 
     TableUtils.populateTable(categoryTable, columns, categories);
   }

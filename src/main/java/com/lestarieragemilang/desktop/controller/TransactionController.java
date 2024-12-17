@@ -7,6 +7,7 @@ import com.lestarieragemilang.desktop.repository.GenericDao;
 import com.lestarieragemilang.desktop.service.GenericService;
 import com.lestarieragemilang.desktop.utils.ClearFields;
 import com.lestarieragemilang.desktop.utils.HibernateUtil;
+import com.lestarieragemilang.desktop.utils.JasperLoader;
 import com.lestarieragemilang.desktop.utils.NumberFormatter;
 import com.lestarieragemilang.desktop.utils.ShowAlert;
 import com.lestarieragemilang.desktop.utils.TableUtils;
@@ -19,7 +20,11 @@ import javafx.scene.control.Alert.AlertType;
 import javafx.util.StringConverter;
 
 import java.math.BigDecimal;
+import java.net.MalformedURLException;
+import java.net.URISyntaxException;
+import java.net.URL;
 import java.time.LocalDate;
+import java.util.ArrayList;
 import java.util.List;
 import java.util.stream.Collectors;
 
@@ -65,6 +70,9 @@ public class TransactionController extends HibernateUtil {
     @FXML
     private TextField transactionBuySearchField, transactionSellSearchField;
 
+    private Integer buyIdValue;
+    private Integer sellIdValue;
+
     private GenericService<Purchasing> purchasingService;
     private GenericService<Sales> salesService;
     private GenericService<Stock> stockService;
@@ -73,6 +81,9 @@ public class TransactionController extends HibernateUtil {
 
     private ObservableList<Purchasing> pendingPurchases = FXCollections.observableArrayList();
     private ObservableList<Sales> pendingSales = FXCollections.observableArrayList();
+
+    private static int buyId = 1;
+    private static int sellId = 1;
 
     public void initialize() {
         purchasingService = new GenericService<>(new GenericDao<>(Purchasing.class), "PUR", 3);
@@ -208,7 +219,7 @@ public class TransactionController extends HibernateUtil {
     }
 
     private void setupAutoFill() {
-        buyStockIDDropdown.setOnAction(event -> {
+        buyStockIDDropdown.setOnAction(_ -> {
             Stock selectedStock = buyStockIDDropdown.getValue();
             if (selectedStock != null) {
                 buyBrandField.setText(selectedStock.getCategory().getBrand());
@@ -217,7 +228,7 @@ public class TransactionController extends HibernateUtil {
             }
         });
 
-        sellStockIDDropdown.setOnAction(event -> {
+        sellStockIDDropdown.setOnAction(_ -> {
             Stock selectedStock = sellStockIDDropdown.getValue();
             if (selectedStock != null) {
                 sellBrandField.setText(selectedStock.getCategory().getBrand());
@@ -226,14 +237,14 @@ public class TransactionController extends HibernateUtil {
             }
         });
 
-        supplierIDDropDown.setOnAction(event -> {
+        supplierIDDropDown.setOnAction(_ -> {
             Supplier selectedSupplier = supplierIDDropDown.getValue();
             if (selectedSupplier != null) {
                 supplierNameField.setText(selectedSupplier.getSupplierName());
             }
         });
 
-        customerIDDropDown.setOnAction(event -> {
+        customerIDDropDown.setOnAction(_ -> {
             Customer selectedCustomer = customerIDDropDown.getValue();
             if (selectedCustomer != null) {
                 customerNameField.setText(selectedCustomer.getCustomerName());
@@ -303,32 +314,104 @@ public class TransactionController extends HibernateUtil {
         return transactions.size() + 1;
     }
 
-    @FXML
-    private void confirmBuyButton(ActionEvent event) {
-        for (Purchasing purchasing : pendingPurchases) {
-            purchasingService.save(purchasing);
-            updateStockQuantity(purchasing.getStock(), purchasing.getQuantity(), true);
-        }
-        pendingPurchases.clear();
-        updateBuyTotalPrice();
-        ShowAlert.showAlert(
-                AlertType.INFORMATION,
-                "Purchases confirmed successfully.",
-                "Purchases confirmed successfully.");
+    // Add this method to generate a unique timestamp-based invoice number
+    private String generateUniqueInvoiceNumber(String prefix, Stock stock) {
+        LocalDate currentDate = LocalDate.now();
+        long timestamp = System.currentTimeMillis();
+        return String.format("%s-%s-%s-%d", prefix, stock.getStockId(), currentDate, timestamp % 1000);
     }
 
     @FXML
-    private void confirmSellButton(ActionEvent event) {
-        for (Sales sale : pendingSales) {
-            salesService.save(sale);
-            updateStockQuantity(sale.getStock(), sale.getQuantity(), false);
+    private void confirmBuyButton(ActionEvent event) throws MalformedURLException, URISyntaxException {
+        if (tabPane.getSelectionModel().getSelectedIndex() == 0) {
+            try {
+                List<Purchasing> purchasingList = new ArrayList<>(buyTable.getItems());
+                boolean success = true;
+
+                for (Purchasing purchasing : purchasingList) {
+                    purchasing.setInvoiceNumber(generateUniqueInvoiceNumber("PUR", purchasing.getStock()));
+
+                    try {
+                        purchasingService.save(purchasing);
+                        updateStockQuantity(purchasing.getStock(), purchasing.getQuantity(), true);
+                    } catch (Exception e) {
+                        success = false;
+                        ShowAlert.showAlert(
+                                AlertType.ERROR,
+                                "Error saving purchase",
+                                "Failed to save purchase: " + e.getMessage());
+                        break;
+                    }
+                }
+
+                if (success) {
+                    buyTable.getItems().clear();
+                    buyIdValue = buyId++;
+                    buyInvoiceNumber.setText(String.format("TRX-%05d", buyIdValue));
+                    updateBuyTotalPrice();
+
+                    printJasperBuyList();
+
+                    ShowAlert.showAlert(
+                            AlertType.INFORMATION,
+                            "Success",
+                            "Purchases confirmed successfully.");
+                }
+            } catch (Exception e) {
+                e.printStackTrace();
+                ShowAlert.showAlert(
+                        AlertType.ERROR,
+                        "Error",
+                        "An error occurred while processing purchases: " + e.getMessage());
+            }
         }
-        pendingSales.clear();
-        updateSellTotalPrice();
-        ShowAlert.showAlert(
-                AlertType.INFORMATION,
-                "Sales confirmed successfully.",
-                "Sales confirmed successfully.");
+    }
+
+    @FXML
+    private void confirmSellButton(ActionEvent event) throws MalformedURLException, URISyntaxException {
+        if (tabPane.getSelectionModel().getSelectedIndex() == 1) {
+            try {
+                List<Sales> salesList = new ArrayList<>(sellTable.getItems());
+                boolean success = true;
+
+                for (Sales sale : salesList) {
+                    // Generate unique invoice number for each sale
+                    sale.setInvoiceNumber(generateUniqueInvoiceNumber("SAL", sale.getStock()));
+
+                    try {
+                        salesService.save(sale);
+                        updateStockQuantity(sale.getStock(), sale.getQuantity(), false);
+                    } catch (Exception e) {
+                        success = false;
+                        ShowAlert.showAlert(
+                                AlertType.ERROR,
+                                "Error saving sale",
+                                "Failed to save sale: " + e.getMessage());
+                        break;
+                    }
+                }
+
+                if (success) {
+                    sellTable.getItems().clear();
+                    sellIdValue = sellId++;
+                    sellInvoiceNumber.setText(String.format("TRX-%05d", sellIdValue));
+                    updateSellTotalPrice();
+
+                    printJasperSellList();
+
+                    ShowAlert.showAlert(
+                            AlertType.INFORMATION,
+                            "Success",
+                            "Sales confirmed successfully.");
+                }
+            } catch (Exception e) {
+                e.printStackTrace();
+                ShowAlert.showAlert(
+                        AlertType.ERROR,
+                        "Error",
+                        "An error occurred while processing sales: " + e.getMessage());
+            }
+        }
     }
 
     private void updateStockQuantity(Stock stock, int quantity, boolean isIncrease) {
@@ -485,5 +568,33 @@ public class TransactionController extends HibernateUtil {
                         sale.getCustomer().getCustomerId().toLowerCase().contains(searchTerm))
                 .collect(Collectors.toList());
         sellTable.setItems(FXCollections.observableArrayList(filteredSales));
+    }
+
+    private void printJasperBuyList() throws MalformedURLException, URISyntaxException {
+        String path = "/com/lestarieragemilang/desktop/jasper/purchasing.jasper";
+        URL url = TransactionController.class.getResource(path).toURI().toURL();
+        try {
+            JasperLoader loader = new JasperLoader();
+
+            loader.showJasperReportBuy(
+                    url,
+                    buyIdValue);
+        } catch (Exception e) {
+            e.printStackTrace();
+        }
+    }
+
+    private void printJasperSellList() throws MalformedURLException, URISyntaxException {
+        String path = "/com/lestarieragemilang/desktop/jasper/sales.jasper";
+        URL url = TransactionController.class.getResource(path).toURI().toURL();
+        try {
+            JasperLoader loader = new JasperLoader();
+
+            loader.showJasperReportSell(
+                    url,
+                    sellIdValue);
+        } catch (Exception e) {
+            e.printStackTrace();
+        }
     }
 }

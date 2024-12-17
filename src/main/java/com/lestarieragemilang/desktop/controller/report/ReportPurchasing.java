@@ -42,16 +42,13 @@ public class ReportPurchasing {
   private TableColumn<Purchasing, LocalDate> buyDateCol;
 
   @FXML
-  private TableColumn<Purchasing, Integer> buyInvoiceCol;
+  private TableColumn<Purchasing, String> buyInvoiceCol;
 
   @FXML
-  private TableColumn<Purchasing, String> buyOnSupplierNameCol;
+  private TableColumn<Purchasing, String> buySupplierCol;
 
   @FXML
-  private TableColumn<Purchasing, String> buyBrandCol;
-
-  @FXML
-  private TableColumn<Purchasing, String> buyTypeCol;
+  private TableColumn<Purchasing, Integer> buyQuantityCol;
 
   @FXML
   private TableColumn<Purchasing, BigDecimal> buyPriceCol;
@@ -144,14 +141,15 @@ public class ReportPurchasing {
 
   private void setupTable(List<Purchasing> purchases) {
     List<TableColumn<Purchasing, ?>> columns = List.of(
-        TableUtils.createColumn("Date", "buyDate"),
+        TableUtils.createColumn("Date", "purchaseDate"),
         TableUtils.createColumn("Invoice", "invoiceNumber"),
-        TableUtils.createColumn("Supplier Name", "supplierName"),
-        TableUtils.createColumn("Brand", "brand"),
-        TableUtils.createColumn("Type", "type"),
-        TableUtils.createColumn("Price", "price"),
-        TableUtils.createColumn("Sub Total", "subTotal"),
-        TableUtils.createColumn("Total", "total"));
+        TableUtils.createColumn("Supplier", "supplier.supplierName"),
+        TableUtils.createColumn("Stock", "stock.category.brand"),
+        TableUtils.createColumn("Quantity", "quantity"),
+        TableUtils.createFormattedColumn("Price", "price"),
+        TableUtils.createFormattedColumn("Sub Total", "subTotal"),
+        TableUtils.createFormattedColumn("Total", "priceTotal")
+    );
 
     TableUtils.populateTable(buyTable, columns, purchases);
   }

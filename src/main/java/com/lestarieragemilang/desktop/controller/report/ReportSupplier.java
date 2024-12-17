@@ -10,10 +10,7 @@ import javafx.scene.input.MouseEvent;
 import javafx.scene.control.Alert;
 import javafx.scene.control.Alert.AlertType;
 
-import java.io.IOException;
-import java.net.URISyntaxException;
 import java.net.URL;
-import java.sql.SQLException;
 import java.util.List;
 import java.util.logging.Level;
 import java.util.logging.Logger;
@@ -28,21 +25,6 @@ import com.lestarieragemilang.desktop.utils.JasperLoader;
 
 public class ReportSupplier {
   private static final Logger LOGGER = Logger.getLogger(ReportSupplier.class.getName());
-
-  @FXML
-  private TableColumn<Supplier, String> supplierAddressCol;
-
-  @FXML
-  private TableColumn<Supplier, String> supplierContactCol;
-
-  @FXML
-  private TableColumn<Supplier, String> supplierEmailCol;
-
-  @FXML
-  private TableColumn<Supplier, Integer> supplierIDCol;
-
-  @FXML
-  private TableColumn<Supplier, String> supplierNameCol;
 
   @FXML
   private TableView<Supplier> supplierTable;
@@ -82,8 +64,7 @@ public class ReportSupplier {
 
     try {
       JasperLoader loader = new JasperLoader();
-      loader.showJasperReportSupplier(
-          url,
+      loader.showJasperReportSupplier(url,
           selectedSupplier.getSupplierName(),
           selectedSupplier.getContact(),
           selectedSupplier.getAddress(),
@@ -103,17 +84,20 @@ public class ReportSupplier {
   @FXML
   void supplierSearch() {
     String searchText = supplierSearchField.getText().toLowerCase();
-    filteredData.setPredicate(supplier ->
-        searchText.isEmpty() ||
-        supplier.getSupplierName().toLowerCase().contains(searchText) ||
-        supplier.getAddress().toLowerCase().contains(searchText) ||
-        supplier.getContact().toLowerCase().contains(searchText) ||
-        supplier.getEmail().toLowerCase().contains(searchText)
-    );
+    filteredData.setPredicate(supplier -> {
+      if (searchText == null || searchText.isEmpty()) {
+        return true;
+      }
+      return supplier.getSupplierId().toLowerCase().contains(searchText) ||
+          supplier.getSupplierName().toLowerCase().contains(searchText) ||
+          supplier.getContact().toLowerCase().contains(searchText) ||
+          supplier.getAddress().toLowerCase().contains(searchText) ||
+          supplier.getEmail().toLowerCase().contains(searchText);
+    });
   }
 
   @FXML
-  void initialize() throws SQLException {
+  void initialize() {
     List<Supplier> suppliers = fetchSuppliersFromDatabase();
     setupTable(suppliers);
     setupSearch();
@@ -131,11 +115,11 @@ public class ReportSupplier {
 
   private void setupTable(List<Supplier> suppliers) {
     List<TableColumn<Supplier, ?>> columns = List.of(
-        TableUtils.createColumn("Supplier ID", "supplierID"),
+        TableUtils.createColumn("Supplier ID", "supplierId"),
         TableUtils.createColumn("Name", "supplierName"),
-        TableUtils.createColumn("Address", "supplierAddress"),
-        TableUtils.createColumn("Contact", "supplierContact"),
-        TableUtils.createColumn("Email", "supplierEmail")
+        TableUtils.createColumn("Contact", "contact"),
+        TableUtils.createColumn("Address", "address"),
+        TableUtils.createColumn("Email", "email")
     );
 
     TableUtils.populateTable(supplierTable, columns, suppliers);

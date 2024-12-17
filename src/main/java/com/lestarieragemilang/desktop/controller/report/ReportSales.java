@@ -6,6 +6,7 @@ import java.time.LocalDate;
 import java.time.ZoneId;
 import java.util.Date;
 import java.util.List;
+import java.math.BigDecimal;
 
 import javafx.collections.FXCollections;
 import javafx.collections.transformation.FilteredList;
@@ -44,22 +45,25 @@ public class ReportSales {
   private TableColumn<Sales, LocalDate> sellDateCol;
 
   @FXML
-  private TableColumn<Sales, Integer> sellInvoiceCol;
+  private TableColumn<Sales, String> sellInvoiceCol;
 
   @FXML
-  private TableColumn<Sales, String> sellOnCustomerNameCol;
+  private TableColumn<Sales, String> sellCustomerCol;
 
   @FXML
-  private TableColumn<Sales, Double> sellPriceCol;
+  private TableColumn<Sales, Integer> sellQuantityCol;
 
   @FXML
-  private TableColumn<Sales, Double> sellSubTotalCol;
+  private TableColumn<Sales, BigDecimal> sellPriceCol;
+
+  @FXML
+  private TableColumn<Sales, BigDecimal> sellSubTotalCol;
 
   @FXML
   private TableView<Sales> sellTable;
 
   @FXML
-  private TableColumn<Sales, Double> sellTotalCol;
+  private TableColumn<Sales, BigDecimal> sellTotalCol;
 
   @FXML
   private TableColumn<Sales, String> sellTypeCol;
@@ -145,14 +149,15 @@ public class ReportSales {
 
   private void setupTable(List<Sales> sales) {
     List<TableColumn<Sales, ?>> columns = List.of(
-        TableUtils.createColumn("Date", "sellDate"),
+        TableUtils.createColumn("Date", "saleDate"),
         TableUtils.createColumn("Invoice", "invoiceNumber"),
-        TableUtils.createColumn("Customer Name", "customerName"),
-        TableUtils.createColumn("Brand", "brand"),
-        TableUtils.createColumn("Type", "type"),
-        TableUtils.createColumn("Price", "price"),
-        TableUtils.createColumn("Sub Total", "subTotal"),
-        TableUtils.createColumn("Total", "total"));
+        TableUtils.createColumn("Customer", "customer.customerName"),
+        TableUtils.createColumn("Stock", "stock.category.brand"),
+        TableUtils.createColumn("Quantity", "quantity"),
+        TableUtils.createFormattedColumn("Price", "price"),
+        TableUtils.createFormattedColumn("Sub Total", "subTotal"),
+        TableUtils.createFormattedColumn("Total", "priceTotal")
+    );
 
     TableUtils.populateTable(sellTable, columns, sales);
   }

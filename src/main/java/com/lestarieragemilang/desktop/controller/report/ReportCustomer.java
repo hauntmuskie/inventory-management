@@ -17,28 +17,10 @@ import javafx.scene.input.MouseEvent;
 import org.hibernate.Session;
 import org.hibernate.query.Query;
 
-import java.io.IOException;
-import java.net.URISyntaxException;
 import java.net.URL;
-import java.sql.SQLException;
 import java.util.List;
 
 public class ReportCustomer {
-
-  @FXML
-  private TableColumn<Customer, String> customerAddressCol;
-
-  @FXML
-  private TableColumn<Customer, String> customerContactCol;
-
-  @FXML
-  private TableColumn<Customer, String> customerEmailCol;
-
-  @FXML
-  private TableColumn<Customer, Integer> customerIDCol;
-
-  @FXML
-  private TableColumn<Customer, String> customerNameCol;
 
   @FXML
   private TableView<Customer> customerTable;
@@ -97,15 +79,20 @@ public class ReportCustomer {
   @FXML
   void customerSearch() {
     String searchText = customerSearchField.getText().toLowerCase();
-    filteredData.setPredicate(customer -> searchText.isEmpty() ||
-        customer.getCustomerName().toLowerCase().contains(searchText) ||
-        customer.getAddress().toLowerCase().contains(searchText) ||
-        customer.getContact().toLowerCase().contains(searchText) ||
-        customer.getEmail().toLowerCase().contains(searchText));
+    filteredData.setPredicate(customer -> {
+      if (searchText == null || searchText.isEmpty()) {
+        return true;
+      }
+      return customer.getCustomerId().toLowerCase().contains(searchText) ||
+          customer.getCustomerName().toLowerCase().contains(searchText) ||
+          customer.getContact().toLowerCase().contains(searchText) ||
+          customer.getAddress().toLowerCase().contains(searchText) ||
+          customer.getEmail().toLowerCase().contains(searchText);
+    });
   }
 
   @FXML
-  void initialize() throws SQLException {
+  void initialize() {
     List<Customer> customers = fetchCustomersFromDatabase();
     setupTable(customers);
     setupSearch();
@@ -123,11 +110,12 @@ public class ReportCustomer {
 
   private void setupTable(List<Customer> customers) {
     List<TableColumn<Customer, ?>> columns = List.of(
-        TableUtils.createColumn("Customer ID", "customerID"),
+        TableUtils.createColumn("Customer ID", "customerId"),
         TableUtils.createColumn("Name", "customerName"),
-        TableUtils.createColumn("Address", "customerAddress"),
-        TableUtils.createColumn("Contact", "customerContact"),
-        TableUtils.createColumn("Email", "customerEmail"));
+        TableUtils.createColumn("Contact", "contact"),
+        TableUtils.createColumn("Address", "address"),
+        TableUtils.createColumn("Email", "email")
+    );
 
     TableUtils.populateTable(customerTable, columns, customers);
   }
