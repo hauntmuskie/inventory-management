@@ -1,151 +1,142 @@
 package com.lestarieragemilang.desktop.utils;
 
+import javafx.application.Platform;
+import javafx.scene.control.Alert;
 import javafx.scene.control.Alert.AlertType;
-import net.sf.jasperreports.engine.JRException;
-import net.sf.jasperreports.engine.JasperFillManager;
-import net.sf.jasperreports.engine.JasperPrint;
-import net.sf.jasperreports.engine.JasperReport;
+import javafx.scene.input.MouseEvent;
+import net.sf.jasperreports.engine.*;
 import net.sf.jasperreports.engine.util.JRLoader;
 import net.sf.jasperreports.view.JasperViewer;
+import org.hibernate.Session;
+import org.hibernate.jdbc.Work;
 
-import java.math.BigDecimal;
 import java.net.URL;
+import java.sql.Connection;
 import java.util.Date;
 import java.util.HashMap;
 import java.util.Map;
 import java.util.logging.Level;
 import java.util.logging.Logger;
 
-public class JasperLoader extends HibernateUtil {
+public class JasperLoader {
+    private static final Logger LOGGER = Logger.getLogger(JasperLoader.class.getName());
 
-  private static final Logger LOGGER = Logger.getLogger(JasperLoader.class.getName());
+    private Connection getConnection() {
+        if (!HibernateUtil.isDatabaseAvailable()) {
+            throw new RuntimeException("Database is not available");
+        }
 
-  public void showJasperReport(Map<String, Object> parameters, URL location) {
-    try {
-      JasperReport jasperReport = (JasperReport) JRLoader.loadObject(location);
-      JasperPrint jasperPrint = JasperFillManager.fillReport(jasperReport, parameters);
-      JasperViewer.viewReport(jasperPrint, false);
-    } catch (JRException e) {
-      LOGGER.log(Level.SEVERE, "Error loading Jasper report", e);
-      ShowAlert.showAlert(AlertType.ERROR, null, "Error loading Jasper report");
+        final Connection[] conn = new Connection[1];
+        Session session = HibernateUtil.getSessionFactory().openSession();
+        
+        try {
+            session.doWork(new Work() {
+                public void execute(Connection connection) {
+                    conn[0] = connection;
+                }
+            });
+        } finally {
+            session.close();
+        }
+        
+        return conn[0];
     }
-  }
 
-  private Map<String, Object> createParameters(String... params) {
-    Map<String, Object> parameters = new HashMap<>();
-    for (int i = 0; i < params.length; i += 2) {
-      parameters.put(params[i], params[i + 1]);
+    private void showReport(URL location, Map<String, Object> parameters) {
+        try {
+            if (!HibernateUtil.isDatabaseAvailable()) {
+                throw new RuntimeException("Database is not available");
+            }
+
+            JasperReport jasperReport = (JasperReport) JRLoader.loadObject(location);
+            JasperPrint jasperPrint = JasperFillManager.fillReport(jasperReport, parameters, getConnection());
+
+            final JasperViewer viewer = new JasperViewer(jasperPrint, false);
+            Platform.runLater(() -> viewer.setVisible(true));
+
+        } catch (Exception e) {
+            LOGGER.log(Level.SEVERE, "Error loading Jasper Report", e);
+            Alert alert = new Alert(AlertType.ERROR);
+            alert.setTitle("Error");
+            alert.setHeaderText(null);
+            alert.setContentText(e.getMessage());
+            alert.showAndWait();
+        }
     }
-    return parameters;
-  }
 
-  public void showJasperReportSupplier(URL location, String nameSupplier, String contactSupplier,
-      String addressSupplier, String emailSupplier) {
-    Map<String, Object> parameters = createParameters(
-        "nameSupplier", nameSupplier,
-        "contactSupplier", contactSupplier,
-        "addressSupplier", addressSupplier,
-        "emailSupplier", emailSupplier);
-    showJasperReport(parameters, location);
-  }
+    public void showJasperReportSupplier(URL location, String nameSupplier, String contactSupplier,
+            String addressSupplier, String emailSupplier, MouseEvent event) {
+        Map<String, Object> parameters = new HashMap<>();
+        parameters.put("nameSupplier", "%" + nameSupplier + "%");
+        parameters.put("contactSupplier", "%" + contactSupplier + "%");
+        parameters.put("addressSupplier", "%" + addressSupplier + "%");
+        parameters.put("emailSupplier", "%" + emailSupplier + "%");
+        showReport(location, parameters);
+    }
 
-  public void showJasperReportCustomer(URL location, String nameCustomer, String contactCustomer,
-      String addressCustomer, String emailCustomer) {
-    Map<String, Object> parameters = createParameters(
-        "nameCustomer", nameCustomer,
-        "contactCustomer", contactCustomer,
-        "addressCustomer", addressCustomer,
-        "emailCustomer", emailCustomer);
-    showJasperReport(parameters, location);
-  }
+    public void showJasperReportCustomer(URL location, String nameCustomer, String contactCustomer,
+            String addressCustomer, String emailCustomer, MouseEvent event) {
+        Map<String, Object> parameters = new HashMap<>();
+        parameters.put("nameCustomer", "%" + nameCustomer + "%");
+        parameters.put("contactCustomer", "%" + contactCustomer + "%");
+        parameters.put("addressCustomer", "%" + addressCustomer + "%");
+        parameters.put("emailCustomer", "%" + emailCustomer + "%");
+        showReport(location, parameters);
+    }
 
-  public void showJasperReportCategory(URL location, String brandCategory, String typeCategory,
-      String sizeCategory, String weightCategory, String unitCategory) {
-    Map<String, Object> parameters = createParameters(
-        "brandCategory", brandCategory,
-        "typeCategory", typeCategory,
-        "sizeCategory", sizeCategory,
-        "weightCategory", weightCategory,
-        "unitCategory", unitCategory);
-    showJasperReport(parameters, location);
-  }
+    public void showJasperReportCategory(URL location, String brandCategory, String typeCategory,
+            String sizeCategory, String weightCategory, String unitCategory, MouseEvent event) {
+        Map<String, Object> parameters = new HashMap<>();
+        parameters.put("brandCategory", "%" + brandCategory + "%");
+        parameters.put("typeCategory", "%" + typeCategory + "%");
+        parameters.put("sizeCategory", "%" + sizeCategory + "%");
+        parameters.put("weightCategory", "%" + weightCategory + "%");
+        parameters.put("unitCategory", "%" + unitCategory + "%");
+        showReport(location, parameters);
+    }
 
-  public void showJasperReportStock(URL location, String brandStock, String typeStock,
-      String sizeStock, String weightStock, String unitStock, String stock,
-      String purchasePriceStock, String sellingPriceStock) {
-    Map<String, Object> parameters = createParameters(
-        "brandStock", brandStock,
-        "typeStock", typeStock,
-        "sizeStock", sizeStock,
-        "weightStock", weightStock,
-        "unitStock", unitStock,
-        "stock", stock,
-        "purchasePriceStock", purchasePriceStock,
-        "sellingPriceStock", sellingPriceStock);
-    showJasperReport(parameters, location);
-  }
+    public void showJasperReportStock(URL location, String brandStock, String typeStock,
+            String sizeStock, String weightStock, String unitStock, String stock, String purchasePriceStock,
+            String sellingPriceStock, MouseEvent event) {
+        Map<String, Object> parameters = new HashMap<>();
+        parameters.put("brandStock", "%" + brandStock + "%");
+        parameters.put("typeStock", "%" + typeStock + "%");
+        parameters.put("sizeStock", "%" + sizeStock + "%");
+        parameters.put("weightStock", "%" + weightStock + "%");
+        parameters.put("unitStock", "%" + unitStock + "%");
+        parameters.put("stock", "%" + stock + "%");
+        parameters.put("purchasePriceStock", "%" + purchasePriceStock + "%");
+        parameters.put("sellingPriceStock", "%" + sellingPriceStock + "%");
+        showReport(location, parameters);
+    }
 
-  public void showJasperReportSales(URL location, String invoiceNumber, String customerName,
-      String stockName, Integer quantity, BigDecimal price, BigDecimal subTotal, BigDecimal priceTotal) {
-    Map<String, Object> parameters = createParameters(
-        "invoiceNumber", invoiceNumber,
-        "customerName", customerName,
-        "stockName", stockName,
-        "quantity", quantity.toString(),
-        "price", price.toString(),
-        "subTotal", subTotal.toString(),
-        "priceTotal", priceTotal.toString());
-    showJasperReport(parameters, location);
-  }
+    public void showJasperReportBuyList(URL location, String invoicePurchasing, Date firstDate, Date secondDate,
+            MouseEvent event) {
+        Map<String, Object> parameters = new HashMap<>();
+        parameters.put("invoicePurchasing", "%" + invoicePurchasing + "%");
+        parameters.put("firstDate", firstDate);
+        parameters.put("secondDate", secondDate);
+        showReport(location, parameters);
+    }
 
-  public void showJasperReportReturns(URL location, String returnId, String returnType,
-      String invoiceNumber, String reason) {
-    Map<String, Object> parameters = createParameters(
-        "returnId", returnId,
-        "returnType", returnType,
-        "invoiceNumber", invoiceNumber,
-        "reason", reason);
-    showJasperReport(parameters, location);
-  }
+    public void showJasperReportBuy(URL location, Integer buyIdValue) {
+        Map<String, Object> parameters = new HashMap<>();
+        parameters.put("invoicePurchasing", "%" + buyIdValue.toString() + "%");
+        showReport(location, parameters);
+    }
 
-  public void showJasperReportPurchasing(URL location, String invoiceNumber, String supplierName,
-      String stockName, Integer quantity, BigDecimal price, BigDecimal subTotal, BigDecimal priceTotal) {
-    Map<String, Object> parameters = createParameters(
-        "invoiceNumber", invoiceNumber,
-        "supplierName", supplierName,
-        "stockName", stockName,
-        "quantity", quantity.toString(),
-        "price", price.toString(),
-        "subTotal", subTotal.toString(),
-        "priceTotal", priceTotal.toString());
-    showJasperReport(parameters, location);
-  }
+    public void showJasperReportSell(URL location, Integer sellIdValue) {
+        Map<String, Object> parameters = new HashMap<>();
+        parameters.put("invoiceSales", "%" + sellIdValue.toString() + "%");
+        showReport(location, parameters);
+    }
 
-  public void showJasperReportBuyList(URL location, String invoicePurchasing, Date firstDate, Date secondDate) {
-    Map<String, Object> parameters = new HashMap<>();
-    parameters.put("invoicePurchasing", "%" + invoicePurchasing + "%");
-    parameters.put("firstDate", firstDate);
-    parameters.put("secondDate", secondDate);
-    showJasperReport(parameters, location);
-  }
-
-  public void showJasperReportBuy(URL location, Integer buyIdValue) {
-    Map<String, Object> parameters = new HashMap<>();
-    parameters.put("invoicePurchasing", "%" + buyIdValue.toString() + "%");
-    showJasperReport(parameters, location);
-  }
-
-  public void showJasperReportSell(URL location, Integer sellIdValue) {
-    Map<String, Object> parameters = new HashMap<>();
-    parameters.put("invoiceSales", "%" + sellIdValue.toString() + "%");
-    showJasperReport(parameters, location);
-  }
-
-  public void showJasperReportSellList(URL location, String invoiceSales, Date firstDate, Date secondDate) {
-    Map<String, Object> parameters = new HashMap<>();
-    parameters.put("invoiceSales", "%" + invoiceSales + "%");
-    parameters.put("firstDate", firstDate);
-    parameters.put("secondDate", secondDate);
-    showJasperReport(parameters, location);
-  }
+    public void showJasperReportSellList(URL location, String invoiceSales, Date firstDate, Date secondDate,
+            MouseEvent event) {
+        Map<String, Object> parameters = new HashMap<>();
+        parameters.put("invoiceSales", "%" + invoiceSales + "%");
+        parameters.put("firstDate", firstDate);
+        parameters.put("secondDate", secondDate);
+        showReport(location, parameters);
+    }
 }

@@ -17,7 +17,7 @@
 
 <VBox maxHeight="570.0" maxWidth="970.0" prefHeight="570.0" prefWidth="970.0"
    xmlns="http://javafx.com/javafx/22" xmlns:fx="http://javafx.com/fxml/1"
-   fx:controller="com.lestarieragemilang.desktop.controller.ReportController">
+   fx:controller="com.lestarieragemilang.desktop.controller.report.ReportController">
    <children>
       <BorderPane fx:id="bp" prefHeight="570.0">
          <center>

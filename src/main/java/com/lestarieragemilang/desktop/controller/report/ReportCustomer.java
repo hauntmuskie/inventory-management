@@ -1,4 +1,4 @@
-package com.lestarieragemilang.desktop.controller;
+package com.lestarieragemilang.desktop.controller.report;
 
 import com.lestarieragemilang.desktop.model.Customer;
 import com.lestarieragemilang.desktop.utils.TableUtils;
@@ -8,6 +8,8 @@ import com.lestarieragemilang.desktop.utils.JasperLoader;
 import javafx.collections.FXCollections;
 import javafx.collections.transformation.FilteredList;
 import javafx.fxml.FXML;
+import javafx.scene.control.Alert;
+import javafx.scene.control.Alert.AlertType;
 import javafx.scene.control.TableColumn;
 import javafx.scene.control.TableView;
 import javafx.scene.control.TextField;
@@ -47,15 +49,48 @@ public class ReportCustomer {
   private FilteredList<Customer> filteredData;
 
   @FXML
-  void printJasperCustomer(MouseEvent event) throws IOException, URISyntaxException {
-    String path = "/com/lestarieragemilang/app/desktop/jasper/customer-list.jasper";
-    URL url = getClass().getResource(path).toURI().toURL();
+  void printJasperCustomer(MouseEvent event) {
+    String path = "/jasper/customer-list.jasper";
+    URL url = getClass().getResource(path);
+    if (url == null) {
+      path = "/com/lestarieragemilang/desktop/jasper/customer-list.jasper";
+      url = getClass().getResource(path);
+    }
+
+    if (url == null) {
+      Alert alert = new Alert(AlertType.ERROR);
+      alert.setTitle("Error");
+      alert.setHeaderText(null);
+      alert.setContentText("Could not find report template");
+      alert.showAndWait();
+      return;
+    }
+
+    Customer selectedCustomer = customerTable.getSelectionModel().getSelectedItem();
+    if (selectedCustomer == null) {
+      Alert alert = new Alert(AlertType.INFORMATION);
+      alert.setTitle("Information");
+      alert.setHeaderText(null);
+      alert.setContentText("Please select a customer to print");
+      alert.showAndWait();
+      return;
+    }
+
     try {
       JasperLoader loader = new JasperLoader();
-      String searchText = customerSearchField.getText();
-      loader.showJasperReportCustomer(url, searchText, searchText, searchText, searchText);
+      loader.showJasperReportCustomer(url,
+          selectedCustomer.getCustomerName(),
+          selectedCustomer.getContact(),
+          selectedCustomer.getAddress(),
+          selectedCustomer.getEmail(),
+          event
+      );
     } catch (Exception e) {
-      e.printStackTrace();
+      Alert alert = new Alert(AlertType.ERROR);
+      alert.setTitle("Error");
+      alert.setHeaderText(null);
+      alert.setContentText("Error generating report: " + e.getMessage());
+      alert.showAndWait();
     }
   }
 

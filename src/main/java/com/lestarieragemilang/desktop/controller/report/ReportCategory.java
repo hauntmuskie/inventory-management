@@ -1,4 +1,4 @@
-package com.lestarieragemilang.desktop.controller;
+package com.lestarieragemilang.desktop.controller.report;
 
 import com.lestarieragemilang.desktop.model.Category;
 import com.lestarieragemilang.desktop.utils.TableUtils;
@@ -8,6 +8,8 @@ import com.lestarieragemilang.desktop.utils.JasperLoader;
 import javafx.collections.FXCollections;
 import javafx.collections.transformation.FilteredList;
 import javafx.fxml.FXML;
+import javafx.scene.control.Alert;
+import javafx.scene.control.Alert.AlertType;
 import javafx.scene.control.TableColumn;
 import javafx.scene.control.TableView;
 import javafx.scene.control.TextField;
@@ -15,8 +17,6 @@ import javafx.scene.input.MouseEvent;
 import org.hibernate.Session;
 import org.hibernate.query.Query;
 
-import java.io.IOException;
-import java.net.URISyntaxException;
 import java.net.URL;
 import java.sql.SQLException;
 import java.util.List;
@@ -50,15 +50,49 @@ public class ReportCategory {
   private FilteredList<Category> filteredData;
 
   @FXML
-  void printJasperCategory(MouseEvent event) throws IOException, URISyntaxException {
-    String path = "/com/lestarieragemilang/app/desktop/jasper/category-list.jasper";
-    URL url = getClass().getResource(path).toURI().toURL();
+  void printJasperCategory(MouseEvent event) {
+    String path = "/jasper/category-list.jasper";
+    URL url = getClass().getResource(path);
+    if (url == null) {
+      path = "/com/lestarieragemilang/desktop/jasper/category-list.jasper";
+      url = getClass().getResource(path);
+    }
+
+    if (url == null) {
+      Alert alert = new Alert(AlertType.ERROR);
+      alert.setTitle("Error");
+      alert.setHeaderText(null);
+      alert.setContentText("Could not find report template");
+      alert.showAndWait();
+      return;
+    }
+
+    Category selectedCategory = categoryTable.getSelectionModel().getSelectedItem();
+    if (selectedCategory == null) {
+      Alert alert = new Alert(AlertType.INFORMATION);
+      alert.setTitle("Information");
+      alert.setHeaderText(null);
+      alert.setContentText("Please select a category to print");
+      alert.showAndWait();
+      return;
+    }
+
     try {
       JasperLoader loader = new JasperLoader();
-      String searchText = categorySearchField.getText();
-      loader.showJasperReportCategory(url, searchText, searchText, searchText, searchText, searchText);
+      loader.showJasperReportCategory(url,
+          selectedCategory.getBrand(),
+          selectedCategory.getProductType(),
+          selectedCategory.getSize(),
+          selectedCategory.getWeight().toString(),
+          selectedCategory.getWeightUnit(),
+          event
+      );
     } catch (Exception e) {
-      e.printStackTrace();
+      Alert alert = new Alert(AlertType.ERROR);
+      alert.setTitle("Error");
+      alert.setHeaderText(null);
+      alert.setContentText("Error generating report: " + e.getMessage());
+      alert.showAndWait();
     }
   }
 

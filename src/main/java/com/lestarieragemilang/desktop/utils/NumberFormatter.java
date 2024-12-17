@@ -26,7 +26,7 @@ public final class NumberFormatter {
     public static void applyNumberFormat(TextField textField) {
         Preconditions.checkNotNull(textField, "TextField must not be null");
 
-        textField.textProperty().addListener((observable, oldValue, newValue) -> {
+        textField.textProperty().addListener((_, oldValue, newValue) -> {
             if (Strings.isNullOrEmpty(newValue)) {
                 return;
             }

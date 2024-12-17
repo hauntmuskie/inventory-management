@@ -58,7 +58,7 @@ public class TableUtils {
             }
         });
 
-        column.setCellFactory(col -> new TableCell<T, BigDecimal>() {
+        column.setCellFactory(_ -> new TableCell<T, BigDecimal>() {
             @Override
             protected void updateItem(BigDecimal item, boolean empty) {
                 super.updateItem(item, empty);
@@ -78,7 +78,7 @@ public class TableUtils {
     }
 
     public static String formatCurrency(BigDecimal value) {
-        NumberFormat currencyFormat = NumberFormat.getCurrencyInstance(new Locale("id", "ID"));
+        NumberFormat currencyFormat = NumberFormat.getCurrencyInstance(Locale.of("id", "ID"));
         return currencyFormat.format(value);
     }
 
@@ -95,7 +95,7 @@ public class TableUtils {
 
     private static Method getMethod(Class<?> clazz, String methodName) throws NoSuchMethodException {
         String key = clazz.getName() + "#" + methodName;
-        return METHOD_CACHE.computeIfAbsent(key, k -> {
+        return METHOD_CACHE.computeIfAbsent(key, _ -> {
             try {
                 return clazz.getMethod(methodName);
             } catch (NoSuchMethodException e) {

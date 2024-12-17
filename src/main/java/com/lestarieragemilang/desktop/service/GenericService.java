@@ -15,7 +15,7 @@ public class GenericService<T> {
     private final String idPrefix;
     private final int bound;
     private final SessionFactory sessionFactory;
-    private final String[] affectedScenes; // Add this field
+    private final String[] affectedScenes;
 
     public GenericService(GenericDao<T> dao, String idPrefix, int bound, String... affectedScenes) {
         this.dao = dao;
@@ -26,19 +26,22 @@ public class GenericService<T> {
     }
 
     public void save(T entity) {
-        if (!HibernateUtil.isDatabaseAvailable()) return;
+        if (!HibernateUtil.isDatabaseAvailable())
+            return;
         dao.save(entity);
         invalidateAffectedScenes();
     }
 
     public void update(T entity) {
-        if (!HibernateUtil.isDatabaseAvailable()) return;
+        if (!HibernateUtil.isDatabaseAvailable())
+            return;
         dao.update(entity);
         invalidateAffectedScenes();
     }
 
     public boolean canDelete(T entity) {
-        if (!HibernateUtil.isDatabaseAvailable()) return false;
+        if (!HibernateUtil.isDatabaseAvailable())
+            return false;
         try {
             dao.checkDeleteConstraints(entity);
             return true;
@@ -48,18 +51,21 @@ public class GenericService<T> {
     }
 
     public void delete(T entity) throws ConstraintViolationException {
-        if (!HibernateUtil.isDatabaseAvailable()) return;
+        if (!HibernateUtil.isDatabaseAvailable())
+            return;
         dao.delete(entity);
         invalidateAffectedScenes();
     }
 
     public T findById(Long id) {
-        if (!HibernateUtil.isDatabaseAvailable()) return null;
+        if (!HibernateUtil.isDatabaseAvailable())
+            return null;
         return dao.findById(id);
     }
 
     public List<T> findAll() {
-        if (!HibernateUtil.isDatabaseAvailable()) return new ArrayList<>();
+        if (!HibernateUtil.isDatabaseAvailable())
+            return new ArrayList<>();
         return dao.findAll();
     }
 

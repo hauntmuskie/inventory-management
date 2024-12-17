@@ -20,11 +20,14 @@ module com.lestarieragemilang.desktop {
     requires org.slf4j;
     requires com.google.common;
     requires jbcrypt;
+    requires ehcache;
 
     opens com.lestarieragemilang.desktop to javafx.fxml;
     opens com.lestarieragemilang.desktop.controller to javafx.fxml;
+    opens com.lestarieragemilang.desktop.controller.report to javafx.fxml;
     opens com.lestarieragemilang.desktop.model to org.hibernate.orm.core, javafx.base;
 
     exports com.lestarieragemilang.desktop;
     exports com.lestarieragemilang.desktop.controller;
+    exports com.lestarieragemilang.desktop.controller.report;
 }

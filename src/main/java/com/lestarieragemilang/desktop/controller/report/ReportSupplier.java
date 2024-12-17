@@ -1,4 +1,4 @@
-package com.lestarieragemilang.desktop.controller;
+package com.lestarieragemilang.desktop.controller.report;
 
 import javafx.collections.FXCollections;
 import javafx.collections.transformation.FilteredList;
@@ -7,6 +7,8 @@ import javafx.scene.control.TableColumn;
 import javafx.scene.control.TableView;
 import javafx.scene.control.TextField;
 import javafx.scene.input.MouseEvent;
+import javafx.scene.control.Alert;
+import javafx.scene.control.Alert.AlertType;
 
 import java.io.IOException;
 import java.net.URISyntaxException;
@@ -52,18 +54,49 @@ public class ReportSupplier {
 
   @FXML
   void printJasperSupplier(MouseEvent event) {
+    String path = "/jasper/supplier-list.jasper";
+    URL url = getClass().getResource(path);
+    if (url == null) {
+      path = "/com/lestarieragemilang/desktop/jasper/supplier-list.jasper";
+      url = getClass().getResource(path);
+    }
+
+    if (url == null) {
+      Alert alert = new Alert(AlertType.ERROR);
+      alert.setTitle("Error");
+      alert.setHeaderText(null);
+      alert.setContentText("Could not find report template");
+      alert.showAndWait();
+      return;
+    }
+
+    Supplier selectedSupplier = supplierTable.getSelectionModel().getSelectedItem();
+    if (selectedSupplier == null) {
+      Alert alert = new Alert(AlertType.INFORMATION);
+      alert.setTitle("Information");
+      alert.setHeaderText(null);
+      alert.setContentText("Please select a supplier to print");
+      alert.showAndWait();
+      return;
+    }
+
     try {
-      String path = "/com/lestarieragemilang/app/desktop/jasper/supplier-list.jasper";
-      URL url = ReportSupplier.class.getResource(path).toURI().toURL();
       JasperLoader loader = new JasperLoader();
       loader.showJasperReportSupplier(
           url,
-          supplierSearchField.getText(),
-          supplierSearchField.getText(),
-          supplierSearchField.getText(),
-          supplierSearchField.getText());
-    } catch (IOException | URISyntaxException e) {
-      LOGGER.log(Level.SEVERE, "Error loading report", e);
+          selectedSupplier.getSupplierName(),
+          selectedSupplier.getContact(),
+          selectedSupplier.getAddress(),
+          selectedSupplier.getEmail(),
+          event
+      );
+    } catch (Exception e) {
+      Alert alert = new Alert(AlertType.ERROR);
+      alert.setTitle("Error");
+      alert.setHeaderText(null);
+      alert.setContentText("Error generating report: " + e.getMessage());
+      alert.showAndWait();
+      LOGGER.log(Level.SEVERE, "Error generating report", e);
     }
   }
 

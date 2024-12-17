@@ -26,8 +26,19 @@ public class SceneManager {
     public static final String SUPPLIER = "supplier";
     public static final String TRANSAKSI = "transaksi";
 
+    // Add constants for report scenes
+    public static final String REPORT_MAIN = "laporan";
+    public static final String REPORT_STOCK = "laporan-stok";
+    public static final String REPORT_CATEGORY = "laporan-kategori";
+    public static final String REPORT_CUSTOMER = "laporan-pelanggan";
+    public static final String REPORT_PURCHASING = "laporan-pembelian";
+    public static final String REPORT_SALES = "laporan-penjualan";
+    public static final String REPORT_SUPPLIER = "laporan-supplier";
+
     private static final List<String> SCENE_NAMES = Arrays.asList(
-            LAYOUT, STOK_BESI, KATEGORI, PELANGGAN, PENGEMBALIAN, SUPPLIER, TRANSAKSI);
+            LAYOUT, STOK_BESI, KATEGORI, PELANGGAN, PENGEMBALIAN, SUPPLIER, TRANSAKSI,
+            REPORT_MAIN, REPORT_STOCK, REPORT_CATEGORY, REPORT_CUSTOMER, 
+            REPORT_PURCHASING, REPORT_SALES, REPORT_SUPPLIER);
 
     public SceneManager() {
         this.sceneCache = CacheBuilder.newBuilder()

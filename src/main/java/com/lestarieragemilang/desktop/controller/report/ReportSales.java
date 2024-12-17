@@ -1,4 +1,4 @@
-package com.lestarieragemilang.desktop.controller;
+package com.lestarieragemilang.desktop.controller.report;
 
 import java.net.URL;
 import java.sql.SQLException;
@@ -15,6 +15,8 @@ import javafx.scene.control.TableColumn;
 import javafx.scene.control.TableView;
 import javafx.scene.control.TextField;
 import javafx.scene.input.MouseEvent;
+import javafx.scene.control.Alert;
+import javafx.scene.control.Alert.AlertType;
 
 import org.hibernate.Session;
 import org.hibernate.query.Query;
@@ -66,22 +68,48 @@ public class ReportSales {
 
   @FXML
   void printJasperSellList(MouseEvent event) {
-    String path = "/com/lestarieragemilang/app/desktop/jasper/sales-list.jasper";
+    String path = "/jasper/sales-list.jasper";
+    URL url = getClass().getResource(path);
+    if (url == null) {
+      path = "/com/lestarieragemilang/desktop/jasper/sales-list.jasper";
+      url = getClass().getResource(path);
+    }
+
+    if (url == null) {
+      Alert alert = new Alert(AlertType.ERROR);
+      alert.setTitle("Error");
+      alert.setHeaderText(null);
+      alert.setContentText("Could not find report template");
+      alert.showAndWait();
+      return;
+    }
+
     try {
-      URL url = getClass().getResource(path);
-
       JasperLoader loader = new JasperLoader();
-
       LocalDate firstLocalDate = SellListDateFirstField.getValue();
       LocalDate secondLocalDate = SellListDateSecondField.getValue();
 
-      Date firstDate = convertToLocalDate(firstLocalDate);
-      Date secondDate = convertToLocalDate(secondLocalDate);
+      if (firstLocalDate == null || secondLocalDate == null) {
+        Alert alert = new Alert(AlertType.INFORMATION);
+        alert.setTitle("Information");
+        alert.setHeaderText(null);
+        alert.setContentText("Please select both start and end dates");
+        alert.showAndWait();
+        return;
+      }
 
-      loader.showJasperReportSellList(url, SellListSearchField.getText(), firstDate, secondDate);
-
+      loader.showJasperReportSellList(url,
+          SellListSearchField.getText(),
+          Date.from(firstLocalDate.atStartOfDay(ZoneId.systemDefault()).toInstant()),
+          Date.from(secondLocalDate.atStartOfDay(ZoneId.systemDefault()).toInstant()),
+          event
+      );
     } catch (Exception e) {
-      e.printStackTrace();
+      Alert alert = new Alert(AlertType.ERROR);
+      alert.setTitle("Error");
+      alert.setHeaderText(null);
+      alert.setContentText("Error generating report: " + e.getMessage());
+      alert.showAndWait();
     }
   }
 

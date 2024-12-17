@@ -39,7 +39,7 @@ public abstract class Redirect {
   protected void switchScene(AnchorPane currentScene, String newSceneName, Runnable setNewScene) {
     animateFadeOut(currentScene, () -> {
       PauseTransition delay = new PauseTransition(Duration.seconds(0.5));
-      delay.setOnFinished(e -> {
+      delay.setOnFinished(_ -> {
         setNewScene.run();
         try {
           loadScene(newSceneName, currentScene);

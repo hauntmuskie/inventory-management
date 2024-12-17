@@ -1,4 +1,4 @@
-package com.lestarieragemilang.desktop.controller;
+package com.lestarieragemilang.desktop.controller.report;
 
 import java.math.BigDecimal;
 import java.net.URL;
@@ -16,6 +16,8 @@ import javafx.scene.control.TableColumn;
 import javafx.scene.control.TableView;
 import javafx.scene.control.TextField;
 import javafx.scene.input.MouseEvent;
+import javafx.scene.control.Alert;
+import javafx.scene.control.Alert.AlertType;
 
 import org.hibernate.Session;
 import org.hibernate.query.Query;
@@ -74,22 +76,48 @@ public class ReportPurchasing {
 
   @FXML
   void printJasperBuyList(MouseEvent event) {
-    String path = "/com/lestarieragemilang/app/desktop/jasper/purchasing-list.jasper";
+    String path = "/jasper/purchasing-list.jasper";
+    URL url = getClass().getResource(path);
+    if (url == null) {
+      path = "/com/lestarieragemilang/desktop/jasper/purchasing-list.jasper";
+      url = getClass().getResource(path);
+    }
+
+    if (url == null) {
+      Alert alert = new Alert(AlertType.ERROR);
+      alert.setTitle("Error");
+      alert.setHeaderText(null);
+      alert.setContentText("Could not find report template");
+      alert.showAndWait();
+      return;
+    }
+
     try {
-      URL url = getClass().getResource(path);
-
       JasperLoader loader = new JasperLoader();
-
       LocalDate firstLocalDate = BuyListDateFirstField.getValue();
       LocalDate secondLocalDate = BuyListDateSecondField.getValue();
 
-      Date firstDate = convertToLocalDate(firstLocalDate);
-      Date secondDate = convertToLocalDate(secondLocalDate);
+      if (firstLocalDate == null || secondLocalDate == null) {
+        Alert alert = new Alert(AlertType.INFORMATION);
+        alert.setTitle("Information");
+        alert.setHeaderText(null);
+        alert.setContentText("Please select both start and end dates");
+        alert.showAndWait();
+        return;
+      }
 
-      loader.showJasperReportBuyList(url, BuyListSearchField.getText(), firstDate, secondDate);
-
+      loader.showJasperReportBuyList(url, 
+          BuyListSearchField.getText(),
+          Date.from(firstLocalDate.atStartOfDay(ZoneId.systemDefault()).toInstant()),
+          Date.from(secondLocalDate.atStartOfDay(ZoneId.systemDefault()).toInstant()),
+          event
+      );
     } catch (Exception e) {
-      e.printStackTrace();
+      Alert alert = new Alert(AlertType.ERROR);
+      alert.setTitle("Error");
+      alert.setHeaderText(null);
+      alert.setContentText("Error generating report: " + e.getMessage());
+      alert.showAndWait();
     }
   }
 
