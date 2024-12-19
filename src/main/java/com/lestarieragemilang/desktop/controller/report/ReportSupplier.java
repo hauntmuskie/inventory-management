@@ -64,7 +64,10 @@ public class ReportSupplier {
 
     try {
       JasperLoader loader = new JasperLoader();
-      loader.showJasperReportSupplier(url,
+      // Fixed parameter order and added missing email parameter
+      loader.showJasperReportSupplier(
+          url,
+          selectedSupplier.getSupplierId(),
           selectedSupplier.getSupplierName(),
           selectedSupplier.getContact(),
           selectedSupplier.getAddress(),
