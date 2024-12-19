@@ -159,7 +159,6 @@
                                                             </font>
                                                         </JFXButton>
                                                         <JFXButton buttonType="RAISED"
-                                                            onAction="#deleteAdmin"
                                                             prefHeight="50.0" prefWidth="120.0"
                                                             style="-fx-background-color: red; -fx-text-fill: #ffffff; -fx-background-radius: 25; -fx-border-radius: 25; -fx-cursor: hand; -fx-font-weight: bold;"
                                                             text="Hapus">
