@@ -101,4 +101,13 @@ public class ReportController extends Redirect {
             });
         }
     }
+
+    @FXML
+    void setSceneReportReturn(MouseEvent event) {
+        if (!currentScene.equals(SceneManager.REPORT_RETURN)) {
+            switchScene(setScene, SceneManager.REPORT_RETURN, () -> {
+                currentScene = SceneManager.REPORT_RETURN;
+            });
+        }
+    }
 }

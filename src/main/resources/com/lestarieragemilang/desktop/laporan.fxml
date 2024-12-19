@@ -8,9 +8,6 @@
 <?import javafx.scene.image.ImageView?>
 <?import javafx.scene.layout.AnchorPane?>
 <?import javafx.scene.layout.BorderPane?>
-<?import javafx.scene.layout.ColumnConstraints?>
-<?import javafx.scene.layout.GridPane?>
-<?import javafx.scene.layout.RowConstraints?>
 <?import javafx.scene.layout.VBox?>
 <?import javafx.scene.paint.Color?>
 <?import javafx.scene.text.Font?>
@@ -25,257 +22,173 @@
                <content>
                   <AnchorPane fx:id="setScene" prefHeight="570.0" prefWidth="970.0"
                      style="-fx-background-color: #f5f5f5;">
-                     <children>
-                        <GridPane hgap="20.0" layoutX="20.0" layoutY="20.0" prefHeight="570.0"
-                           vgap="20.0" AnchorPane.bottomAnchor="20.0" AnchorPane.leftAnchor="150.0"
-                           AnchorPane.rightAnchor="150.0" AnchorPane.topAnchor="20.0">
-                           <children>
-                              <VBox alignment="CENTER" spacing="10.0">
-                                 <children>
-                                    <ImageView fitHeight="100.0" fitWidth="100.0">
-                                       <image>
-                                          <Image url="@Assets/Images/box_.png" />
-                                       </image>
-                                    </ImageView>
-                                    <Label style="-fx-font-size: 20px; -fx-font-weight: bold;"
-                                       text="Stok Besi">
-                                       <effect>
-                                          <DropShadow>
-                                             <color>
-                                                <Color red="0.0" green="0.0" blue="0.0"
-                                                   opacity="0.2" />
-                                             </color>
-                                             <radius>5.0</radius>
-                                          </DropShadow>
-                                       </effect>
-                                    </Label>
-                                    <JFXButton buttonType="RAISED"
-                                       onMouseClicked="#setSceneReportStock" prefHeight="100.0"
-                                       prefWidth="230.0"
-                                       style="-fx-background-color: #333; -fx-background-radius: 10; -fx-text-fill: white; -fx-font-weight: bold; -fx-border-radius: 10; -fx-font-size: 20; -fx-cursor: hand;"
-                                       text="Laporan Stok Besi" textAlignment="CENTER">
-                                       <font>
-                                          <Font name="Calibri Bold" size="10.0" />
-                                       </font>
-                                       <effect>
-                                          <DropShadow>
-                                             <color>
-                                                <Color red="0.0" green="0.0" blue="0.0"
-                                                   opacity="0.2" />
-                                             </color>
-                                             <radius>5.0</radius>
-                                          </DropShadow>
-                                       </effect>
-                                    </JFXButton>
-                                 </children>
-                              </VBox>
-                              <VBox alignment="CENTER" spacing="10.0" GridPane.columnIndex="1">
-                                 <children>
-                                    <ImageView fitHeight="100.0" fitWidth="100.0">
-                                       <image>
-                                          <Image url="@Assets/Images/clipboard_.png" />
-                                       </image>
-                                    </ImageView>
-                                    <Label style="-fx-font-size: 20px; -fx-font-weight: bold;"
-                                       text="Kategori">
-                                       <effect>
-                                          <DropShadow>
-                                             <color>
-                                                <Color red="0.0" green="0.0" blue="0.0"
-                                                   opacity="0.2" />
-                                             </color>
-                                             <radius>5.0</radius>
-                                          </DropShadow>
-                                       </effect>
-                                    </Label>
-                                    <JFXButton buttonType="RAISED"
-                                       onMouseClicked="#setSceneReportCategory" prefHeight="100.0"
-                                       prefWidth="230.0"
-                                       style="-fx-background-color: #333; -fx-background-radius: 10; -fx-text-fill: white; -fx-font-weight: bold; -fx-border-radius: 10; -fx-font-size: 20; -fx-cursor: hand;"
-                                       text="Laporan Kategori" textAlignment="CENTER">
-                                       <font>
-                                          <Font name="Calibri Bold" size="10.0" />
-                                       </font>
-                                       <effect>
-                                          <DropShadow>
-                                             <color>
-                                                <Color red="0.0" green="0.0" blue="0.0"
-                                                   opacity="0.2" />
-                                             </color>
-                                             <radius>5.0</radius>
-                                          </DropShadow>
-                                       </effect>
-                                    </JFXButton>
-                                 </children>
-                              </VBox>
-                              <VBox alignment="CENTER" spacing="10.0" GridPane.rowIndex="1">
-                                 <children>
-                                    <ImageView fitHeight="100.0" fitWidth="100.0">
-                                       <image>
-                                          <Image url="@Assets/Images/money_.png" />
-                                       </image>
-                                    </ImageView>
-                                    <Label style="-fx-font-size: 20px; -fx-font-weight: bold;"
-                                       text="Transaksi">
-                                       <effect>
-                                          <DropShadow>
-                                             <color>
-                                                <Color red="0.0" green="0.0" blue="0.0"
-                                                   opacity="0.2" />
-                                             </color>
-                                             <radius>5.0</radius>
-                                          </DropShadow>
-                                       </effect>
-                                    </Label>
-                                    <JFXButton buttonType="RAISED"
-                                       onMouseClicked="#setSceneReportPurchasing" prefHeight="100.0"
-                                       prefWidth="230.0"
-                                       style="-fx-background-color: #333; -fx-background-radius: 10; -fx-text-fill: white; -fx-font-weight: bold; -fx-border-radius: 10; -fx-font-size: 20; -fx-cursor: hand;"
-                                       text="Laporan Pembelian" textAlignment="CENTER">
-                                       <font>
-                                          <Font name="Calibri Bold" size="10.0" />
-                                       </font>
-                                       <effect>
-                                          <DropShadow>
-                                             <color>
-                                                <Color red="0.0" green="0.0" blue="0.0"
-                                                   opacity="0.2" />
-                                             </color>
-                                             <radius>5.0</radius>
-                                          </DropShadow>
-                                       </effect>
-                                    </JFXButton>
-                                 </children>
-                              </VBox>
-                              <VBox alignment="CENTER" spacing="10.0" GridPane.columnIndex="1"
-                                 GridPane.rowIndex="1">
-                                 <children>
-                                    <ImageView fitHeight="100.0" fitWidth="100.0">
-                                       <image>
-                                          <Image url="@Assets/Images/delivery-fast-fill_.png" />
-                                       </image>
-                                    </ImageView>
-                                    <Label style="-fx-font-size: 20px; -fx-font-weight: bold;"
-                                       text="Supplier">
-                                       <effect>
-                                          <DropShadow>
-                                             <color>
-                                                <Color red="0.0" green="0.0" blue="0.0"
-                                                   opacity="0.2" />
-                                             </color>
-                                             <radius>5.0</radius>
-                                          </DropShadow>
-                                       </effect>
-                                    </Label>
-                                    <JFXButton buttonType="RAISED"
-                                       onMouseClicked="#setSceneReportSupplier" prefHeight="100.0"
-                                       prefWidth="230.0"
-                                       style="-fx-background-color: #333; -fx-background-radius: 10; -fx-text-fill: white; -fx-font-weight: bold; -fx-border-radius: 10; -fx-font-size: 20; -fx-cursor: hand;"
-                                       text="Laporan Supplier" textAlignment="CENTER">
-                                       <font>
-                                          <Font name="Calibri Bold" size="10.0" />
-                                       </font>
-                                       <effect>
-                                          <DropShadow>
-                                             <color>
-                                                <Color red="0.0" green="0.0" blue="0.0"
-                                                   opacity="0.2" />
-                                             </color>
-                                             <radius>5.0</radius>
-                                          </DropShadow>
-                                       </effect>
-                                    </JFXButton>
-                                 </children>
-                              </VBox>
-                              <VBox alignment="CENTER" spacing="10.0" GridPane.columnIndex="2">
-                                 <children>
-                                    <ImageView fitHeight="100.0" fitWidth="100.0">
-                                       <image>
-                                          <Image url="@Assets/Images/earth_.png" />
-                                       </image>
-                                    </ImageView>
-                                    <Label style="-fx-font-size: 20px; -fx-font-weight: bold;"
-                                       text="Pelanggan">
-                                       <effect>
-                                          <DropShadow>
-                                             <color>
-                                                <Color red="0.0" green="0.0" blue="0.0"
-                                                   opacity="0.2" />
-                                             </color>
-                                             <radius>5.0</radius>
-                                          </DropShadow>
-                                       </effect>
-                                    </Label>
-                                    <JFXButton buttonType="RAISED"
-                                       onMouseClicked="#setSceneReportCustomer" prefHeight="100.0"
-                                       prefWidth="230.0"
-                                       style="-fx-background-color: #333; -fx-background-radius: 10; -fx-text-fill: white; -fx-font-weight: bold; -fx-border-radius: 10; -fx-font-size: 20; -fx-cursor: hand;"
-                                       text="Laporan Pelanggan" textAlignment="CENTER">
-                                       <font>
-                                          <Font name="Calibri Bold" size="10.0" />
-                                       </font>
-                                       <effect>
-                                          <DropShadow>
-                                             <color>
-                                                <Color red="0.0" green="0.0" blue="0.0"
-                                                   opacity="0.2" />
-                                             </color>
-                                             <radius>5.0</radius>
-                                          </DropShadow>
-                                       </effect>
-                                    </JFXButton>
-                                 </children>
-                              </VBox>
-                              <VBox alignment="CENTER" spacing="10.0" GridPane.columnIndex="2"
-                                 GridPane.rowIndex="1">
-                                 <children>
-                                    <ImageView fitHeight="100.0" fitWidth="100.0">
-                                       <image>
-                                          <Image url="@Assets/Images/money_.png" />
-                                       </image>
-                                    </ImageView>
-                                    <Label style="-fx-font-size: 20px; -fx-font-weight: bold;"
-                                       text="Transaksi">
-                                       <effect>
-                                          <DropShadow radius="5.0">
-                                             <color>
-                                                <Color red="0.0" green="0.0" blue="0.0"
-                                                   opacity="0.2" />
-                                             </color>
-                                          </DropShadow>
-                                       </effect>
-                                    </Label>
-                                    <JFXButton buttonType="RAISED"
-                                       onMouseClicked="#setSceneReportSales" prefHeight="100.0"
-                                       prefWidth="230.0"
-                                       style="-fx-background-color: #333; -fx-background-radius: 10; -fx-text-fill: white; -fx-font-weight: bold; -fx-border-radius: 10; -fx-font-size: 20; -fx-cursor: hand;"
-                                       text="Laporan Penjualan" textAlignment="CENTER">
-                                       <font>
-                                          <Font name="Calibri Bold" size="10.0" />
-                                       </font>
-                                       <effect>
-                                          <DropShadow radius="5.0">
-                                             <color>
-                                                <Color red="0.0" green="0.0" blue="0.0"
-                                                   opacity="0.2" />
-                                             </color>
-                                          </DropShadow>
-                                       </effect>
-                                    </JFXButton>
-                                 </children>
-                              </VBox>
-                           </children>
-                           <columnConstraints>
-                              <ColumnConstraints />
-                              <ColumnConstraints />
-                              <ColumnConstraints />
-                           </columnConstraints>
-                           <rowConstraints>
-                              <RowConstraints />
-                              <RowConstraints />
-                           </rowConstraints>
-                        </GridPane>
-                     </children>
+                     <!-- Kategori - Top Center -->
+                     <VBox alignment="CENTER" spacing="10.0" layoutX="370.0" layoutY="20.0">
+                        <children>
+                           <ImageView fitHeight="100.0" fitWidth="100.0">
+                              <image>
+                                 <Image url="@Assets/Images/clipboard_.png" />
+                              </image>
+                           </ImageView>
+                           <Label style="-fx-font-size: 20px; -fx-font-weight: bold;" text="Kategori">
+                              <effect>
+                                 <DropShadow>
+                                    <color>
+                                       <Color opacity="0.2" />
+                                    </color>
+                                 </DropShadow>
+                              </effect>
+                           </Label>
+                           <JFXButton buttonType="RAISED" onMouseClicked="#setSceneReportCategory"
+                              prefHeight="50.0" prefWidth="230.0"
+                              style="-fx-background-color: #333; -fx-background-radius: 10; -fx-text-fill: white; -fx-font-weight: bold; -fx-border-radius: 10; -fx-font-size: 20; -fx-cursor: hand;"
+                              text="Laporan Kategori" />
+                        </children>
+                     </VBox>
+
+                     <!-- Stok Besi - Left -->
+                     <VBox alignment="CENTER" spacing="10.0" layoutX="50.0" layoutY="150.0">
+                        <children>
+                           <ImageView fitHeight="100.0" fitWidth="100.0">
+                              <image>
+                                 <Image url="@Assets/Images/box_.png" />
+                              </image>
+                           </ImageView>
+                           <Label style="-fx-font-size: 20px; -fx-font-weight: bold;" text="Stok Besi">
+                              <effect>
+                                 <DropShadow>
+                                    <color>
+                                       <Color opacity="0.2" />
+                                    </color>
+                                 </DropShadow>
+                              </effect>
+                           </Label>
+                           <JFXButton buttonType="RAISED" onMouseClicked="#setSceneReportStock"
+                              prefHeight="50.0" prefWidth="230.0"
+                              style="-fx-background-color: #333; -fx-background-radius: 10; -fx-text-fill: white; -fx-font-weight: bold; -fx-border-radius: 10; -fx-font-size: 20; -fx-cursor: hand;"
+                              text="Laporan Stok Besi" />
+                        </children>
+                     </VBox>
+
+                     <!-- Pelanggan - Right -->
+                     <VBox alignment="CENTER" spacing="10.0" layoutX="690.0" layoutY="150.0">
+                        <children>
+                           <ImageView fitHeight="100.0" fitWidth="100.0">
+                              <image>
+                                 <Image url="@Assets/Images/earth_.png" />
+                              </image>
+                           </ImageView>
+                           <Label style="-fx-font-size: 20px; -fx-font-weight: bold;" text="Pelanggan">
+                              <effect>
+                                 <DropShadow>
+                                    <color>
+                                       <Color opacity="0.2" />
+                                    </color>
+                                 </DropShadow>
+                              </effect>
+                           </Label>
+                           <JFXButton buttonType="RAISED" onMouseClicked="#setSceneReportCustomer"
+                              prefHeight="50.0" prefWidth="230.0"
+                              style="-fx-background-color: #333; -fx-background-radius: 10; -fx-text-fill: white; -fx-font-weight: bold; -fx-border-radius: 10; -fx-font-size: 20; -fx-cursor: hand;"
+                              text="Laporan Pelanggan" />
+                        </children>
+                     </VBox>
+
+                     <!-- Pengembalian - Center -->
+                     <VBox alignment="CENTER" spacing="10.0" layoutX="370.0" layoutY="235.0">
+                        <children>
+                           <ImageView fitHeight="100.0" fitWidth="100.0">
+                              <image>
+                                 <Image url="@Assets/Images/return_.png" />
+                              </image>
+                           </ImageView>
+                           <Label style="-fx-font-size: 20px; -fx-font-weight: bold;" text="Pengembalian">
+                              <effect>
+                                 <DropShadow>
+                                    <color>
+                                       <Color opacity="0.2" />
+                                    </color>
+                                 </DropShadow>
+                              </effect>
+                           </Label>
+                           <JFXButton buttonType="RAISED" onMouseClicked="#setSceneReportReturn"
+                              prefHeight="50.0" prefWidth="230.0"
+                              style="-fx-background-color: #333; -fx-background-radius: 10; -fx-text-fill: white; -fx-font-weight: bold; -fx-border-radius: 10; -fx-font-size: 20; -fx-cursor: hand;"
+                              text="Laporan Pengembalian" />
+                        </children>
+                     </VBox>
+
+                     <!-- Pembelian - Bottom Left -->
+                     <VBox alignment="CENTER" spacing="10.0" layoutX="150.0" layoutY="420.0">
+                        <children>
+                           <ImageView fitHeight="100.0" fitWidth="100.0">
+                              <image>
+                                 <Image url="@Assets/Images/money_.png" />
+                              </image>
+                           </ImageView>
+                           <Label style="-fx-font-size: 20px; -fx-font-weight: bold;" text="Pembelian">
+                              <effect>
+                                 <DropShadow>
+                                    <color>
+                                       <Color opacity="0.2" />
+                                    </color>
+                                 </DropShadow>
+                              </effect>
+                           </Label>
+                           <JFXButton buttonType="RAISED" onMouseClicked="#setSceneReportPurchasing"
+                              prefHeight="50.0" prefWidth="230.0"
+                              style="-fx-background-color: #333; -fx-background-radius: 10; -fx-text-fill: white; -fx-font-weight: bold; -fx-border-radius: 10; -fx-font-size: 20; -fx-cursor: hand;"
+                              text="Laporan Pembelian" />
+                        </children>
+                     </VBox>
+
+                     <!-- Penjualan - Bottom Right -->
+                     <VBox alignment="CENTER" spacing="10.0" layoutX="590.0" layoutY="420.0">
+                        <children>
+                           <ImageView fitHeight="100.0" fitWidth="100.0">
+                              <image>
+                                 <Image url="@Assets/Images/money_.png" />
+                              </image>
+                           </ImageView>
+                           <Label style="-fx-font-size: 20px; -fx-font-weight: bold;" text="Penjualan">
+                              <effect>
+                                 <DropShadow>
+                                    <color>
+                                       <Color opacity="0.2" />
+                                    </color>
+                                 </DropShadow>
+                              </effect>
+                           </Label>
+                           <JFXButton buttonType="RAISED" onMouseClicked="#setSceneReportSales"
+                              prefHeight="50.0" prefWidth="230.0"
+                              style="-fx-background-color: #333; -fx-background-radius: 10; -fx-text-fill: white; -fx-font-weight: bold; -fx-border-radius: 10; -fx-font-size: 20; -fx-cursor: hand;"
+                              text="Laporan Penjualan" />
+                        </children>
+                     </VBox>
+
+                     <!-- Supplier - Bottom Center -->
+                     <VBox alignment="CENTER" spacing="10.0" layoutX="370.0" layoutY="420.0">
+                        <children>
+                           <ImageView fitHeight="100.0" fitWidth="100.0">
+                              <image>
+                                 <Image url="@Assets/Images/delivery-fast-fill_.png" />
+                              </image>
+                           </ImageView>
+                           <Label style="-fx-font-size: 20px; -fx-font-weight: bold;" text="Supplier">
+                              <effect>
+                                 <DropShadow>
+                                    <color>
+                                       <Color opacity="0.2" />
+                                    </color>
+                                 </DropShadow>
+                              </effect>
+                           </Label>
+                           <JFXButton buttonType="RAISED" onMouseClicked="#setSceneReportSupplier"
+                              prefHeight="50.0" prefWidth="230.0"
+                              style="-fx-background-color: #333; -fx-background-radius: 10; -fx-text-fill: white; -fx-font-weight: bold; -fx-border-radius: 10; -fx-font-size: 20; -fx-cursor: hand;"
+                              text="Laporan Supplier" />
+                        </children>
+                     </VBox>
                   </AnchorPane>
                </content>
             </ScrollPane>

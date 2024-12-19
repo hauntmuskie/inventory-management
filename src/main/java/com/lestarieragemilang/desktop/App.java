@@ -56,6 +56,7 @@ public class App extends Application {
             new FadeIn(root).play();
 
             stage.show();
+            
         } catch (IOException e) {
             LOGGER.log(Level.SEVERE, "Failed to load the initial scene: " + INITIAL_SCENE, e);
         } catch (Exception e) {

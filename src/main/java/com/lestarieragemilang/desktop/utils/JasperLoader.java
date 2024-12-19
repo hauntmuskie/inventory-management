@@ -12,6 +12,7 @@ import org.hibernate.jdbc.Work;
 
 import java.net.URL;
 import java.sql.Connection;
+import java.time.LocalDate;
 import java.util.Date;
 import java.util.HashMap;
 import java.util.Map;
@@ -48,6 +49,10 @@ public class JasperLoader {
                 throw new RuntimeException("Database is not available");
             }
 
+            if (location == null) {
+                throw new RuntimeException("Report template not found. Please ensure reports are compiled.");
+            }
+
             JasperReport jasperReport = (JasperReport) JRLoader.loadObject(location);
             JasperPrint jasperPrint = JasperFillManager.fillReport(jasperReport, parameters, getConnection());
 
@@ -59,7 +64,7 @@ public class JasperLoader {
             Alert alert = new Alert(AlertType.ERROR);
             alert.setTitle("Error");
             alert.setHeaderText(null);
-            alert.setContentText(e.getMessage());
+            alert.setContentText("Error loading report: " + e.getMessage());
             alert.showAndWait();
         }
     }
@@ -138,6 +143,17 @@ public class JasperLoader {
         parameters.put("invoiceSales", "%" + invoiceSales + "%");
         parameters.put("firstDate", firstDate);
         parameters.put("secondDate", secondDate);
+        showReport(location, parameters);
+    }
+
+    public void showJasperReportReturn(URL location, String returnId, LocalDate returnDate,
+            String returnType, String invoiceNumber, String reason, MouseEvent event) {
+        Map<String, Object> parameters = new HashMap<>();
+        parameters.put("returnId", "%" + returnId + "%");
+        parameters.put("returnDate", java.sql.Date.valueOf(returnDate));
+        parameters.put("returnType", "%" + returnType + "%");
+        parameters.put("invoiceNumber", "%" + invoiceNumber + "%");
+        parameters.put("reason", "%" + reason + "%");
         showReport(location, parameters);
     }
 }

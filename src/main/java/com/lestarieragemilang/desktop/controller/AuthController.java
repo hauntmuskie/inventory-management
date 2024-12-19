@@ -111,41 +111,10 @@ public class AuthController {
         Platform.exit();
     }
 
-    private boolean validateRegistrationInput(String email, String username, String password, String confirmPassword) {
-        if (email.isEmpty() || username.isEmpty() || password.isEmpty() || confirmPassword.isEmpty()) {
-            showAlert(Alert.AlertType.ERROR, "Error", "Please fill in all fields");
-            return false;
-        }
-
-        if (!password.equals(confirmPassword)) {
-            showAlert(Alert.AlertType.ERROR, "Error", "Passwords do not match");
-            return false;
-        }
-
-        if (userService.isUsernameExists(username)) {
-            showAlert(Alert.AlertType.ERROR, "Error", "Username already exists");
-            return false;
-        }
-
-        if (userService.isEmailExists(email)) {
-            showAlert(Alert.AlertType.ERROR, "Error", "Email already exists");
-            return false;
-        }
-
-        return true;
-    }
-
     private void showAlert(Alert.AlertType type, String title, String content) {
         Alert alert = new Alert(type);
         alert.setTitle(title);
         alert.setContentText(content);
         alert.showAndWait();
-    }
-
-    private void clearRegistrationFields() {
-        registerEmail.clear();
-        registerUsername.clear();
-        registerPassword.clear();
-        confirmPassword.clear();
     }
 }

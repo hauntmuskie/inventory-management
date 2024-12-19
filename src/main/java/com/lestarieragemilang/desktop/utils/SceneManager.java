@@ -32,6 +32,8 @@ public class SceneManager {
     public static final String REPORT_PURCHASING = "laporan-pembelian";
     public static final String REPORT_SALES = "laporan-penjualan";
     public static final String REPORT_SUPPLIER = "laporan-supplier";
+    public static final String REPORT_RETURN = "laporan-return";
+
 
     private static final List<String> SCENE_NAMES = Arrays.asList(
             LAYOUT, STOK_BESI, KATEGORI, PELANGGAN, PENGEMBALIAN, SUPPLIER, TRANSAKSI,
