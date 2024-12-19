@@ -64,9 +64,10 @@ public class JasperLoader {
         }
     }
 
-    public void showJasperReportSupplier(URL location, String nameSupplier, String contactSupplier,
-            String addressSupplier, String emailSupplier, MouseEvent event) {
+    public void showJasperReportSupplier(URL location, String supplierId, String nameSupplier, 
+            String contactSupplier, String addressSupplier, String emailSupplier, MouseEvent event) {
         Map<String, Object> parameters = new HashMap<>();
+        parameters.put("supplierId", "%" + supplierId + "%");
         parameters.put("nameSupplier", "%" + nameSupplier + "%");
         parameters.put("contactSupplier", "%" + contactSupplier + "%");
         parameters.put("addressSupplier", "%" + addressSupplier + "%");
