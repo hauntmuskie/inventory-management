@@ -18,6 +18,8 @@ public class ReportController extends Redirect {
     @FXML
     private AnchorPane setScene;
 
+    private String currentScene = SceneManager.REPORT_MAIN;
+
     @Override
     protected void animateFadeIn(Parent node) {
         FadeTransition fadeIn = new FadeTransition(Duration.seconds(0.5), node);
@@ -37,36 +39,66 @@ public class ReportController extends Redirect {
 
     @FXML
     void backToReportMain(MouseEvent event) {
-        switchScene(setScene, SceneManager.REPORT_MAIN, () -> {});
+        if (!currentScene.equals(SceneManager.REPORT_MAIN)) {
+            switchScene(setScene, SceneManager.REPORT_MAIN, () -> {
+                currentScene = SceneManager.REPORT_MAIN;
+                // Clear the current scene's content
+                setScene.getChildren().clear();
+            });
+        }
     }
 
     @FXML
     void setSceneReportCategory(MouseEvent event) {
-        switchScene(setScene, SceneManager.REPORT_CATEGORY, () -> {});
+        if (!currentScene.equals(SceneManager.REPORT_CATEGORY)) {
+            switchScene(setScene, SceneManager.REPORT_CATEGORY, () -> {
+                currentScene = SceneManager.REPORT_CATEGORY;
+            });
+        }
     }
 
     @FXML
     void setSceneReportCustomer(MouseEvent event) {
-        switchScene(setScene, SceneManager.REPORT_CUSTOMER, () -> {});
+        if (!currentScene.equals(SceneManager.REPORT_CUSTOMER)) {
+            switchScene(setScene, SceneManager.REPORT_CUSTOMER, () -> {
+                currentScene = SceneManager.REPORT_CUSTOMER;
+            });
+        }
     }
 
     @FXML
     void setSceneReportPurchasing(MouseEvent event) {
-        switchScene(setScene, SceneManager.REPORT_PURCHASING, () -> {});
+        if (!currentScene.equals(SceneManager.REPORT_PURCHASING)) {
+            switchScene(setScene, SceneManager.REPORT_PURCHASING, () -> {
+                currentScene = SceneManager.REPORT_PURCHASING;
+            });
+        }
     }
 
     @FXML
     void setSceneReportSales(MouseEvent event) {
-        switchScene(setScene, SceneManager.REPORT_SALES, () -> {});
+        if (!currentScene.equals(SceneManager.REPORT_SALES)) {
+            switchScene(setScene, SceneManager.REPORT_SALES, () -> {
+                currentScene = SceneManager.REPORT_SALES;
+            });
+        }
     }
 
     @FXML
     void setSceneReportStock(MouseEvent event) {
-        switchScene(setScene, SceneManager.REPORT_STOCK, () -> {});
+        if (!currentScene.equals(SceneManager.REPORT_STOCK)) {
+            switchScene(setScene, SceneManager.REPORT_STOCK, () -> {
+                currentScene = SceneManager.REPORT_STOCK;
+            });
+        }
     }
 
     @FXML
     void setSceneReportSupplier(MouseEvent event) {
-        switchScene(setScene, SceneManager.REPORT_SUPPLIER, () -> {});
+        if (!currentScene.equals(SceneManager.REPORT_SUPPLIER)) {
+            switchScene(setScene, SceneManager.REPORT_SUPPLIER, () -> {
+                currentScene = SceneManager.REPORT_SUPPLIER;
+            });
+        }
     }
 }

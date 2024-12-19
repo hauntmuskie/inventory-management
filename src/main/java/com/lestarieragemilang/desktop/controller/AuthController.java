@@ -101,71 +101,9 @@ public class AuthController {
     }
 
     @FXML
-    void registerAdmin(ActionEvent event) {
-        String email = registerEmail.getText();
-        String username = registerUsername.getText();
-        String password = registerPassword.getText();
-        String confirmPwd = confirmPassword.getText();
-
-        if (!validateRegistrationInput(email, username, password, confirmPwd)) {
-            return;
-        }
-
-        User user = new User();
-        user.setEmail(email);
-        user.setUsername(username);
-        user.setName(username); // Using username as name, modify if needed
-
-        String salt = UUID.randomUUID().toString().substring(0, 32);
-        user.setSalt(salt);
-        user.setPasswordHash(BCrypt.hashpw(password + salt, BCrypt.gensalt()));
-
-        try {
-            userService.save(user);
-            showAlert(Alert.AlertType.INFORMATION, "Success", "User registered successfully");
-            clearRegistrationFields();
-            loadUsers();
-        } catch (Exception e) {
-            showAlert(Alert.AlertType.ERROR, "Error", "Could not register user: " + e.getMessage());
-        }
-    }
-
-    @FXML
-    void deleteAdmin(ActionEvent event) {
-        String selectedUsername = (String) profileListView.getSelectionModel().getSelectedItem();
-        if (selectedUsername == null) {
-            showAlert(Alert.AlertType.ERROR, "Error", "Please select a user to delete");
-            return;
-        }
-
-        User user = userService.findAll().stream()
-                .filter(u -> u.getUsername().equals(selectedUsername))
-                .findFirst()
-                .orElse(null);
-
-        if (user != null && userService.canDelete(user)) {
-            try {
-                userService.delete(user);
-                loadUsers();
-                showAlert(Alert.AlertType.INFORMATION, "Success", "User deleted successfully");
-            } catch (Exception e) {
-                showAlert(Alert.AlertType.ERROR, "Error", "Could not delete user: " + e.getMessage());
-            }
-        } else {
-            showAlert(Alert.AlertType.ERROR, "Error", "Cannot delete this user");
-        }
-    }
-
-    @FXML
     void showLoginView(ActionEvent event) {
         loginView.setVisible(true);
         registerView.setVisible(false);
-    }
-
-    @FXML
-    void showRegisterView(ActionEvent event) {
-        loginView.setVisible(false);
-        registerView.setVisible(true);
     }
 
     @FXML

@@ -41,7 +41,7 @@ public class Layout extends Redirect {
 
     private void initializeClock() {
         Timeline clock = new Timeline(
-                new KeyFrame(Duration.ZERO, e -> updateClock()),
+                new KeyFrame(Duration.ZERO, _ -> updateClock()),
                 new KeyFrame(Duration.seconds(1)));
         clock.setCycleCount(Timeline.INDEFINITE);
         clock.play();
@@ -118,7 +118,7 @@ public class Layout extends Redirect {
     @Override
     protected void animateFadeOut(Parent node, Runnable onFinished) {
         animatefx.animation.FadeOut fadeOut = new animatefx.animation.FadeOut(node);
-        fadeOut.setOnFinished(event -> onFinished.run());
+        fadeOut.setOnFinished(_ -> onFinished.run());
         fadeOut.play();
     }
 

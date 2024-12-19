@@ -3,7 +3,7 @@
 -- https://www.phpmyadmin.net/
 --
 -- Host: 127.0.0.1
--- Generation Time: Sep 21, 2024 at 04:37 PM
+-- Generation Time: Dec 19, 2024 at 07:52 PM
 -- Server version: 10.4.32-MariaDB
 -- PHP Version: 8.2.12
 
@@ -47,7 +47,8 @@ INSERT INTO `categories` (`id`, `category_id`, `brand`, `product_type`, `size`, 
 (3, 'CAT003', 'Metal Masters', 'Rod', '1 inch', 2.50, 'kg'),
 (4, 'CAT004', 'Alloy Industries', 'Beam', 'I-beam 6 inch', 120.00, 'kg'),
 (5, 'CAT005', 'Steel Co', 'Tube', '3 inch', 7.50, 'kg'),
-(6, 'CAT-449', 'Adidas', 'Shoes', 'M', 750.00, 'g');
+(6, 'CAT-449', 'Adidas', 'Shoes', 'M', 750.00, 'g'),
+(7, 'CAT-094', 'Nike', 'Shoes', 'M', 12.00, 'kg');
 
 -- --------------------------------------------------------
 
@@ -73,7 +74,8 @@ INSERT INTO `customers` (`id`, `customer_id`, `customer_name`, `contact`, `addre
 (2, 'CUST002', 'Smith Fabrication', '555-5678', '456 Weld Ave, Metal Town', 'info@smithfab.com'),
 (3, 'CUST003', 'Johnson Industries', '555-9876', '789 Industry Rd, Factoryville', 'sales@johnsonindustries.com'),
 (4, 'CUST004', 'Brown & Sons Builders', '555-4321', '321 Frame Ln, Scaffold City', 'orders@brownbuilders.com'),
-(5, 'CUST005', 'Green Engineering', '555-8765', '654 Design Blvd, Blueprint City', 'projects@greeneng.com');
+(5, 'CUST005', 'Green Engineering', '555-8765', '654 Design Blvd, Blueprint City', 'projects@greeneng.com'),
+(7, 'CUST-593', 'a', 'a', 'a', 'a');
 
 -- --------------------------------------------------------
 
@@ -106,7 +108,12 @@ INSERT INTO `purchasing` (`id`, `purchase_date`, `invoice_number`, `stock_id`, `
 (6, '2024-09-01', 'PUR-STK001-2024-09-14-001', 1, 1, 50, 50.00, 2500.00, 2500.00),
 (7, '2024-09-14', 'PUR-STK002-2024-09-14-001', 2, 2, 3, 200.00, 600.00, 600.00),
 (8, '2024-09-14', 'PUR-STK002-2024-09-14-002', 2, 2, 2, 200.00, 400.00, 400.00),
-(9, '2024-09-14', 'PUR-STK001-2024-09-14-003', 1, 1, 2, 50.00, 100.00, 100.00);
+(9, '2024-09-14', 'PUR-STK001-2024-09-14-003', 1, 1, 2, 50.00, 100.00, 100.00),
+(10, '2024-12-13', 'PUR-STK002-2024-12-13-001', 2, 2, 1, 200.00, 200.00, 200.00),
+(11, '2024-12-17', 'PUR-STK-610-2024-12-17-001', 9, 7, 10, 212121.00, 2121210.00, 2121210.00),
+(12, '2024-12-17', 'PUR-STK002-2024-12-17-001', 2, 3, 9, 200.00, 1800.00, 1800.00),
+(13, '2024-12-17', 'PUR-STK003-2024-12-17-001', 3, 3, 1, 25.00, 25.00, 25.00),
+(15, '2024-12-17', 'PUR-STK003-2024-12-17-794', 3, 3, 7, 25.00, 175.00, 175.00);
 
 -- --------------------------------------------------------
 
@@ -128,12 +135,8 @@ CREATE TABLE `returns` (
 --
 
 INSERT INTO `returns` (`id`, `return_date`, `return_id`, `return_type`, `invoice_number`, `reason`) VALUES
-(1, '2024-09-11', 'RET001', 'Sale', 'SALE001', 'Wrong size delivered'),
-(2, '2024-09-12', 'RET002', 'Purchase', 'PUR002', 'Damaged during shipping'),
-(3, '2024-09-13', 'RET003', 'Sale', 'SALE003', 'Customer ordered incorrect quantity'),
 (4, '2024-09-14', 'RET004', 'Purchase', 'PUR004', 'Quality issues'),
-(7, '2024-09-14', 'RTN-704', 'Buy', 'PUR003', 'what'),
-(8, '2024-09-17', 'RTN-109', 'Buy', 'PUR-STK001-2024-09-14-001', 'kualitas kurang baik');
+(10, '2024-12-13', 'RTN-100', 'Buy', 'PUR-STK002-2024-09-14-002', 'barang rusak');
 
 -- --------------------------------------------------------
 
@@ -162,7 +165,11 @@ INSERT INTO `sales` (`id`, `sale_date`, `invoice_number`, `stock_id`, `customer_
 (2, '2024-09-07', 'SALE002', 2, 2, 5, 300.00, 1500.00, 1500.00),
 (3, '2024-09-08', 'SALE003', 3, 3, 20, 40.00, 800.00, 800.00),
 (4, '2024-09-09', 'SALE004', 4, 4, 2, 750.00, 1500.00, 1500.00),
-(5, '2024-09-10', 'SALE005', 5, 5, 8, 110.00, 880.00, 880.00);
+(5, '2024-09-10', 'SALE005', 5, 5, 8, 110.00, 880.00, 880.00),
+(6, '2024-12-12', 'SAL-STK001-2024-12-12-001', 1, 1, 3, 75000.00, 225000.00, 225000.00),
+(7, '2024-12-12', 'SAL-STK002-2024-12-12-001', 2, 1, 21, 300.00, 6300.00, 6300.00),
+(8, '2024-12-13', 'SAL-STK003-2024-12-13-001', 3, 2, 1, 40.00, 40.00, 40.00),
+(9, '2024-12-17', 'SAL-STK004-2024-12-17-155', 4, 3, 9, 750.00, 6750.00, 6750.00);
 
 -- --------------------------------------------------------
 
@@ -184,12 +191,16 @@ CREATE TABLE `stocks` (
 --
 
 INSERT INTO `stocks` (`id`, `stock_id`, `category_id`, `quantity`, `purchase_price`, `selling_price`) VALUES
-(1, 'STK001', 1, 155, 50000.00, 75000.00),
-(2, 'STK002', 5, 70, 200.00, 300.00),
-(3, 'STK003', 3, 200, 25.00, 40.00),
-(4, 'STK004', 4, 30, 500.00, 750.00),
-(5, 'STK005', 5, 80, 75.00, 110.00),
-(7, 'STK-167', 1, 9, 900000.00, 1200000.00);
+(1, 'STK001', 1, 152, 50000.00, 75000.00),
+(2, 'STK002', 5, 59, 200.00, 300.00),
+(3, 'STK003', 3, 207, 25.00, 40.00),
+(4, 'STK004', 4, 21, 500.00, 750.00),
+(5, 'STK005', 5, 80, 75000.00, 110000.00),
+(7, 'STK-167', 1, 9, 900000.00, 1200000.00),
+(9, 'STK-610', 1, 131, 212121.00, 21212.00),
+(10, 'STK-300', 1, 222, 150000.00, 170000.00),
+(11, 'STK-059', 1, 4, 1200000.00, 1500000.00),
+(12, 'STK-334', 5, 5, 9000000.00, 10000000.00);
 
 -- --------------------------------------------------------
 
@@ -215,7 +226,8 @@ INSERT INTO `suppliers` (`id`, `supplier_id`, `supplier_name`, `contact`, `addre
 (2, 'SUPP002', 'MetalCorp', '555-1357', '135 Alloy Rd, Ingot Town', 'orders@metalcorp.com'),
 (3, 'SUPP003', 'Iron Mountain', '555-3690', '369 Mine Dr, Ore City', 'supply@ironmountain.com'),
 (4, 'SUPP004', 'Alloy Alliance', '555-1470', '147 Smelt Ave, Foundry City', 'info@alloyalliance.com'),
-(5, 'SUPP005', 'Steel Solutions', '555-2580', '258 Rolling Mill Rd, Billet Town', 'contact@steelsolutions.com');
+(5, 'SUPP005', 'Steel Solutions', '555-2580', '258 Rolling Mill Rd, Billet Town', 'contact@steelsolutions.com'),
+(7, 'SUP-142', 'b', 'b', 'b', 'b');
 
 -- --------------------------------------------------------
 
@@ -239,11 +251,7 @@ CREATE TABLE `users` (
 --
 
 INSERT INTO `users` (`id`, `username`, `email`, `name`, `password_hash`, `salt`, `created_at`, `updated_at`) VALUES
-(1, 'admin', 'admin@example.com', 'Admin User', 'hashed_password_here', 'salt_value_here', '2024-09-14 02:43:56', '2024-09-14 02:43:56'),
-(2, 'john_doe', 'john.doe@example.com', 'John Doe', 'hashed_password_here', 'salt_value_here', '2024-09-14 02:43:56', '2024-09-14 02:43:56'),
-(3, 'jane_smith', 'jane.smith@example.com', 'Jane Smith', 'hashed_password_here', 'salt_value_here', '2024-09-14 02:43:56', '2024-09-14 02:43:56'),
-(4, 'mike_johnson', 'mike.johnson@example.com', 'Mike Johnson', 'hashed_password_here', 'salt_value_here', '2024-09-14 02:43:56', '2024-09-14 02:43:56'),
-(5, 'sarah_brown', 'sarah.brown@example.com', 'Sarah Brown', 'hashed_password_here', 'salt_value_here', '2024-09-14 02:43:56', '2024-09-14 02:43:56');
+(6, 'rionggo', 'rioclasher4@gmail.com', 'rionggo', '$2a$10$gjuJPewWB6lVripZy54pu.zc/6akz3N5HwWQlFSWo9ObzYrypVzPK', 'a14f99b5-d040-4cf7-b08c-9a4451be', '2024-12-06 07:21:25', '2024-12-06 07:21:25');
 
 --
 -- Indexes for dumped tables
@@ -320,49 +328,49 @@ ALTER TABLE `users`
 -- AUTO_INCREMENT for table `categories`
 --
 ALTER TABLE `categories`
-  MODIFY `id` bigint(20) UNSIGNED NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=7;
+  MODIFY `id` bigint(20) UNSIGNED NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=8;
 
 --
 -- AUTO_INCREMENT for table `customers`
 --
 ALTER TABLE `customers`
-  MODIFY `id` bigint(20) UNSIGNED NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=7;
+  MODIFY `id` bigint(20) UNSIGNED NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=8;
 
 --
 -- AUTO_INCREMENT for table `purchasing`
 --
 ALTER TABLE `purchasing`
-  MODIFY `id` bigint(20) UNSIGNED NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=10;
+  MODIFY `id` bigint(20) UNSIGNED NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=16;
 
 --
 -- AUTO_INCREMENT for table `returns`
 --
 ALTER TABLE `returns`
-  MODIFY `id` bigint(20) UNSIGNED NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=10;
+  MODIFY `id` bigint(20) UNSIGNED NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=11;
 
 --
 -- AUTO_INCREMENT for table `sales`
 --
 ALTER TABLE `sales`
-  MODIFY `id` bigint(20) UNSIGNED NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=6;
+  MODIFY `id` bigint(20) UNSIGNED NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=10;
 
 --
 -- AUTO_INCREMENT for table `stocks`
 --
 ALTER TABLE `stocks`
-  MODIFY `id` bigint(20) UNSIGNED NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=8;
+  MODIFY `id` bigint(20) UNSIGNED NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=13;
 
 --
 -- AUTO_INCREMENT for table `suppliers`
 --
 ALTER TABLE `suppliers`
-  MODIFY `id` bigint(20) UNSIGNED NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=7;
+  MODIFY `id` bigint(20) UNSIGNED NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=8;
 
 --
 -- AUTO_INCREMENT for table `users`
 --
 ALTER TABLE `users`
-  MODIFY `id` bigint(20) UNSIGNED NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=6;
+  MODIFY `id` bigint(20) UNSIGNED NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=7;
 
 --
 -- Constraints for dumped tables

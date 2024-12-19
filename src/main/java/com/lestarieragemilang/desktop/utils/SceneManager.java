@@ -4,8 +4,6 @@ import com.google.common.cache.Cache;
 import com.google.common.cache.CacheBuilder;
 import javafx.fxml.FXMLLoader;
 import javafx.scene.Parent;
-import javafx.concurrent.Task;
-import javafx.application.Platform;
 
 import java.io.IOException;
 import java.util.Arrays;
@@ -46,31 +44,12 @@ public class SceneManager {
                 .build();
     }
 
-    public void preloadScenes() {
-        Task<Void> preloadTask = new Task<>() {
-            @Override
-            protected Void call() throws Exception {
-                for (String sceneName : SCENE_NAMES) {
-                    try {
-                        String resourcePath = RESOURCE_PATH + sceneName + ".fxml";
-                        FXMLLoader loader = new FXMLLoader(getClass().getResource(resourcePath));
-                        // Load on background thread
-                        Parent root = loader.load();
-                        // Update cache on FX thread
-                        Platform.runLater(() -> sceneCache.put(sceneName, root));
-                    } catch (IOException e) {
-                        System.err.println("Failed to preload scene: " + sceneName);
-                        e.printStackTrace();
-                    }
-                }
-                return null;
-            }
-        };
-
-        new Thread(preloadTask).start();
-    }
-
     public Parent getScene(String sceneName) throws IOException {
+        // Always reload report scenes, don't use cache for them
+        if (sceneName.startsWith("laporan")) {
+            return loadScene(sceneName);
+        }
+        
         Parent cachedScene = sceneCache.getIfPresent(sceneName);
         if (cachedScene == null) {
             cachedScene = loadScene(sceneName);

@@ -56,9 +56,6 @@ public class App extends Application {
             new FadeIn(root).play();
 
             stage.show();
-
-            // Preload scenes in the background
-            sceneManager.preloadScenes();
         } catch (IOException e) {
             LOGGER.log(Level.SEVERE, "Failed to load the initial scene: " + INITIAL_SCENE, e);
         } catch (Exception e) {
@@ -67,6 +64,17 @@ public class App extends Application {
     }
 
     public static void setRoot(String fxml) throws IOException {
+        // Invalidate report scenes when navigating back to main laporan
+        if (fxml.equals(SceneManager.REPORT_MAIN)) {
+            sceneManager.invalidateScenes(
+                SceneManager.REPORT_STOCK,
+                SceneManager.REPORT_CATEGORY,
+                SceneManager.REPORT_CUSTOMER,
+                SceneManager.REPORT_PURCHASING,
+                SceneManager.REPORT_SALES,
+                SceneManager.REPORT_SUPPLIER
+            );
+        }
         Parent newRoot = sceneManager.getScene(fxml);
         new FadeIn(newRoot).play();
         scene.setRoot(newRoot);
