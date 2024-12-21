@@ -2,6 +2,8 @@ package com.lestarieragemilang.desktop.controller;
 
 import com.lestarieragemilang.desktop.model.User;
 import com.lestarieragemilang.desktop.service.UserService;
+import com.lestarieragemilang.desktop.utils.ShowAlert;
+
 import javafx.application.Platform;
 import javafx.collections.FXCollections;
 import javafx.event.ActionEvent;
@@ -12,10 +14,7 @@ import javafx.scene.Scene;
 import javafx.scene.control.*;
 import javafx.scene.layout.*;
 import javafx.stage.Stage;
-import org.mindrot.jbcrypt.BCrypt;
-
 import java.io.IOException;
-import java.util.UUID;
 
 public class AuthController {
 
@@ -79,7 +78,7 @@ public class AuthController {
         String password = loginPassword.getText();
 
         if (username.isEmpty() || password.isEmpty()) {
-            showAlert(Alert.AlertType.ERROR, "Error", "Please fill in all fields");
+            ShowAlert.showValidationError("Mohon isi semua field yang diperlukan");
             return;
         }
 
@@ -93,10 +92,10 @@ public class AuthController {
                 stage.setScene(scene);
                 stage.show();
             } catch (IOException e) {
-                showAlert(Alert.AlertType.ERROR, "Error", "Could not load main view");
+                ShowAlert.showError("Terjadi kesalahan saat memuat tampilan utama");
             }
         } else {
-            showAlert(Alert.AlertType.ERROR, "Error", "Invalid username or password");
+            ShowAlert.showError("Username atau password tidak valid");
         }
     }
 
@@ -109,12 +108,5 @@ public class AuthController {
     @FXML
     void exitApp(ActionEvent event) {
         Platform.exit();
-    }
-
-    private void showAlert(Alert.AlertType type, String title, String content) {
-        Alert alert = new Alert(type);
-        alert.setTitle(title);
-        alert.setContentText(content);
-        alert.showAndWait();
     }
 }

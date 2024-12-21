@@ -4,11 +4,11 @@ import com.lestarieragemilang.desktop.model.Stock;
 import com.lestarieragemilang.desktop.utils.TableUtils;
 import com.lestarieragemilang.desktop.utils.HibernateUtil;
 import com.lestarieragemilang.desktop.utils.JasperLoader;
+import com.lestarieragemilang.desktop.utils.ShowAlert;
 
 import javafx.collections.FXCollections;
 import javafx.collections.transformation.FilteredList;
 import javafx.fxml.FXML;
-import javafx.scene.control.Alert;
 import javafx.scene.control.Alert.AlertType;
 import javafx.scene.control.TableColumn;
 import javafx.scene.control.TableView;
@@ -39,43 +39,40 @@ public class ReportStock {
     }
     
     if (url == null) {
-      Alert alert = new Alert(AlertType.ERROR);
-      alert.setTitle("Error");
-      alert.setHeaderText(null);
-      alert.setContentText("Could not find report template");
-      alert.showAndWait();
+      ShowAlert.showAlert(AlertType.ERROR, 
+          "Error", 
+          "Kesalahan Template", 
+          "Template laporan tidak ditemukan");
       return;
     }
 
     Stock selectedStock = stockTable.getSelectionModel().getSelectedItem();
-    if (selectedStock == null) {
-      Alert alert = new Alert(AlertType.INFORMATION);
-      alert.setTitle("Information");
-      alert.setHeaderText(null);
-      alert.setContentText("Please select a stock item to print");
-      alert.showAndWait();
-      return;
-    }
-
+    
     try {
       JasperLoader loader = new JasperLoader();
-      loader.showJasperReportStock(url,
-          selectedStock.getCategory().getBrand(),
-          selectedStock.getCategory().getProductType(),
-          selectedStock.getCategory().getSize(),
-          selectedStock.getCategory().getWeight().toString(),
-          selectedStock.getCategory().getWeightUnit(),
-          selectedStock.getQuantity().toString(),
-          selectedStock.getPurchasePrice().toString(),
-          selectedStock.getSellingPrice().toString(),
-          event
-      );
+      if (selectedStock != null) {
+        loader.showJasperReportStock(url,
+            selectedStock.getCategory().getBrand(),
+            selectedStock.getCategory().getProductType(),
+            selectedStock.getCategory().getSize(),
+            selectedStock.getCategory().getWeight().toString(),
+            selectedStock.getCategory().getWeightUnit(),
+            selectedStock.getQuantity().toString(),
+            selectedStock.getPurchasePrice().toString(),
+            selectedStock.getSellingPrice().toString(),
+            event
+        );
+      } else {
+        loader.showJasperReportStock(url,
+            "%", "%", "%", "%", "%", "%", "%", "%", event
+        );
+      }
     } catch (Exception e) {
-      Alert alert = new Alert(AlertType.ERROR);
-      alert.setTitle("Error");
-      alert.setHeaderText(null);
-      alert.setContentText("Error generating report: " + e.getMessage());
-      alert.showAndWait();
+      ShowAlert.showAlert(AlertType.ERROR, 
+          "Error", 
+          "Kesalahan Laporan", 
+          "Terjadi kesalahan saat membuat laporan:", 
+          e.getMessage());
     }
   }
 

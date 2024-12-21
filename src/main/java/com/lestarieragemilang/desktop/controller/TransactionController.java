@@ -16,7 +16,6 @@ import javafx.collections.ObservableList;
 import javafx.event.ActionEvent;
 import javafx.fxml.FXML;
 import javafx.scene.control.*;
-import javafx.scene.control.Alert.AlertType;
 import javafx.util.StringConverter;
 
 import java.math.BigDecimal;
@@ -258,24 +257,29 @@ public class TransactionController extends HibernateUtil {
             return;
         }
 
-        Stock selectedStock = buyStockIDDropdown.getValue();
-        Supplier selectedSupplier = supplierIDDropDown.getValue();
-        int quantity = Integer.parseInt(buyTotalField.getText());
-        BigDecimal price = new BigDecimal(NumberFormatter.getNumericValue(buyPriceField.getText()));
+        try {
+            Stock selectedStock = buyStockIDDropdown.getValue();
+            Supplier selectedSupplier = supplierIDDropDown.getValue();
+            int quantity = Integer.parseInt(buyTotalField.getText());
+            BigDecimal price = new BigDecimal(NumberFormatter.getNumericValue(buyPriceField.getText()));
 
-        Purchasing purchasing = new Purchasing();
-        purchasing.setPurchaseDate(buyDate.getValue());
-        purchasing.setInvoiceNumber(generateInvoiceNumber("PUR", selectedStock));
-        purchasing.setStock(selectedStock);
-        purchasing.setSupplier(selectedSupplier);
-        purchasing.setQuantity(quantity);
-        purchasing.setPrice(price);
-        purchasing.setSubTotal(price.multiply(BigDecimal.valueOf(quantity)));
-        purchasing.setPriceTotal(purchasing.getSubTotal());
+            Purchasing purchasing = new Purchasing();
+            purchasing.setPurchaseDate(buyDate.getValue());
+            purchasing.setInvoiceNumber(generateInvoiceNumber("PUR", selectedStock));
+            purchasing.setStock(selectedStock);
+            purchasing.setSupplier(selectedSupplier);
+            purchasing.setQuantity(quantity);
+            purchasing.setPrice(price);
+            purchasing.setSubTotal(price.multiply(BigDecimal.valueOf(quantity)));
+            purchasing.setPriceTotal(purchasing.getSubTotal());
 
-        pendingPurchases.add(purchasing);
-        updateBuyTotalPrice();
-        resetBuyButton(event);
+            pendingPurchases.add(purchasing);
+            updateBuyTotalPrice();
+            resetBuyButton(event);
+            ShowAlert.showSuccess("Pembelian berhasil ditambahkan ke daftar pending");
+        } catch (Exception e) {
+            ShowAlert.showError("Gagal menambahkan pembelian: " + e.getMessage());
+        }
     }
 
     @FXML
@@ -284,24 +288,29 @@ public class TransactionController extends HibernateUtil {
             return;
         }
 
-        Stock selectedStock = sellStockIDDropdown.getValue();
-        Customer selectedCustomer = customerIDDropDown.getValue();
-        int quantity = Integer.parseInt(sellTotalField.getText());
-        BigDecimal price = new BigDecimal(NumberFormatter.getNumericValue(sellPriceField.getText()));
+        try {
+            Stock selectedStock = sellStockIDDropdown.getValue();
+            Customer selectedCustomer = customerIDDropDown.getValue();
+            int quantity = Integer.parseInt(sellTotalField.getText());
+            BigDecimal price = new BigDecimal(NumberFormatter.getNumericValue(sellPriceField.getText()));
 
-        Sales sales = new Sales();
-        sales.setSaleDate(sellDate.getValue());
-        sales.setInvoiceNumber(generateInvoiceNumber("SAL", selectedStock));
-        sales.setStock(selectedStock);
-        sales.setCustomer(selectedCustomer);
-        sales.setQuantity(quantity);
-        sales.setPrice(price);
-        sales.setSubTotal(price.multiply(BigDecimal.valueOf(quantity)));
-        sales.setPriceTotal(sales.getSubTotal());
+            Sales sales = new Sales();
+            sales.setSaleDate(sellDate.getValue());
+            sales.setInvoiceNumber(generateInvoiceNumber("SAL", selectedStock));
+            sales.setStock(selectedStock);
+            sales.setCustomer(selectedCustomer);
+            sales.setQuantity(quantity);
+            sales.setPrice(price);
+            sales.setSubTotal(price.multiply(BigDecimal.valueOf(quantity)));
+            sales.setPriceTotal(sales.getSubTotal());
 
-        pendingSales.add(sales);
-        updateSellTotalPrice();
-        resetSellButton(event);
+            pendingSales.add(sales);
+            updateSellTotalPrice();
+            resetSellButton(event);
+            ShowAlert.showSuccess("Penjualan berhasil ditambahkan ke daftar pending");
+        } catch (Exception e) {
+            ShowAlert.showError("Gagal menambahkan penjualan: " + e.getMessage());
+        }
     }
 
     private String generateInvoiceNumber(String prefix, Stock stock) {
@@ -323,6 +332,10 @@ public class TransactionController extends HibernateUtil {
 
     @FXML
     private void confirmBuyButton(ActionEvent event) throws MalformedURLException, URISyntaxException {
+        if (!ShowAlert.showYesNo("Konfirmasi Pembelian", "Apakah Anda yakin ingin mengkonfirmasi semua pembelian?")) {
+            return;
+        }
+
         if (tabPane.getSelectionModel().getSelectedIndex() == 0) {
             try {
                 List<Purchasing> purchasingList = new ArrayList<>(buyTable.getItems());
@@ -336,10 +349,7 @@ public class TransactionController extends HibernateUtil {
                         updateStockQuantity(purchasing.getStock(), purchasing.getQuantity(), true);
                     } catch (Exception e) {
                         success = false;
-                        ShowAlert.showAlert(
-                                AlertType.ERROR,
-                                "Error saving purchase",
-                                "Failed to save purchase: " + e.getMessage());
+                        ShowAlert.showError("Gagal mengkonfirmasi pembelian: " + e.getMessage());
                         break;
                     }
                 }
@@ -352,23 +362,21 @@ public class TransactionController extends HibernateUtil {
 
                     printJasperBuyList();
 
-                    ShowAlert.showAlert(
-                            AlertType.INFORMATION,
-                            "Success",
-                            "Purchases confirmed successfully.");
+                    ShowAlert.showSuccess("Pembelian berhasil dikonfirmasi");
                 }
             } catch (Exception e) {
                 e.printStackTrace();
-                ShowAlert.showAlert(
-                        AlertType.ERROR,
-                        "Error",
-                        "An error occurred while processing purchases: " + e.getMessage());
+                ShowAlert.showError("Gagal mengkonfirmasi pembelian: " + e.getMessage());
             }
         }
     }
 
     @FXML
     private void confirmSellButton(ActionEvent event) throws MalformedURLException, URISyntaxException {
+        if (!ShowAlert.showYesNo("Konfirmasi Penjualan", "Apakah Anda yakin ingin mengkonfirmasi semua penjualan?")) {
+            return;
+        }
+
         if (tabPane.getSelectionModel().getSelectedIndex() == 1) {
             try {
                 List<Sales> salesList = new ArrayList<>(sellTable.getItems());
@@ -383,10 +391,7 @@ public class TransactionController extends HibernateUtil {
                         updateStockQuantity(sale.getStock(), sale.getQuantity(), false);
                     } catch (Exception e) {
                         success = false;
-                        ShowAlert.showAlert(
-                                AlertType.ERROR,
-                                "Error saving sale",
-                                "Failed to save sale: " + e.getMessage());
+                        ShowAlert.showError("Gagal mengkonfirmasi penjualan: " + e.getMessage());
                         break;
                     }
                 }
@@ -399,17 +404,11 @@ public class TransactionController extends HibernateUtil {
 
                     printJasperSellList();
 
-                    ShowAlert.showAlert(
-                            AlertType.INFORMATION,
-                            "Success",
-                            "Sales confirmed successfully.");
+                    ShowAlert.showSuccess("Penjualan berhasil dikonfirmasi");
                 }
             } catch (Exception e) {
                 e.printStackTrace();
-                ShowAlert.showAlert(
-                        AlertType.ERROR,
-                        "Error",
-                        "An error occurred while processing sales: " + e.getMessage());
+                ShowAlert.showError("Gagal mengkonfirmasi penjualan: " + e.getMessage());
             }
         }
     }
@@ -424,10 +423,7 @@ public class TransactionController extends HibernateUtil {
     private void editBuyButton(ActionEvent event) {
         Purchasing selectedPurchase = buyTable.getSelectionModel().getSelectedItem();
         if (selectedPurchase == null) {
-            ShowAlert.showAlert(
-                    AlertType.WARNING,
-                    "No Purchase Selected",
-                    "Please select a purchase to edit.");
+            ShowAlert.showWarning("Silakan pilih pembelian yang akan diedit");
             return;
         }
 
@@ -446,10 +442,7 @@ public class TransactionController extends HibernateUtil {
     private void editSellButton(ActionEvent event) {
         Sales selectedSale = sellTable.getSelectionModel().getSelectedItem();
         if (selectedSale == null) {
-            ShowAlert.showAlert(
-                    AlertType.WARNING,
-                    "No Sale Selected",
-                    "Please select a sale to edit.");
+            ShowAlert.showWarning("Silakan pilih penjualan yang akan diedit");
             return;
         }
 
@@ -468,30 +461,30 @@ public class TransactionController extends HibernateUtil {
     private void removeBuyButton(ActionEvent event) {
         Purchasing selectedPurchase = buyTable.getSelectionModel().getSelectedItem();
         if (selectedPurchase == null) {
-            ShowAlert.showAlert(
-                    AlertType.WARNING,
-                    "No Purchase Selected",
-                    "Please select a purchase to remove.");
+            ShowAlert.showWarning("Silakan pilih pembelian yang akan dihapus");
             return;
         }
 
-        pendingPurchases.remove(selectedPurchase);
-        updateBuyTotalPrice();
+        if (ShowAlert.showYesNo("Hapus Pembelian", "Apakah Anda yakin ingin menghapus pembelian ini?")) {
+            pendingPurchases.remove(selectedPurchase);
+            updateBuyTotalPrice();
+            ShowAlert.showSuccess("Pembelian berhasil dihapus");
+        }
     }
 
     @FXML
     private void removeSellButton(ActionEvent event) {
         Sales selectedSale = sellTable.getSelectionModel().getSelectedItem();
         if (selectedSale == null) {
-            ShowAlert.showAlert(
-                    AlertType.WARNING,
-                    "No Sale Selected",
-                    "Please select a sale to remove.");
+            ShowAlert.showWarning("Silakan pilih penjualan yang akan dihapus");
             return;
         }
 
-        pendingSales.remove(selectedSale);
-        updateSellTotalPrice();
+        if (ShowAlert.showYesNo("Hapus Penjualan", "Apakah Anda yakin ingin menghapus penjualan ini?")) {
+            pendingSales.remove(selectedSale);
+            updateSellTotalPrice();
+            ShowAlert.showSuccess("Penjualan berhasil dihapus");
+        }
     }
 
     private void updateBuyTotalPrice() {
@@ -526,10 +519,7 @@ public class TransactionController extends HibernateUtil {
         if (buyDate.getValue() == null || buyStockIDDropdown.getValue() == null ||
                 supplierIDDropDown.getValue() == null || buyTotalField.getText().isEmpty() ||
                 buyPriceField.getText().isEmpty()) {
-            ShowAlert.showAlert(
-                    AlertType.INFORMATION,
-                    "Please fill in all required fields.",
-                    "Please fill in all required fields.");
+            ShowAlert.showValidationError("Mohon lengkapi semua field yang diperlukan");
             return false;
         }
         return true;
@@ -539,10 +529,7 @@ public class TransactionController extends HibernateUtil {
         if (sellDate.getValue() == null || sellStockIDDropdown.getValue() == null ||
                 customerIDDropDown.getValue() == null || sellTotalField.getText().isEmpty() ||
                 sellPriceField.getText().isEmpty()) {
-            ShowAlert.showAlert(
-                    AlertType.INFORMATION,
-                    "Please fill in all required fields.",
-                    "Please fill in all required fields.");
+            ShowAlert.showValidationError("Mohon lengkapi semua field yang diperlukan");
             return false;
         }
         return true;

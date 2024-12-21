@@ -57,7 +57,7 @@ public class GenericEditPopup<T> {
         Dialog<ButtonType> dialog = new Dialog<>();
         dialog.setTitle(title);
 
-        ButtonType confirmButtonType = new ButtonType("Confirm", ButtonBar.ButtonData.OK_DONE);
+        ButtonType confirmButtonType = new ButtonType("Konfirmasi", ButtonBar.ButtonData.OK_DONE);
         dialog.getDialogPane().getButtonTypes().addAll(confirmButtonType, ButtonType.CANCEL);
 
         GridPane grid = new GridPane();
@@ -77,17 +77,18 @@ public class GenericEditPopup<T> {
 
         dialog.setResultConverter(dialogButton -> {
             if (dialogButton == confirmButtonType) {
-                Alert confirmAlert = new Alert(Alert.AlertType.CONFIRMATION);
-                confirmAlert.setTitle("Confirm Edit");
-                confirmAlert.setHeaderText("Are you sure you want to save the changes?");
-                confirmAlert.setContentText("This action cannot be undone.");
-
-                if (confirmAlert.showAndWait().orElse(ButtonType.CANCEL) == ButtonType.OK) {
-                    if (saveAction != null) {
-                        saveAction.accept(item, fields);
-                    }
-                    if (postSaveAction != null) {
-                        postSaveAction.run();
+                if (ShowAlert.showYesNo("Konfirmasi Perubahan", 
+                    "Apakah Anda yakin ingin menyimpan perubahan ini?")) {
+                    try {
+                        if (saveAction != null) {
+                            saveAction.accept(item, fields);
+                        }
+                        if (postSaveAction != null) {
+                            postSaveAction.run();
+                        }
+                        ShowAlert.showSuccess("Data berhasil disimpan");
+                    } catch (Exception e) {
+                        ShowAlert.showError("Gagal menyimpan data: " + e.getMessage());
                     }
                 }
             }

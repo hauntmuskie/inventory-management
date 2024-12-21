@@ -20,7 +20,6 @@ module com.lestarieragemilang.desktop {
     requires org.slf4j;
     requires com.google.common;
     requires jbcrypt;
-    requires ehcache;
 
     opens com.lestarieragemilang.desktop to javafx.fxml;
     opens com.lestarieragemilang.desktop.controller to javafx.fxml;

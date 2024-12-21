@@ -4,11 +4,11 @@ import com.lestarieragemilang.desktop.model.Category;
 import com.lestarieragemilang.desktop.utils.TableUtils;
 import com.lestarieragemilang.desktop.utils.HibernateUtil;
 import com.lestarieragemilang.desktop.utils.JasperLoader;
+import com.lestarieragemilang.desktop.utils.ShowAlert;
 
 import javafx.collections.FXCollections;
 import javafx.collections.transformation.FilteredList;
 import javafx.fxml.FXML;
-import javafx.scene.control.Alert;
 import javafx.scene.control.Alert.AlertType;
 import javafx.scene.control.TableColumn;
 import javafx.scene.control.TableView;
@@ -40,40 +40,36 @@ public class ReportCategory {
     }
 
     if (url == null) {
-      Alert alert = new Alert(AlertType.ERROR);
-      alert.setTitle("Error");
-      alert.setHeaderText(null);
-      alert.setContentText("Could not find report template");
-      alert.showAndWait();
-      return;
-    }
-
-    Category selectedCategory = categoryTable.getSelectionModel().getSelectedItem();
-    if (selectedCategory == null) {
-      Alert alert = new Alert(AlertType.INFORMATION);
-      alert.setTitle("Information");
-      alert.setHeaderText(null);
-      alert.setContentText("Please select a category to print");
-      alert.showAndWait();
+      ShowAlert.showAlert(AlertType.ERROR, 
+          "Error", 
+          "Kesalahan Template", 
+          "Template laporan tidak ditemukan");
       return;
     }
 
     try {
+      Category selectedCategory = categoryTable.getSelectionModel().getSelectedItem();
       JasperLoader loader = new JasperLoader();
-      loader.showJasperReportCategory(url,
-          selectedCategory.getBrand(),
-          selectedCategory.getProductType(),
-          selectedCategory.getSize(),
-          selectedCategory.getWeight().toString(),
-          selectedCategory.getWeightUnit(),
-          event
-      );
+      if (selectedCategory != null) {
+        loader.showJasperReportCategory(url,
+            selectedCategory.getBrand(),
+            selectedCategory.getProductType(),
+            selectedCategory.getSize(),
+            selectedCategory.getWeight().toString(),
+            selectedCategory.getWeightUnit(),
+            event
+        );
+      } else {
+        loader.showJasperReportCategory(url,
+            "%", "%", "%", "%", "%", event
+        );
+      }
     } catch (Exception e) {
-      Alert alert = new Alert(AlertType.ERROR);
-      alert.setTitle("Error");
-      alert.setHeaderText(null);
-      alert.setContentText("Error generating report: " + e.getMessage());
-      alert.showAndWait();
+      ShowAlert.showAlert(AlertType.ERROR, 
+          "Error", 
+          "Kesalahan Laporan", 
+          "Terjadi kesalahan saat membuat laporan:", 
+          e.getMessage());
     }
   }
 

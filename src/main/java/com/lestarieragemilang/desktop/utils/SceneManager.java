@@ -7,15 +7,13 @@ import javafx.scene.Parent;
 
 import java.io.IOException;
 import java.util.Arrays;
-import java.util.List;
 import java.util.concurrent.TimeUnit;
 
 public class SceneManager {
-    private static final String RESOURCE_PATH = "/com/lestarieragemilang/desktop/";
+    private static final String RESOURCE_PATH = "/com/lestarieragemilang/desktop/ui/";
     private static final long CACHE_EXPIRATION_TIME = 30;
     private final Cache<String, Parent> sceneCache;
 
-    // Add constants for scene names
     public static final String LAYOUT = "layout";
     public static final String STOK_BESI = "stokbesi";
     public static final String KATEGORI = "kategori";
@@ -24,7 +22,6 @@ public class SceneManager {
     public static final String SUPPLIER = "supplier";
     public static final String TRANSAKSI = "transaksi";
 
-    // Add constants for report scenes
     public static final String REPORT_MAIN = "laporan";
     public static final String REPORT_STOCK = "laporan-stok";
     public static final String REPORT_CATEGORY = "laporan-kategori";
@@ -34,12 +31,6 @@ public class SceneManager {
     public static final String REPORT_SUPPLIER = "laporan-supplier";
     public static final String REPORT_RETURN = "laporan-return";
 
-
-    private static final List<String> SCENE_NAMES = Arrays.asList(
-            LAYOUT, STOK_BESI, KATEGORI, PELANGGAN, PENGEMBALIAN, SUPPLIER, TRANSAKSI,
-            REPORT_MAIN, REPORT_STOCK, REPORT_CATEGORY, REPORT_CUSTOMER, 
-            REPORT_PURCHASING, REPORT_SALES, REPORT_SUPPLIER);
-
     public SceneManager() {
         this.sceneCache = CacheBuilder.newBuilder()
                 .expireAfterWrite(CACHE_EXPIRATION_TIME, TimeUnit.MINUTES)
@@ -47,7 +38,6 @@ public class SceneManager {
     }
 
     public Parent getScene(String sceneName) throws IOException {
-        // Always reload report scenes, don't use cache for them
         if (sceneName.startsWith("laporan")) {
             return loadScene(sceneName);
         }
@@ -60,7 +50,12 @@ public class SceneManager {
     }
 
     private Parent loadScene(String sceneName) throws IOException {
-        String resourcePath = RESOURCE_PATH + sceneName + ".fxml";
+        String resourcePath;
+        if (sceneName.startsWith("laporan")) {
+            resourcePath = "/com/lestarieragemilang/desktop/ui/report/" + sceneName + ".fxml";
+        } else {
+            resourcePath = RESOURCE_PATH + sceneName + ".fxml";
+        }
         FXMLLoader loader = new FXMLLoader(getClass().getResource(resourcePath));
         Parent root = loader.load();
         sceneCache.put(sceneName, root);

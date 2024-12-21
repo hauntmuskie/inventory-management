@@ -49,24 +49,21 @@ public class ReportCustomer {
     }
 
     Customer selectedCustomer = customerTable.getSelectionModel().getSelectedItem();
-    if (selectedCustomer == null) {
-      Alert alert = new Alert(AlertType.INFORMATION);
-      alert.setTitle("Information");
-      alert.setHeaderText(null);
-      alert.setContentText("Please select a customer to print");
-      alert.showAndWait();
-      return;
-    }
-
     try {
       JasperLoader loader = new JasperLoader();
-      loader.showJasperReportCustomer(url,
-          selectedCustomer.getCustomerName(),
-          selectedCustomer.getContact(),
-          selectedCustomer.getAddress(),
-          selectedCustomer.getEmail(),
-          event
-      );
+      if (selectedCustomer != null) {
+        loader.showJasperReportCustomer(url,
+            selectedCustomer.getCustomerName(),
+            selectedCustomer.getContact(),
+            selectedCustomer.getAddress(),
+            selectedCustomer.getEmail(),
+            event
+        );
+      } else {
+        loader.showJasperReportCustomer(url,
+            "%", "%", "%", "%", event
+        );
+      }
     } catch (Exception e) {
       Alert alert = new Alert(AlertType.ERROR);
       alert.setTitle("Error");

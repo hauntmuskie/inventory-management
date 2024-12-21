@@ -26,6 +26,7 @@ import com.lestarieragemilang.desktop.model.Sales;
 import com.lestarieragemilang.desktop.utils.TableUtils;
 import com.lestarieragemilang.desktop.utils.HibernateUtil;
 import com.lestarieragemilang.desktop.utils.JasperLoader;
+import com.lestarieragemilang.desktop.utils.ShowAlert;
 
 public class ReportSales {
 
@@ -80,11 +81,10 @@ public class ReportSales {
     }
 
     if (url == null) {
-      Alert alert = new Alert(AlertType.ERROR);
-      alert.setTitle("Error");
-      alert.setHeaderText(null);
-      alert.setContentText("Could not find report template");
-      alert.showAndWait();
+      ShowAlert.showAlert(AlertType.ERROR, 
+          "Error", 
+          "Kesalahan Template", 
+          "Template laporan tidak ditemukan");
       return;
     }
 
@@ -92,33 +92,46 @@ public class ReportSales {
       JasperLoader loader = new JasperLoader();
       LocalDate firstLocalDate = SellListDateFirstField.getValue();
       LocalDate secondLocalDate = SellListDateSecondField.getValue();
+      String searchText = SellListSearchField.getText();
 
-      if (firstLocalDate == null || secondLocalDate == null) {
-        Alert alert = new Alert(AlertType.INFORMATION);
-        alert.setTitle("Information");
-        alert.setHeaderText(null);
-        alert.setContentText("Please select both start and end dates");
-        alert.showAndWait();
+      Date firstDate = firstLocalDate != null ? convertToDate(firstLocalDate) : null;
+      Date secondDate = secondLocalDate != null ? convertToDate(secondLocalDate.plusDays(1)) : null;
+
+      if (firstLocalDate != null && secondLocalDate != null && firstLocalDate.isAfter(secondLocalDate)) {
+        ShowAlert.showAlert(AlertType.ERROR, 
+            "Error", 
+            "Kesalahan Tanggal", 
+            "Tanggal awal harus sebelum atau sama dengan tanggal akhir");
         return;
       }
 
-      loader.showJasperReportSellList(url,
-          SellListSearchField.getText(),
-          Date.from(firstLocalDate.atStartOfDay(ZoneId.systemDefault()).toInstant()),
-          Date.from(secondLocalDate.atStartOfDay(ZoneId.systemDefault()).toInstant()),
+      loader.showJasperReportSellList(
+          url,
+          searchText != null && !searchText.isEmpty() ? "%" + searchText + "%" : "%",
+          firstDate,
+          secondDate,
           event
       );
     } catch (Exception e) {
-      Alert alert = new Alert(AlertType.ERROR);
-      alert.setTitle("Error");
-      alert.setHeaderText(null);
-      alert.setContentText("Error generating report: " + e.getMessage());
-      alert.showAndWait();
+      ShowAlert.showAlert(AlertType.ERROR, 
+          "Error", 
+          "Kesalahan Laporan", 
+          "Terjadi kesalahan saat membuat laporan:", 
+          e.getMessage());
     }
   }
 
-  private Date convertToLocalDate(LocalDate localDate) {
-    return localDate != null ? Date.from(localDate.atStartOfDay(ZoneId.systemDefault()).toInstant()) : null;
+  private Date convertToDate(LocalDate localDate) {
+    return localDate != null ? 
+        Date.from(localDate.atStartOfDay(ZoneId.systemDefault()).toInstant()) : null;
+  }
+
+  private void showError(String message) {
+    Alert alert = new Alert(AlertType.ERROR);
+    alert.setTitle("Error");
+    alert.setHeaderText(null);
+    alert.setContentText(message);
+    alert.showAndWait();
   }
 
   @FXML
@@ -135,6 +148,7 @@ public class ReportSales {
     List<Sales> sales = fetchSalesFromDatabase();
     setupTable(sales);
     setupSearch();
+    setupDateSearchMutualExclusion();
   }
 
   private List<Sales> fetchSalesFromDatabase() {
@@ -166,6 +180,34 @@ public class ReportSales {
     filteredData = new FilteredList<>(sellTable.getItems(), p -> true);
     sellTable.setItems(filteredData);
     SellListSearchField.textProperty().addListener((observable, oldValue, newValue) -> sellSearch());
+  }
+
+  private void setupDateSearchMutualExclusion() {
+    // Disable search when dates are selected
+    SellListDateFirstField.valueProperty().addListener((obs, old, newValue) -> {
+        SellListSearchField.setDisable(newValue != null);
+        if (newValue != null) {
+            SellListSearchField.clear();
+        }
+    });
+
+    SellListDateSecondField.valueProperty().addListener((obs, old, newValue) -> {
+        SellListSearchField.setDisable(newValue != null);
+        if (newValue != null) {
+            SellListSearchField.clear();
+        }
+    });
+
+    // Disable dates when search is used
+    SellListSearchField.textProperty().addListener((obs, old, newValue) -> {
+        boolean hasText = !newValue.isEmpty();
+        SellListDateFirstField.setDisable(hasText);
+        SellListDateSecondField.setDisable(hasText);
+        if (hasText) {
+            SellListDateFirstField.setValue(null);
+            SellListDateSecondField.setValue(null);
+        }
+    });
   }
 
   @SuppressWarnings("unused")

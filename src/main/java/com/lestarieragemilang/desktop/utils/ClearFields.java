@@ -12,7 +12,6 @@ public class ClearFields {
             } else if (field instanceof ComboBox<?>) {
                 ((ComboBox<?>) field).setValue(null);
             }
-            // Add more conditions here for other types of fields if needed
         }
     }
 }

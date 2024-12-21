@@ -47,7 +47,7 @@ public class StockController extends HibernateUtil {
         CompletableFuture.runAsync(this::loadStocks);
         generateAndSetStockId();
         stockIDIncrement.setDisable(true);
-        stockSearchField.textProperty().addListener((observable, oldValue, newValue) -> handleSearch());
+        stockSearchField.textProperty().addListener((_, _, _) -> handleSearch());
     }
 
     private void initializeCategoryComboBox() {
@@ -114,8 +114,7 @@ public class StockController extends HibernateUtil {
     private void addStockButton() {
         String stockId = stockIDIncrement.getText();
         if (stockIdExists(stockId)) {
-            ShowAlert.showAlert(AlertType.WARNING, "Stock ID Exists",
-                    "Stock ID already exists. Please generate a new one.");
+            ShowAlert.showWarning("ID Stok sudah ada di database.");
             generateAndSetStockId();
             return;
         }
@@ -148,7 +147,7 @@ public class StockController extends HibernateUtil {
     private void editStockButton() {
         Stock selectedStock = stockTable.getSelectionModel().getSelectedItem();
         if (selectedStock == null) {
-            ShowAlert.showAlert(AlertType.WARNING, "No Stock Selected", null, "Please select a stock to edit.");
+            ShowAlert.showWarning("Silakan pilih stok yang akan diubah");
             return;
         }
 
@@ -196,33 +195,27 @@ public class StockController extends HibernateUtil {
     private void removeStockButton() {
         Stock selectedStock = stockTable.getSelectionModel().getSelectedItem();
         if (selectedStock == null) {
-            ShowAlert.showAlert(AlertType.INFORMATION, "No Stock Selected", null, "Please select a stock to remove.");
+            ShowAlert.showWarning("Silakan pilih stok yang akan dihapus");
             return;
         }
 
         if (!stockService.canDelete(selectedStock)) {
-            ShowAlert.showAlert(AlertType.ERROR, "Cannot Delete Stock", null,
-                    "This stock cannot be deleted because it is referenced by other records.");
+            ShowAlert.showError("Stok tidak dapat dihapus karena masih terhubung dengan data lain");
             return;
         }
 
-        Alert confirmAlert = new Alert(AlertType.CONFIRMATION, "Are you sure you want to delete this stock?",
-                ButtonType.YES, ButtonType.NO);
-        confirmAlert.setTitle("Confirm Deletion");
-        confirmAlert.showAndWait().ifPresent(response -> {
-            if (response == ButtonType.YES) {
-                try {
-                    CompletableFuture.runAsync(() -> stockService.delete(selectedStock))
-                            .thenRun(() -> Platform.runLater(() -> {
-                                loadStocks();
-                                resetStockButton();
-                            }));
-                } catch (ConstraintViolationException e) {
-                    ShowAlert.showAlert(AlertType.ERROR, "Error Deleting Stock", null,
-                            "An unexpected error occurred while trying to delete the stock. It may be referenced by other records.");
-                }
+        if (ShowAlert.showYesNo("Konfirmasi Hapus", "Apakah Anda yakin ingin menghapus stok ini?")) {
+            try {
+                CompletableFuture.runAsync(() -> stockService.delete(selectedStock))
+                        .thenRun(() -> Platform.runLater(() -> {
+                            ShowAlert.showSuccess("Data stok berhasil dihapus");
+                            loadStocks();
+                            resetStockButton();
+                        }));
+            } catch (ConstraintViolationException e) {
+                ShowAlert.showError("Terjadi kesalahan saat menghapus stok. Stok mungkin masih terhubung dengan data lain.");
             }
-        });
+        }
     }
 
     @FXML

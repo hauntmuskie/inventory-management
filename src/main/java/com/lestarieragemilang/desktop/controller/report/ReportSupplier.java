@@ -7,7 +7,6 @@ import javafx.scene.control.TableColumn;
 import javafx.scene.control.TableView;
 import javafx.scene.control.TextField;
 import javafx.scene.input.MouseEvent;
-import javafx.scene.control.Alert;
 import javafx.scene.control.Alert.AlertType;
 
 import java.net.URL;
@@ -22,6 +21,7 @@ import com.lestarieragemilang.desktop.model.Supplier;
 import com.lestarieragemilang.desktop.utils.TableUtils;
 import com.lestarieragemilang.desktop.utils.HibernateUtil;
 import com.lestarieragemilang.desktop.utils.JasperLoader;
+import com.lestarieragemilang.desktop.utils.ShowAlert;
 
 public class ReportSupplier {
   private static final Logger LOGGER = Logger.getLogger(ReportSupplier.class.getName());
@@ -44,42 +44,38 @@ public class ReportSupplier {
     }
 
     if (url == null) {
-      Alert alert = new Alert(AlertType.ERROR);
-      alert.setTitle("Error");
-      alert.setHeaderText(null);
-      alert.setContentText("Could not find report template");
-      alert.showAndWait();
-      return;
-    }
-
-    Supplier selectedSupplier = supplierTable.getSelectionModel().getSelectedItem();
-    if (selectedSupplier == null) {
-      Alert alert = new Alert(AlertType.INFORMATION);
-      alert.setTitle("Information");
-      alert.setHeaderText(null);
-      alert.setContentText("Please select a supplier to print");
-      alert.showAndWait();
+      ShowAlert.showAlert(AlertType.ERROR, 
+          "Error", 
+          "Kesalahan Template", 
+          "Template laporan tidak ditemukan");
       return;
     }
 
     try {
       JasperLoader loader = new JasperLoader();
-      // Fixed parameter order and added missing email parameter
-      loader.showJasperReportSupplier(
-          url,
-          selectedSupplier.getSupplierId(),
-          selectedSupplier.getSupplierName(),
-          selectedSupplier.getContact(),
-          selectedSupplier.getAddress(),
-          selectedSupplier.getEmail(),
-          event
-      );
+      Supplier supplier = supplierTable.getSelectionModel().getSelectedItem();
+      if (supplier != null) {
+        loader.showJasperReportSupplier(
+            url,
+            supplier.getSupplierId(),
+            supplier.getSupplierName(),
+            supplier.getContact(),
+            supplier.getAddress(), 
+            supplier.getEmail(),
+            event
+        );
+      } else {
+        loader.showJasperReportSupplier(
+            url,
+            "%", "%", "%", "%", "%", event
+        );
+      }
     } catch (Exception e) {
-      Alert alert = new Alert(AlertType.ERROR);
-      alert.setTitle("Error");
-      alert.setHeaderText(null);
-      alert.setContentText("Error generating report: " + e.getMessage());
-      alert.showAndWait();
+      ShowAlert.showAlert(AlertType.ERROR, 
+          "Error", 
+          "Kesalahan Laporan", 
+          "Terjadi kesalahan saat membuat laporan:", 
+          e.getMessage());
       LOGGER.log(Level.SEVERE, "Error generating report", e);
     }
   }

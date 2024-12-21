@@ -1,77 +1,80 @@
 package com.lestarieragemilang.desktop.utils;
 
+import com.google.common.collect.Maps;
 import javafx.application.Platform;
-import javafx.scene.control.Alert;
-import javafx.scene.control.Alert.AlertType;
 import javafx.scene.input.MouseEvent;
 import net.sf.jasperreports.engine.*;
 import net.sf.jasperreports.engine.util.JRLoader;
 import net.sf.jasperreports.view.JasperViewer;
 import org.hibernate.Session;
-import org.hibernate.jdbc.Work;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 import java.net.URL;
 import java.sql.Connection;
-import java.time.LocalDate;
 import java.util.Date;
-import java.util.HashMap;
 import java.util.Map;
-import java.util.logging.Level;
-import java.util.logging.Logger;
+import java.util.Optional;
 
 public class JasperLoader {
-    private static final Logger LOGGER = Logger.getLogger(JasperLoader.class.getName());
+    private static final Logger logger = LoggerFactory.getLogger(JasperLoader.class);
 
     private Connection getConnection() {
         if (!HibernateUtil.isDatabaseAvailable()) {
-            throw new RuntimeException("Database is not available");
+            ShowAlert.showDatabaseError("Database tidak tersedia. Silakan periksa koneksi database.");
+            throw new RuntimeException("Database tidak tersedia");
         }
 
         final Connection[] conn = new Connection[1];
-        Session session = HibernateUtil.getSessionFactory().openSession();
-        
-        try {
-            session.doWork(new Work() {
-                public void execute(Connection connection) {
-                    conn[0] = connection;
-                }
-            });
-        } finally {
-            session.close();
+        try (Session session = HibernateUtil.getSessionFactory().openSession()) {
+            session.doWork(connection -> conn[0] = connection);
+            return conn[0];
+        } catch (Exception e) {
+            logger.error("Gagal membuat koneksi database", e);
+            ShowAlert.showDatabaseError("Gagal membuat koneksi database: " + e.getMessage());
+            throw new RuntimeException("Gagal membuat koneksi database", e);
         }
-        
-        return conn[0];
     }
 
     private void showReport(URL location, Map<String, Object> parameters) {
         try {
-            if (!HibernateUtil.isDatabaseAvailable()) {
-                throw new RuntimeException("Database is not available");
-            }
-
             if (location == null) {
-                throw new RuntimeException("Report template not found. Please ensure reports are compiled.");
+                ShowAlert.showError("Template laporan tidak ditemukan");
+                return;
+            }
+            
+            if (!HibernateUtil.isDatabaseAvailable()) {
+                ShowAlert.showDatabaseError("Database tidak tersedia");
+                return;
             }
 
             JasperReport jasperReport = (JasperReport) JRLoader.loadObject(location);
             JasperPrint jasperPrint = JasperFillManager.fillReport(jasperReport, parameters, getConnection());
 
-            final JasperViewer viewer = new JasperViewer(jasperPrint, false);
-            Platform.runLater(() -> viewer.setVisible(true));
+            if (jasperPrint.getPages().isEmpty()) {
+                ShowAlert.showInfo("Tidak ada data untuk ditampilkan dalam laporan");
+                return;
+            }
 
+            final JasperViewer viewer = new JasperViewer(jasperPrint, false);
+            Platform.runLater(() -> {
+                viewer.setVisible(true);
+                ShowAlert.showSuccess("Laporan berhasil dibuat");
+            });
+
+        } catch (JRException e) {
+            logger.error("Error saat memuat Jasper Report", e);
+            ShowAlert.showError("Gagal memuat laporan: " + e.getMessage() + 
+                              "\nSilakan periksa template laporan");
         } catch (Exception e) {
-            LOGGER.log(Level.SEVERE, "Error loading Jasper Report", e);
-            Alert alert = new Alert(AlertType.ERROR);
-            alert.setTitle("Error");
-            alert.setHeaderText(null);
-            alert.setContentText("Error loading report: " + e.getMessage());
-            alert.showAndWait();
+            logger.error("Error tidak terduga", e);
+            ShowAlert.showError("Terjadi kesalahan: " + e.getMessage());
         }
     }
 
     public void showJasperReportSupplier(URL location, String supplierId, String nameSupplier, 
             String contactSupplier, String addressSupplier, String emailSupplier, MouseEvent event) {
-        Map<String, Object> parameters = new HashMap<>();
+        Map<String, Object> parameters = Maps.newHashMap();
         parameters.put("supplierId", "%" + supplierId + "%");
         parameters.put("nameSupplier", "%" + nameSupplier + "%");
         parameters.put("contactSupplier", "%" + contactSupplier + "%");
@@ -82,7 +85,7 @@ public class JasperLoader {
 
     public void showJasperReportCustomer(URL location, String nameCustomer, String contactCustomer,
             String addressCustomer, String emailCustomer, MouseEvent event) {
-        Map<String, Object> parameters = new HashMap<>();
+        Map<String, Object> parameters = Maps.newHashMap();
         parameters.put("nameCustomer", "%" + nameCustomer + "%");
         parameters.put("contactCustomer", "%" + contactCustomer + "%");
         parameters.put("addressCustomer", "%" + addressCustomer + "%");
@@ -92,7 +95,7 @@ public class JasperLoader {
 
     public void showJasperReportCategory(URL location, String brandCategory, String typeCategory,
             String sizeCategory, String weightCategory, String unitCategory, MouseEvent event) {
-        Map<String, Object> parameters = new HashMap<>();
+        Map<String, Object> parameters = Maps.newHashMap();
         parameters.put("brandCategory", "%" + brandCategory + "%");
         parameters.put("typeCategory", "%" + typeCategory + "%");
         parameters.put("sizeCategory", "%" + sizeCategory + "%");
@@ -104,7 +107,7 @@ public class JasperLoader {
     public void showJasperReportStock(URL location, String brandStock, String typeStock,
             String sizeStock, String weightStock, String unitStock, String stock, String purchasePriceStock,
             String sellingPriceStock, MouseEvent event) {
-        Map<String, Object> parameters = new HashMap<>();
+        Map<String, Object> parameters = Maps.newHashMap();
         parameters.put("brandStock", "%" + brandStock + "%");
         parameters.put("typeStock", "%" + typeStock + "%");
         parameters.put("sizeStock", "%" + sizeStock + "%");
@@ -118,42 +121,38 @@ public class JasperLoader {
 
     public void showJasperReportBuyList(URL location, String invoicePurchasing, Date firstDate, Date secondDate,
             MouseEvent event) {
-        Map<String, Object> parameters = new HashMap<>();
-        parameters.put("invoicePurchasing", "%" + invoicePurchasing + "%");
-        parameters.put("firstDate", firstDate);
-        parameters.put("secondDate", secondDate);
+        Map<String, Object> parameters = Maps.newHashMap();
+        parameters.put("invoicePurchasing", Optional.ofNullable(invoicePurchasing).orElse("%"));
+        parameters.put("firstDate", Optional.ofNullable(firstDate).orElse(new Date(0))); // Default to epoch if null
+        parameters.put("secondDate", Optional.ofNullable(secondDate).orElse(new Date())); // Default to current date if null
         showReport(location, parameters);
     }
 
     public void showJasperReportBuy(URL location, Integer buyIdValue) {
-        Map<String, Object> parameters = new HashMap<>();
+        Map<String, Object> parameters = Maps.newHashMap();
         parameters.put("invoicePurchasing", "%" + buyIdValue.toString() + "%");
         showReport(location, parameters);
     }
 
     public void showJasperReportSell(URL location, Integer sellIdValue) {
-        Map<String, Object> parameters = new HashMap<>();
+        Map<String, Object> parameters = Maps.newHashMap();
         parameters.put("invoiceSales", "%" + sellIdValue.toString() + "%");
         showReport(location, parameters);
     }
 
     public void showJasperReportSellList(URL location, String invoiceSales, Date firstDate, Date secondDate,
             MouseEvent event) {
-        Map<String, Object> parameters = new HashMap<>();
-        parameters.put("invoiceSales", "%" + invoiceSales + "%");
-        parameters.put("firstDate", firstDate);
-        parameters.put("secondDate", secondDate);
+        Map<String, Object> parameters = Maps.newHashMap();
+        parameters.put("invoiceSales", Optional.ofNullable(invoiceSales).orElse("%"));
+        parameters.put("firstDate", Optional.ofNullable(firstDate).orElse(new Date(0)));
+        parameters.put("secondDate", Optional.ofNullable(secondDate).orElse(new Date()));
         showReport(location, parameters);
     }
 
-    public void showJasperReportReturn(URL location, String returnId, LocalDate returnDate,
+    public void showJasperReportReturn(URL location, String returnId, String returnDate,
             String returnType, String invoiceNumber, String reason, MouseEvent event) {
-        Map<String, Object> parameters = new HashMap<>();
-        parameters.put("returnId", "%" + returnId + "%");
-        parameters.put("returnDate", java.sql.Date.valueOf(returnDate));
-        parameters.put("returnType", "%" + returnType + "%");
-        parameters.put("invoiceNumber", "%" + invoiceNumber + "%");
-        parameters.put("reason", "%" + reason + "%");
+        Map<String, Object> parameters = Maps.newHashMap();
+        parameters.put("idReturn", "%" + returnId + "%");
         showReport(location, parameters);
     }
 }

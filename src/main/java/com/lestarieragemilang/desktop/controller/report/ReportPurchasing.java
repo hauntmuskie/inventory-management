@@ -81,11 +81,7 @@ public class ReportPurchasing {
     }
 
     if (url == null) {
-      Alert alert = new Alert(AlertType.ERROR);
-      alert.setTitle("Error");
-      alert.setHeaderText(null);
-      alert.setContentText("Could not find report template");
-      alert.showAndWait();
+      showError("Could not find report template");
       return;
     }
 
@@ -93,33 +89,40 @@ public class ReportPurchasing {
       JasperLoader loader = new JasperLoader();
       LocalDate firstLocalDate = BuyListDateFirstField.getValue();
       LocalDate secondLocalDate = BuyListDateSecondField.getValue();
+      String searchText = BuyListSearchField.getText();
 
-      if (firstLocalDate == null || secondLocalDate == null) {
-        Alert alert = new Alert(AlertType.INFORMATION);
-        alert.setTitle("Information");
-        alert.setHeaderText(null);
-        alert.setContentText("Please select both start and end dates");
-        alert.showAndWait();
+      Date firstDate = firstLocalDate != null ? convertToDate(firstLocalDate) : null;
+      Date secondDate = secondLocalDate != null ? convertToDate(secondLocalDate.plusDays(1)) : null;
+
+      // Validate date range
+      if (firstLocalDate != null && secondLocalDate != null && firstLocalDate.isAfter(secondLocalDate)) {
+        showError("Start date must be before or equal to end date");
         return;
       }
 
-      loader.showJasperReportBuyList(url, 
-          BuyListSearchField.getText(),
-          Date.from(firstLocalDate.atStartOfDay(ZoneId.systemDefault()).toInstant()),
-          Date.from(secondLocalDate.atStartOfDay(ZoneId.systemDefault()).toInstant()),
+      loader.showJasperReportBuyList(
+          url,
+          searchText != null && !searchText.isEmpty() ? "%" + searchText + "%" : "%",
+          firstDate,
+          secondDate,
           event
       );
     } catch (Exception e) {
-      Alert alert = new Alert(AlertType.ERROR);
-      alert.setTitle("Error");
-      alert.setHeaderText(null);
-      alert.setContentText("Error generating report: " + e.getMessage());
-      alert.showAndWait();
+      showError("Error generating report: " + e.getMessage());
     }
   }
 
-  private Date convertToLocalDate(LocalDate localDate) {
-    return localDate != null ? Date.from(localDate.atStartOfDay(ZoneId.systemDefault()).toInstant()) : null;
+  private Date convertToDate(LocalDate localDate) {
+    return localDate != null ? 
+        Date.from(localDate.atStartOfDay(ZoneId.systemDefault()).toInstant()) : null;
+  }
+
+  private void showError(String message) {
+    Alert alert = new Alert(AlertType.ERROR);
+    alert.setTitle("Error");
+    alert.setHeaderText(null);
+    alert.setContentText(message);
+    alert.showAndWait();
   }
 
   @FXML
@@ -127,6 +130,7 @@ public class ReportPurchasing {
     List<Purchasing> purchases = fetchPurchasesFromDatabase();
     setupTable(purchases);
     setupSearch();
+    setupDateSearchMutualExclusion();
   }
 
   private List<Purchasing> fetchPurchasesFromDatabase() {
@@ -158,6 +162,34 @@ public class ReportPurchasing {
     filteredData = new FilteredList<>(buyTable.getItems(), p -> true);
     buyTable.setItems(filteredData);
     BuyListSearchField.textProperty().addListener((observable, oldValue, newValue) -> purchaseSearch());
+  }
+
+  private void setupDateSearchMutualExclusion() {
+    // Disable search when dates are selected
+    BuyListDateFirstField.valueProperty().addListener((obs, old, newValue) -> {
+        BuyListSearchField.setDisable(newValue != null);
+        if (newValue != null) {
+            BuyListSearchField.clear();
+        }
+    });
+
+    BuyListDateSecondField.valueProperty().addListener((obs, old, newValue) -> {
+        BuyListSearchField.setDisable(newValue != null);
+        if (newValue != null) {
+            BuyListSearchField.clear();
+        }
+    });
+
+    // Disable dates when search is used
+    BuyListSearchField.textProperty().addListener((obs, old, newValue) -> {
+        boolean hasText = !newValue.isEmpty();
+        BuyListDateFirstField.setDisable(hasText);
+        BuyListDateSecondField.setDisable(hasText);
+        if (hasText) {
+            BuyListDateFirstField.setValue(null);
+            BuyListDateSecondField.setValue(null);
+        }
+    });
   }
 
   @SuppressWarnings("unused")

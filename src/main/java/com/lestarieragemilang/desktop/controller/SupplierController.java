@@ -17,7 +17,6 @@ import javafx.fxml.FXML;
 import javafx.scene.control.TableColumn;
 import javafx.scene.control.TableView;
 import javafx.scene.control.TextField;
-import javafx.scene.control.Alert.AlertType;
 import javafx.scene.layout.VBox;
 
 import java.util.List;
@@ -85,10 +84,7 @@ public class SupplierController extends HibernateUtil {
     private void addSupplierButton(ActionEvent event) {
         String supplierId = supplierIDIncrement.getText();
         if (supplierIdExists(supplierId)) {
-            ShowAlert.showAlert(
-                    AlertType.WARNING,
-                    "Duplicate Supplier ID",
-                    "Supplier ID already exists.");
+            ShowAlert.showWarning("ID Supplier sudah ada di database");
             generateAndSetSupplierId();
             return;
         }
@@ -101,6 +97,7 @@ public class SupplierController extends HibernateUtil {
         supplier.setAddress(supplierAddressField.getText());
 
         supplierService.save(supplier);
+        ShowAlert.showSuccess("Data supplier berhasil ditambahkan");
         loadSuppliers();
         resetSupplierButton();
     }
@@ -109,10 +106,7 @@ public class SupplierController extends HibernateUtil {
     private void editSupplierButton(ActionEvent event) {
         Supplier selectedSupplier = supplierTable.getSelectionModel().getSelectedItem();
         if (selectedSupplier == null) {
-            ShowAlert.showAlert(
-                    AlertType.WARNING,
-                    "No Supplier Selected",
-                    "Please select a supplier to edit.");
+            ShowAlert.showWarning("Silahkan pilih supplier yang akan diubah");
             return;
         }
 
@@ -132,6 +126,7 @@ public class SupplierController extends HibernateUtil {
                     supplierService.update(supplier);
                 })
                 .afterSave(() -> {
+                    ShowAlert.showSuccess("Data supplier berhasil diubah");
                     loadSuppliers();
                     resetSupplierButton();
                 })
@@ -142,16 +137,16 @@ public class SupplierController extends HibernateUtil {
     private void removeSupplierButton(ActionEvent event) {
         Supplier selectedSupplier = supplierTable.getSelectionModel().getSelectedItem();
         if (selectedSupplier == null) {
-            ShowAlert.showAlert(
-                    AlertType.WARNING,
-                    "No Supplier Selected",
-                    "Please select a supplier to remove.");
+            ShowAlert.showWarning("Silahkan pilih supplier yang akan dihapus");
             return;
         }
 
-        supplierService.delete(selectedSupplier);
-        loadSuppliers();
-        resetSupplierButton();
+        if (ShowAlert.showYesNo("Konfirmasi Hapus", "Apakah Anda yakin ingin menghapus data supplier ini?")) {
+            supplierService.delete(selectedSupplier);
+            ShowAlert.showSuccess("Data supplier berhasil dihapus");
+            loadSuppliers();
+            resetSupplierButton();
+        }
     }
 
     @FXML

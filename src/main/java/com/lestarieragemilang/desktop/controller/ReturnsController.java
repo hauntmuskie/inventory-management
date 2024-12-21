@@ -3,7 +3,6 @@ package com.lestarieragemilang.desktop.controller;
 import javafx.collections.FXCollections;
 import javafx.fxml.FXML;
 import javafx.scene.control.*;
-import javafx.scene.control.Alert.AlertType;
 import javafx.util.StringConverter;
 import com.jfoenix.controls.JFXButton;
 import com.jfoenix.controls.JFXComboBox;
@@ -67,7 +66,7 @@ public class ReturnsController extends HibernateUtil {
         returnIsSell.setToggleGroup(returnTypeGroup);
 
         // Add listener to toggle group
-        returnTypeGroup.selectedToggleProperty().addListener((observable, oldValue, newValue) -> {
+        returnTypeGroup.selectedToggleProperty().addListener((_, _, newValue) -> {
             if (newValue != null) {
                 updateInvoiceComboBox();
             }
@@ -136,11 +135,14 @@ public class ReturnsController extends HibernateUtil {
     private void addReturnButton() {
         String returnId = returnIDIncrement.getText();
         if (returnIdExists(returnId)) {
-            ShowAlert.showAlert(
-                    AlertType.WARNING,
-                    "Duplicate Return ID",
-                    "Return ID already exists.");
+            ShowAlert.showWarning("ID Retur sudah ada dalam sistem. ID baru akan dibuat.");
             generateAndSetReturnId();
+            return;
+        }
+
+        Object selectedInvoice = returnInvoicePurchasing.getValue();
+        if (selectedInvoice == null) {
+            ShowAlert.showValidationError("Silakan pilih faktur terlebih dahulu.");
             return;
         }
 
@@ -148,7 +150,6 @@ public class ReturnsController extends HibernateUtil {
         returnItem.setReturnId(returnId);
         returnItem.setReturnDate(returnDate.getValue());
 
-        Object selectedInvoice = returnInvoicePurchasing.getValue();
         if (selectedInvoice instanceof Purchasing) {
             returnItem.setInvoiceNumber(((Purchasing) selectedInvoice).getInvoiceNumber());
             returnItem.setReturnType("Buy");
@@ -156,10 +157,7 @@ public class ReturnsController extends HibernateUtil {
             returnItem.setInvoiceNumber(((Sales) selectedInvoice).getInvoiceNumber());
             returnItem.setReturnType("Sell");
         } else {
-            ShowAlert.showAlert(
-                    AlertType.WARNING,
-                    "Missing Invoice",
-                    "Please select an invoice.");
+            ShowAlert.showWarning("Silakan pilih faktur terlebih dahulu.");
             return;
         }
 
@@ -183,10 +181,7 @@ public class ReturnsController extends HibernateUtil {
     private void editReturnButton() {
         Returns selectedReturn = returnTable.getSelectionModel().getSelectedItem();
         if (selectedReturn == null) {
-            ShowAlert.showAlert(
-                    AlertType.WARNING,
-                    "No Return Selected",
-                    "Please select a return to edit.");
+            ShowAlert.showWarning("Silakan pilih data retur yang akan diubah.");
             return;
         }
 
@@ -202,6 +197,11 @@ public class ReturnsController extends HibernateUtil {
                     returnItem.setReturnDate(((DatePicker) fields.get(1)).getValue());
 
                     Object selectedInvoice = ((ComboBox<?>) fields.get(2)).getValue();
+                    if (selectedInvoice == null) {
+                        ShowAlert.showValidationError("Silakan pilih faktur terlebih dahulu.");
+                        return;
+                    }
+
                     if (selectedInvoice instanceof Purchasing) {
                         returnItem.setInvoiceNumber(((Purchasing) selectedInvoice).getInvoiceNumber());
                         returnItem.setReturnType("Buy");
@@ -209,10 +209,7 @@ public class ReturnsController extends HibernateUtil {
                         returnItem.setInvoiceNumber(((Sales) selectedInvoice).getInvoiceNumber());
                         returnItem.setReturnType("Sell");
                     } else {
-                        ShowAlert.showAlert(
-                                AlertType.WARNING,
-                                "Missing Invoice",
-                                "Please select an invoice.");
+                        ShowAlert.showWarning("Silakan pilih faktur terlebih dahulu.");
                         return;
                     }
 
@@ -220,6 +217,7 @@ public class ReturnsController extends HibernateUtil {
                     returnService.update(returnItem);
                 })
                 .afterSave(() -> {
+                    ShowAlert.showSuccess("Data retur berhasil diperbarui.");
                     loadReturns();
                     resetReturnButton();
                 })
@@ -230,16 +228,16 @@ public class ReturnsController extends HibernateUtil {
     private void removeReturnButton() {
         Returns selectedReturn = returnTable.getSelectionModel().getSelectedItem();
         if (selectedReturn == null) {
-            ShowAlert.showAlert(
-                    AlertType.WARNING,
-                    "No Return Selected",
-                    "Please select a return to remove.");
+            ShowAlert.showWarning("Silakan pilih data retur yang akan dihapus.");
             return;
         }
 
-        returnService.delete(selectedReturn);
-        loadReturns();
-        resetReturnButton();
+        if (ShowAlert.showYesNo("Konfirmasi Hapus", "Apakah Anda yakin ingin menghapus data retur ini?")) {
+            returnService.delete(selectedReturn);
+            ShowAlert.showSuccess("Data retur berhasil dihapus.");
+            loadReturns();
+            resetReturnButton();
+        }
     }
 
     @FXML

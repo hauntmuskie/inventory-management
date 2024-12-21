@@ -1,10 +1,11 @@
 package com.lestarieragemilang.desktop.utils;
 
+import com.google.common.base.Preconditions;
+import com.google.common.base.Strings;
 import javafx.scene.Parent;
 import javafx.scene.layout.AnchorPane;
 import javafx.animation.PauseTransition;
 import javafx.util.Duration;
-import javafx.scene.control.Alert.AlertType;
 import javafx.application.Platform;
 
 import java.io.IOException;
@@ -18,25 +19,34 @@ public abstract class Redirect {
   protected abstract void animateFadeOut(Parent node, Runnable onFinished);
 
   protected Parent loadScene(String page, AnchorPane anchorPane) throws IOException {
+    Preconditions.checkArgument(!Strings.isNullOrEmpty(page), "Nama halaman tidak boleh kosong");
+    Preconditions.checkNotNull(anchorPane, "AnchorPane tidak boleh kosong");
+
     if (!Platform.isFxApplicationThread()) {
-      // If we're not on the FX thread, submit the work to it
       Platform.runLater(() -> {
         try {
           loadScene(page, anchorPane);
         } catch (IOException e) {
-          throw new RuntimeException(e);
+          throw new RuntimeException("Gagal memuat halaman", e);
         }
       });
       return anchorPane;
     }
     
-    Parent root = App.sceneManager.getScene(page);
+    Parent root = Preconditions.checkNotNull(
+        App.sceneManager.getScene(page),
+        "Scene %s tidak ditemukan", page
+    );
     anchorPane.getChildren().setAll(root);
     animateFadeIn(anchorPane);
     return root;
   }
 
   protected void switchScene(AnchorPane currentScene, String newSceneName, Runnable setNewScene) {
+    Preconditions.checkNotNull(currentScene, "Scene saat ini tidak boleh kosong");
+    Preconditions.checkArgument(!Strings.isNullOrEmpty(newSceneName), "Nama scene baru tidak boleh kosong");
+    Preconditions.checkNotNull(setNewScene, "SetNewScene tidak boleh kosong");
+
     animateFadeOut(currentScene, () -> {
       PauseTransition delay = new PauseTransition(Duration.seconds(0.5));
       delay.setOnFinished(_ -> {
@@ -44,8 +54,8 @@ public abstract class Redirect {
         try {
           loadScene(newSceneName, currentScene);
         } catch (IOException ex) {
-          ShowAlert.showAlert(AlertType.ERROR, "Error", "Scene Switch Error", "Failed to switch scene");
-          throw new RuntimeException("Failed to switch scene", ex);
+          ShowAlert.showError("Gagal mengganti halaman");
+          throw new RuntimeException("Gagal mengganti halaman", ex);
         }
       });
       delay.play();

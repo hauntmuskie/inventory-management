@@ -3,7 +3,6 @@ package com.lestarieragemilang.desktop.controller;
 import javafx.collections.FXCollections;
 import javafx.fxml.FXML;
 import javafx.scene.control.*;
-import javafx.scene.control.Alert.AlertType;
 
 import com.jfoenix.controls.JFXButton;
 import com.lestarieragemilang.desktop.model.Customer;
@@ -76,10 +75,7 @@ public class CustomerController extends HibernateUtil {
     private void addCustomerButton() {
         String customerId = customerIDIncrement.getText();
         if (customerIdExists(customerId)) {
-            ShowAlert.showAlert(
-                    AlertType.WARNING,
-                    "Duplicate Customer ID",
-                    "Customer ID already exists.");
+            ShowAlert.showWarning("ID Pelanggan sudah ada di database");
             generateAndSetCustomerId();
             return;
         }
@@ -92,6 +88,7 @@ public class CustomerController extends HibernateUtil {
         customer.setEmail(customerEmailField.getText());
 
         customerService.save(customer);
+        ShowAlert.showSuccess("Data pelanggan berhasil ditambahkan");
         loadCustomers();
         resetCustomerButton();
     }
@@ -107,10 +104,7 @@ public class CustomerController extends HibernateUtil {
     private void editCustomerButton() {
         Customer selectedCustomer = customerTable.getSelectionModel().getSelectedItem();
         if (selectedCustomer == null) {
-            ShowAlert.showAlert(
-                    AlertType.WARNING,
-                    "No Customer Selected",
-                    "Please select a customer to edit.");
+            ShowAlert.showWarning("Silahkan pilih pelanggan yang akan diubah");
             return;
         }
 
@@ -130,6 +124,7 @@ public class CustomerController extends HibernateUtil {
                     customerService.update(customer);
                 })
                 .afterSave(() -> {
+                    ShowAlert.showSuccess("Data pelanggan berhasil diubah");
                     loadCustomers();
                     resetCustomerButton();
                 })
@@ -140,16 +135,16 @@ public class CustomerController extends HibernateUtil {
     private void removeCustomerButton() {
         Customer selectedCustomer = customerTable.getSelectionModel().getSelectedItem();
         if (selectedCustomer == null) {
-            ShowAlert.showAlert(
-                    AlertType.WARNING,
-                    "No Customer Selected",
-                    "Please select a customer to remove.");
+            ShowAlert.showWarning("Silahkan pilih pelanggan yang akan dihapus");
             return;
         }
 
-        customerService.delete(selectedCustomer);
-        loadCustomers();
-        resetCustomerButton();
+        if (ShowAlert.showYesNo("Konfirmasi Hapus", "Apakah Anda yakin ingin menghapus data pelanggan ini?")) {
+            customerService.delete(selectedCustomer);
+            ShowAlert.showSuccess("Data pelanggan berhasil dihapus");
+            loadCustomers();
+            resetCustomerButton();
+        }
     }
 
     @FXML

@@ -4,11 +4,11 @@ import com.lestarieragemilang.desktop.model.Returns;
 import com.lestarieragemilang.desktop.utils.TableUtils;
 import com.lestarieragemilang.desktop.utils.HibernateUtil;
 import com.lestarieragemilang.desktop.utils.JasperLoader;
+import com.lestarieragemilang.desktop.utils.ShowAlert;
 
 import javafx.collections.FXCollections;
 import javafx.collections.transformation.FilteredList;
 import javafx.fxml.FXML;
-import javafx.scene.control.Alert;
 import javafx.scene.control.Alert.AlertType;
 import javafx.scene.control.TableColumn;
 import javafx.scene.control.TableView;
@@ -31,39 +31,45 @@ public class ReportReturn {
 
     @FXML
     void printJasperReturn(MouseEvent event) {
+        String path = "/jasper/returns-list.jasper";
+        URL url = getClass().getResource(path);
+        if (url == null) {
+            path = "/com/lestarieragemilang/desktop/jasper/returns-list.jasper";
+            url = getClass().getResource(path);
+        }
+
+        if (url == null) {
+            ShowAlert.showAlert(AlertType.ERROR, 
+                "Error", 
+                "Kesalahan Template", 
+                "Template laporan tidak ditemukan");
+            return;
+        }
+
         try {
-            String path = "/jasper/returns-list.jasper";
-            URL url = getClass().getResource(path);
-            if (url == null) {
-                path = "/com/lestarieragemilang/desktop/jasper/returns-list.jasper";
-                url = getClass().getResource(path);
-            }
-
-            if (url == null) {
-                throw new RuntimeException("Could not find report template");
-            }
-
             Returns selectedReturn = returnTable.getSelectionModel().getSelectedItem();
-            if (selectedReturn == null) {
-                throw new RuntimeException("Please select a return to print");
-            }
-
             JasperLoader loader = new JasperLoader();
-            loader.showJasperReportReturn(url, 
-                selectedReturn.getReturnId(),
-                selectedReturn.getReturnDate(),
-                selectedReturn.getReturnType(), 
-                selectedReturn.getInvoiceNumber(),
-                selectedReturn.getReason(),
-                event
-            );
-
+            if (selectedReturn != null) {
+                String returnDateStr = selectedReturn.getReturnDate().toString();
+                loader.showJasperReportReturn(url,
+                    selectedReturn.getReturnId(),
+                    returnDateStr,
+                    selectedReturn.getReturnType(),
+                    selectedReturn.getInvoiceNumber(),
+                    selectedReturn.getReason(),
+                    event
+                );
+            } else {
+                loader.showJasperReportReturn(url,
+                    "%", "%", "%", "%", "%", event
+                );
+            }
         } catch (Exception e) {
-            Alert alert = new Alert(AlertType.ERROR);
-            alert.setTitle("Error");
-            alert.setHeaderText(null);
-            alert.setContentText(e.getMessage());
-            alert.showAndWait();
+            ShowAlert.showAlert(AlertType.ERROR, 
+                "Error", 
+                "Kesalahan Laporan", 
+                "Terjadi kesalahan saat membuat laporan:", 
+                e.getMessage());
         }
     }
 

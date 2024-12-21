@@ -4,7 +4,6 @@ import javafx.collections.FXCollections;
 import javafx.collections.transformation.FilteredList;
 import javafx.fxml.FXML;
 import javafx.scene.control.*;
-import javafx.scene.control.Alert.AlertType;
 
 import com.lestarieragemilang.desktop.model.Category;
 import com.lestarieragemilang.desktop.repository.GenericDao;
@@ -50,7 +49,6 @@ public class CategoryController extends HibernateUtil {
     }
 
     private void setDefaultComboBoxValues() {
-        // Set default values for combo boxes
         brandComboBox.setValue("Nike");
         typeComboBox.setValue("Shoes");
         sizeComboBox.setValue("M");
@@ -58,8 +56,8 @@ public class CategoryController extends HibernateUtil {
     }
 
     private void initializeSearch() {
-        filteredCategories = new FilteredList<>(categoryTable.getItems(), p -> true);
-        searchField.textProperty().addListener((observable, oldValue, newValue) -> {
+        filteredCategories = new FilteredList<>(categoryTable.getItems(), _ -> true);
+        searchField.textProperty().addListener((_, _, newValue) -> {
             filteredCategories.setPredicate(category -> {
                 if (newValue == null || newValue.isEmpty()) {
                     return true;
@@ -132,10 +130,7 @@ public class CategoryController extends HibernateUtil {
     private void handleSave() {
         String categoryId = categoryIdField.getText();
         if (categoryIdExists(categoryId)) {
-            ShowAlert.showAlert(
-                    AlertType.WARNING,
-                    "Duplicate Category ID",
-                    "Category ID already exists.");
+            ShowAlert.showWarning("ID Kategori sudah ada di database");
             generateAndSetCategoryId();
             return;
         }
@@ -149,6 +144,7 @@ public class CategoryController extends HibernateUtil {
         category.setWeightUnit(weightUnitComboBox.getValue());
 
         categoryService.save(category);
+        ShowAlert.showSuccess("Data kategori berhasil ditambahkan");
         loadCategories();
         clearFields();
     }
@@ -157,10 +153,7 @@ public class CategoryController extends HibernateUtil {
     private void handleUpdate() {
         Category selectedCategory = categoryTable.getSelectionModel().getSelectedItem();
         if (selectedCategory == null) {
-            ShowAlert.showAlert(
-                    AlertType.WARNING,
-                    "No Category Selected",
-                    "Please select a category to update.");
+            ShowAlert.showWarning("Silahkan pilih kategori yang akan diubah");
             return;
         }
 
@@ -174,6 +167,7 @@ public class CategoryController extends HibernateUtil {
         category.setWeightUnit(weightUnitComboBox.getValue());
 
         categoryService.update(category);
+        ShowAlert.showSuccess("Data kategori berhasil diubah");
         loadCategories();
         clearFields();
     }
@@ -182,16 +176,16 @@ public class CategoryController extends HibernateUtil {
     private void handleDelete() {
         Category selectedCategory = categoryTable.getSelectionModel().getSelectedItem();
         if (selectedCategory == null) {
-            ShowAlert.showAlert(
-                    AlertType.WARNING,
-                    "No Category Selected",
-                    "Please select a category to delete.");
+            ShowAlert.showWarning("Silahkan pilih kategori yang akan dihapus");
             return;
         }
 
-        categoryService.delete(selectedCategory);
-        loadCategories();
-        clearFields();
+        if (ShowAlert.showYesNo("Konfirmasi Hapus", "Apakah Anda yakin ingin menghapus data kategori ini?")) {
+            categoryService.delete(selectedCategory);
+            ShowAlert.showSuccess("Data kategori berhasil dihapus");
+            loadCategories();
+            clearFields();
+        }
     }
 
     @SuppressWarnings("unchecked")
@@ -199,10 +193,7 @@ public class CategoryController extends HibernateUtil {
     private void handleEdit() {
         Category selectedCategory = categoryTable.getSelectionModel().getSelectedItem();
         if (selectedCategory == null) {
-            ShowAlert.showAlert(
-                    AlertType.WARNING,
-                    "No Category Selected",
-                    "Please select a category to edit.");
+            ShowAlert.showWarning("Silahkan pilih kategori yang akan diubah");
             return;
         }
 
@@ -235,6 +226,7 @@ public class CategoryController extends HibernateUtil {
                     categoryService.update(category);
                 })
                 .afterSave(() -> {
+                    ShowAlert.showSuccess("Data kategori berhasil diubah");
                     loadCategories();
                     clearFields();
                 })

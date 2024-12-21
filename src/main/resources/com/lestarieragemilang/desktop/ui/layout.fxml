@@ -1,0 +1,229 @@
+<?xml version="1.0" encoding="UTF-8"?>
+
+<?import com.jfoenix.controls.JFXButton?>
+<?import javafx.geometry.Insets?>
+<?import javafx.scene.control.Label?>
+<?import javafx.scene.control.Separator?>
+<?import javafx.scene.image.Image?>
+<?import javafx.scene.image.ImageView?>
+<?import javafx.scene.layout.AnchorPane?>
+<?import javafx.scene.layout.BorderPane?>
+<?import javafx.scene.layout.ColumnConstraints?>
+<?import javafx.scene.layout.GridPane?>
+<?import javafx.scene.layout.HBox?>
+<?import javafx.scene.layout.RowConstraints?>
+<?import javafx.scene.layout.StackPane?>
+<?import javafx.scene.shape.Rectangle?>
+<?import javafx.scene.text.Font?>
+
+<BorderPane fx:id="bp" maxHeight="-Infinity" maxWidth="-Infinity" minHeight="-Infinity" minWidth="-Infinity" prefHeight="650.0" prefWidth="1200.0" xmlns="http://javafx.com/javafx/23.0.1" xmlns:fx="http://javafx.com/fxml/1" fx:controller="com.lestarieragemilang.desktop.controller.Layout">
+    <left>
+        <AnchorPane maxWidth="215.0" prefHeight="575.0" prefWidth="215.0" style="-fx-background-color: #222222;" BorderPane.alignment="CENTER">
+            <BorderPane.margin>
+                <Insets />
+            </BorderPane.margin>
+            <children>
+                <GridPane prefHeight="515.0" prefWidth="200.0" style="-fx-background-color: #E8E7DE;" AnchorPane.bottomAnchor="0.0" AnchorPane.leftAnchor="0.0" AnchorPane.rightAnchor="0.0" AnchorPane.topAnchor="0.0">
+                    <columnConstraints>
+                        <ColumnConstraints hgrow="SOMETIMES" maxWidth="111.33334350585938" minWidth="10.0" prefWidth="71.9999974568685" />
+                        <ColumnConstraints hgrow="SOMETIMES" maxWidth="135.0" minWidth="10.0" prefWidth="125.0" />
+                    </columnConstraints>
+                    <rowConstraints>
+                        <RowConstraints minHeight="10.0" prefHeight="30.0" vgrow="SOMETIMES" />
+                        <RowConstraints minHeight="10.0" prefHeight="30.0" vgrow="SOMETIMES" />
+                        <RowConstraints minHeight="10.0" prefHeight="30.0" vgrow="SOMETIMES" />
+                        <RowConstraints minHeight="10.0" prefHeight="30.0" vgrow="SOMETIMES" />
+                        <RowConstraints minHeight="10.0" prefHeight="30.0" vgrow="SOMETIMES" />
+                        <RowConstraints minHeight="10.0" prefHeight="30.0" vgrow="SOMETIMES" />
+                        <RowConstraints minHeight="10.0" prefHeight="30.0" vgrow="SOMETIMES" />
+                    </rowConstraints>
+                    <children>
+                        <HBox alignment="CENTER_LEFT" prefHeight="50.0" prefWidth="230.0" spacing="10.0" GridPane.rowIndex="0">
+                            <children>
+                                <StackPane>
+                                    <Rectangle arcHeight="20.0" arcWidth="20.0" fill="#EEEEEE" height="50.0" width="50" />
+                                    <ImageView fitHeight="35.0" fitWidth="50.0" pickOnBounds="true" preserveRatio="true" styleClass="navText">
+                                        <image>
+                                            <Image url="@../Assets/Images/box_.png" />
+                                        </image>
+                                    </ImageView>
+                                </StackPane>
+                            </children>
+                            <padding>
+                                <Insets left="20.0" />
+                            </padding>
+                        </HBox>
+                        <HBox alignment="CENTER_LEFT" prefHeight="50.0" prefWidth="230.0" spacing="10.0" GridPane.rowIndex="1">
+                            <children>
+                                <StackPane>
+                                    <Rectangle arcHeight="20.0" arcWidth="20.0" fill="#EEEEEE" height="50.0" width="50" />
+                                    <ImageView fitHeight="35.0" fitWidth="50.0" pickOnBounds="true" preserveRatio="true" styleClass="navText">
+                                        <image>
+                                            <Image url="@../Assets/Images/delivery-fast-fill_.png" />
+                                        </image>
+                                    </ImageView>
+                                </StackPane>
+                            </children>
+                            <padding>
+                                <Insets left="20.0" />
+                            </padding>
+                        </HBox>
+                        <HBox alignment="CENTER_LEFT" prefHeight="50.0" prefWidth="230.0" spacing="10.0" GridPane.rowIndex="2">
+                            <children>
+                                <StackPane>
+                                    <Rectangle arcHeight="20.0" arcWidth="20.0" fill="#EEEEEE" height="50.0" width="50" />
+                                    <ImageView fitHeight="35.0" fitWidth="50.0" pickOnBounds="true" preserveRatio="true" styleClass="navText">
+                                        <image>
+                                            <Image url="@../Assets/Images/clipboard_.png" />
+                                        </image>
+                                    </ImageView>
+                                </StackPane>
+                            </children>
+                            <padding>
+                                <Insets left="20.0" />
+                            </padding>
+                        </HBox>
+                        <HBox alignment="CENTER_LEFT" prefHeight="50.0" prefWidth="230.0" spacing="10.0" GridPane.rowIndex="3">
+                            <children>
+                                <StackPane>
+                                    <Rectangle arcHeight="20.0" arcWidth="20.0" fill="#EEEEEE" height="50.0" width="50" />
+                                    <ImageView fitHeight="35.0" fitWidth="50.0" pickOnBounds="true" preserveRatio="true" styleClass="navText">
+                                        <image>
+                                            <Image url="@../Assets/Images/earth_.png" />
+                                        </image>
+                                    </ImageView>
+                                </StackPane>
+                            </children>
+                            <padding>
+                                <Insets left="20.0" />
+                            </padding>
+                        </HBox>
+                        <HBox alignment="CENTER_LEFT" prefHeight="50.0" prefWidth="230.0" spacing="10.0" GridPane.rowIndex="4">
+                            <children>
+                                <StackPane>
+                                    <Rectangle arcHeight="20.0" arcWidth="20.0" fill="#EEEEEE" height="50.0" width="50" />
+                                    <ImageView fitHeight="35.0" fitWidth="50.0" pickOnBounds="true" preserveRatio="true" styleClass="navText">
+                                        <image>
+                                            <Image url="@../Assets/Images/money_.png" />
+                                        </image>
+                                    </ImageView>
+                                </StackPane>
+                            </children>
+                            <padding>
+                                <Insets left="20.0" />
+                            </padding>
+                        </HBox>
+                        <HBox alignment="CENTER_LEFT" prefHeight="50.0" prefWidth="230.0" spacing="10.0" GridPane.rowIndex="5">
+                            <children>
+                                <StackPane>
+                                    <Rectangle arcHeight="20.0" arcWidth="20.0" fill="#EEEEEE" height="50.0" width="50" />
+                                    <ImageView fitHeight="35.0" fitWidth="50.0" pickOnBounds="true" preserveRatio="true" styleClass="navText">
+                                        <image>
+                                            <Image url="@../Assets/Images/arrow-bottom-left-2_.png" />
+                                        </image>
+                                    </ImageView>
+                                </StackPane>
+                            </children>
+                            <padding>
+                                <Insets left="20.0" />
+                            </padding>
+                        </HBox>
+                        <HBox alignment="CENTER_LEFT" prefHeight="50.0" prefWidth="230.0" spacing="10.0" GridPane.rowIndex="6">
+                            <children>
+                                <StackPane>
+                                    <Rectangle arcHeight="20.0" arcWidth="20.0" fill="#EEEEEE" height="50.0" width="50" />
+                                    <ImageView fitHeight="35.0" fitWidth="50.0" pickOnBounds="true" preserveRatio="true" styleClass="navText">
+                                        <image>
+                                            <Image url="@../Assets/Images/bookmark-tabs_.png" />
+                                        </image>
+                                    </ImageView>
+                                </StackPane>
+                            </children>
+                            <padding>
+                                <Insets left="20.0" />
+                            </padding>
+                        </HBox>
+                        <JFXButton fx:id="navButtons" alignment="BASELINE_LEFT" onMouseClicked="#handleNavButtonClick" prefHeight="50.0" prefWidth="120.0" style="-fx-background-color: #EEEEEE; -fx-background-radius: 10; -fx-text-fill: #333333; -fx-cursor: hand; -fx-font-weight: bold; -fx-border-radius: 10;" text="Stok Besi" GridPane.columnIndex="1">
+                            <font>
+                                <Font size="14.0" />
+                            </font>
+                        </JFXButton>
+                        <JFXButton fx:id="navButtons" alignment="BASELINE_LEFT" onMouseClicked="#handleNavButtonClick" prefHeight="50.0" prefWidth="120.0" style="-fx-background-color: #EEEEEE; -fx-background-radius: 10; -fx-text-fill: #333333; -fx-cursor: hand; -fx-font-weight: bold; -fx-border-radius: 10;" text="Supplier" GridPane.columnIndex="1" GridPane.rowIndex="1">
+                            <font>
+                                <Font size="14.0" />
+                            </font>
+                        </JFXButton>
+                        <JFXButton fx:id="navButtons" alignment="BASELINE_LEFT" onMouseClicked="#handleNavButtonClick" prefHeight="50.0" prefWidth="120.0" style="-fx-background-color: #EEEEEE; -fx-background-radius: 10; -fx-text-fill: #333333; -fx-cursor: hand; -fx-font-weight: bold; -fx-border-radius: 10;" text="Kategori" GridPane.columnIndex="1" GridPane.rowIndex="2">
+                            <font>
+                                <Font size="14.0" />
+                            </font>
+                        </JFXButton>
+                        <JFXButton fx:id="navButtons" alignment="BASELINE_LEFT" onMouseClicked="#handleNavButtonClick" prefHeight="50.0" prefWidth="120.0" style="-fx-background-color: #EEEEEE; -fx-background-radius: 10; -fx-text-fill: #333333; -fx-cursor: hand; -fx-font-weight: bold; -fx-border-radius: 10;" text="Pelanggan" GridPane.columnIndex="1" GridPane.rowIndex="3">
+                            <font>
+                                <Font size="14.0" />
+                            </font>
+                        </JFXButton>
+                        <JFXButton fx:id="navButtons" alignment="BASELINE_LEFT" onMouseClicked="#handleNavButtonClick" prefHeight="50.0" prefWidth="120.0" style="-fx-background-color: #EEEEEE; -fx-background-radius: 10; -fx-text-fill: #333333; -fx-cursor: hand; -fx-font-weight: bold; -fx-border-radius: 10;" text="Transaksi" GridPane.columnIndex="1" GridPane.rowIndex="4">
+                            <font>
+                                <Font size="14.0" />
+                            </font>
+                        </JFXButton>
+                        <JFXButton fx:id="navButtons" alignment="BASELINE_LEFT" onMouseClicked="#handleNavButtonClick" prefHeight="50.0" prefWidth="120.0" style="-fx-background-color: #EEEEEE; -fx-background-radius: 10; -fx-text-fill: #333333; -fx-cursor: hand; -fx-font-weight: bold; -fx-border-radius: 10;" text="Pengembalian" GridPane.columnIndex="1" GridPane.rowIndex="5">
+                            <font>
+                                <Font size="14.0" />
+                            </font>
+                        </JFXButton>
+                        <JFXButton fx:id="navButtons" alignment="BASELINE_LEFT" onMouseClicked="#handleNavButtonClick" prefHeight="50.0" prefWidth="120.0" style="-fx-background-color: #EEEEEE; -fx-background-radius: 10; -fx-text-fill: #333333; -fx-cursor: hand; -fx-font-weight: bold; -fx-border-radius: 10;" text="Laporan" GridPane.columnIndex="1" GridPane.rowIndex="6">
+                            <font>
+                                <Font size="14.0" />
+                            </font>
+                        </JFXButton>
+                    </children>
+                </GridPane>
+            </children>
+        </AnchorPane>
+    </left>
+    <top>
+        <AnchorPane prefHeight="75.0" prefWidth="200.0" style="-fx-background-color: #EEEEEE;" BorderPane.alignment="CENTER">
+            <children>
+                <HBox alignment="CENTER" layoutX="20.0" layoutY="9.0" prefHeight="35.0" prefWidth="660.0" spacing="20.0" AnchorPane.bottomAnchor="20.0" AnchorPane.leftAnchor="20.0" AnchorPane.rightAnchor="520.0" AnchorPane.topAnchor="20.0">
+                    <children>
+                        <Label prefHeight="35.0" prefWidth="326.0" text="PT LESTARI ERA GEMILANG" textFill="#333333">
+                            <font>
+                                <Font name="System Bold" size="24.0" />
+                            </font>
+                        </Label>
+                        <Separator orientation="VERTICAL" prefHeight="35.0" prefWidth="15.0" />
+                        <Label fx:id="localTimeApp" prefHeight="27.0" prefWidth="250.0" textFill="#333333">
+                            <font>
+                                <Font name="System Bold" size="18.0" />
+                            </font>
+                        </Label>
+                    </children>
+                </HBox>
+                <HBox alignment="CENTER" layoutX="967.0" layoutY="20.0" prefHeight="40.0" prefWidth="215.0" spacing="20.0">
+                    <children>
+                        <JFXButton alignment="BASELINE_CENTER" onMouseClicked="#setSceneLogin" prefHeight="40.0" prefWidth="85.0" style="-fx-background-radius: 10; -fx-cursor: hand; -fx-background-color: #FBF6E2; -fx-text-fill: #333333; -fx-border-color: gray; -fx-border-radius: 10; -fx-font-weight: bold;" text="LOG OUT" textFill="WHITE">
+                            <font>
+                                <Font size="14.0" />
+                            </font>
+                        </JFXButton>
+                        <JFXButton alignment="BASELINE_CENTER" onMouseClicked="#isMinimizeApp" prefHeight="40.0" prefWidth="40.0" style="-fx-background-radius: 10; -fx-cursor: hand; -fx-background-color: orange; -fx-text-fill: white; -fx-border-color: gray; -fx-border-radius: 10; -fx-font-weight: bold;" text="-" textFill="#333333">
+                            <font>
+                                <Font size="14.0" />
+                            </font>
+                        </JFXButton>
+                        <JFXButton alignment="BASELINE_CENTER" onMouseClicked="#isExitApp" prefHeight="40.0" prefWidth="40.0" style="-fx-background-radius: 10; -fx-cursor: hand; -fx-background-color: red; -fx-text-fill: white; -fx-border-color: gray; -fx-border-radius: 10; -fx-font-weight: bold;" text="X" textFill="#333333">
+                            <font>
+                                <Font size="14.0" />
+                            </font>
+                        </JFXButton>
+                    </children>
+                </HBox>
+            </children>
+        </AnchorPane>
+    </top>
+    <center>
+        <AnchorPane fx:id="setScene" onMouseClicked="#handleNavButtonClick" prefHeight="575.0" prefWidth="988.0" style="-fx-border-color: #EEEEEE; -fx-background-color: #E8E7DE;" BorderPane.alignment="CENTER" />
+    </center>
+</BorderPane>
