@@ -57,15 +57,12 @@ public class ReturnsController extends HibernateUtil {
         loadReturns();
         generateAndSetReturnId();
 
-        // Disable the return ID field
         returnIDIncrement.setDisable(true);
 
-        // Set up radio button group
         ToggleGroup returnTypeGroup = new ToggleGroup();
         returnIsBuy.setToggleGroup(returnTypeGroup);
         returnIsSell.setToggleGroup(returnTypeGroup);
 
-        // Add listener to toggle group
         returnTypeGroup.selectedToggleProperty().addListener((_, _, newValue) -> {
             if (newValue != null) {
                 updateInvoiceComboBox();

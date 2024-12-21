@@ -85,7 +85,6 @@ public class Layout extends Redirect {
             JFXButton clickedButton = (JFXButton) event.getSource();
             String buttonText = clickedButton.getText();
 
-            // Use regex to remove spaces and keep capitalization
             String sceneName = buttonText.replaceAll("\\s+", "");
 
             System.out.println("Button clicked: " + buttonText);

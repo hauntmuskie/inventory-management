@@ -38,7 +38,6 @@ public class CustomerController extends HibernateUtil {
         loadCustomers();
         generateAndSetCustomerId();
 
-        // Disable the customer ID field
         customerIDIncrement.setDisable(true);
     }
 

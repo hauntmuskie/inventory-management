@@ -42,7 +42,7 @@ public class ReportController extends Redirect {
         if (!currentScene.equals(SceneManager.REPORT_MAIN)) {
             switchScene(setScene, SceneManager.REPORT_MAIN, () -> {
                 currentScene = SceneManager.REPORT_MAIN;
-                // Clear the current scene's content
+                
                 setScene.getChildren().clear();
             });
         }

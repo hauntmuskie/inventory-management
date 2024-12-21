@@ -16,7 +16,6 @@ import javafx.scene.control.TableColumn;
 import javafx.scene.control.TableView;
 import javafx.scene.control.TextField;
 import javafx.scene.input.MouseEvent;
-import javafx.scene.control.Alert;
 import javafx.scene.control.Alert.AlertType;
 
 import org.hibernate.Session;
@@ -98,10 +97,7 @@ public class ReportSales {
       Date secondDate = secondLocalDate != null ? convertToDate(secondLocalDate.plusDays(1)) : null;
 
       if (firstLocalDate != null && secondLocalDate != null && firstLocalDate.isAfter(secondLocalDate)) {
-        ShowAlert.showAlert(AlertType.ERROR, 
-            "Error", 
-            "Kesalahan Tanggal", 
-            "Tanggal awal harus sebelum atau sama dengan tanggal akhir");
+        ShowAlert.showError("Tanggal awal harus sebelum atau sama dengan tanggal akhir");
         return;
       }
 
@@ -127,11 +123,7 @@ public class ReportSales {
   }
 
   private void showError(String message) {
-    Alert alert = new Alert(AlertType.ERROR);
-    alert.setTitle("Error");
-    alert.setHeaderText(null);
-    alert.setContentText(message);
-    alert.showAndWait();
+    ShowAlert.showError(message);
   }
 
   @FXML

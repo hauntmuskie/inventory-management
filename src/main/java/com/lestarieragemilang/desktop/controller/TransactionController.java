@@ -91,7 +91,6 @@ public class TransactionController extends HibernateUtil {
         supplierService = new GenericService<>(new GenericDao<>(Supplier.class), "SUP", 3);
         customerService = new GenericService<>(new GenericDao<>(Customer.class), "CUS", 3);
 
-        // Apply number formatting to price and total fields
         NumberFormatter.applyNumberFormat(buyPriceField);
         NumberFormatter.applyNumberFormat(buyTotalPrice);
         NumberFormatter.applyNumberFormat(sellPriceField);
@@ -197,9 +196,9 @@ public class TransactionController extends HibernateUtil {
                 TableUtils.createColumn("Invoice", "invoiceNumber"),
                 TableUtils.createColumn("Supplier", "supplier.supplierId"),
                 TableUtils.createColumn("Quantity", "quantity"),
-                TableUtils.createFormattedColumn("Price", "price"), // Changed to formatted
-                TableUtils.createFormattedColumn("Sub Total", "subTotal"), // Changed to formatted
-                TableUtils.createFormattedColumn("Total", "priceTotal")); // Changed to formatted
+                TableUtils.createFormattedColumn("Price", "price"),
+                TableUtils.createFormattedColumn("Sub Total", "subTotal"),
+                TableUtils.createFormattedColumn("Total", "priceTotal"));
         buyTable.getColumns().setAll(buyColumns);
         buyTable.setItems(pendingPurchases);
 

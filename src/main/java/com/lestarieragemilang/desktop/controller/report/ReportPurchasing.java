@@ -16,9 +16,6 @@ import javafx.scene.control.TableColumn;
 import javafx.scene.control.TableView;
 import javafx.scene.control.TextField;
 import javafx.scene.input.MouseEvent;
-import javafx.scene.control.Alert;
-import javafx.scene.control.Alert.AlertType;
-
 import org.hibernate.Session;
 import org.hibernate.query.Query;
 
@@ -26,6 +23,7 @@ import com.lestarieragemilang.desktop.model.Purchasing;
 import com.lestarieragemilang.desktop.utils.TableUtils;
 import com.lestarieragemilang.desktop.utils.HibernateUtil;
 import com.lestarieragemilang.desktop.utils.JasperLoader;
+import com.lestarieragemilang.desktop.utils.ShowAlert;
 
 public class ReportPurchasing {
 
@@ -81,7 +79,7 @@ public class ReportPurchasing {
     }
 
     if (url == null) {
-      showError("Could not find report template");
+      ShowAlert.showError("Template laporan tidak ditemukan");
       return;
     }
 
@@ -94,9 +92,8 @@ public class ReportPurchasing {
       Date firstDate = firstLocalDate != null ? convertToDate(firstLocalDate) : null;
       Date secondDate = secondLocalDate != null ? convertToDate(secondLocalDate.plusDays(1)) : null;
 
-      // Validate date range
       if (firstLocalDate != null && secondLocalDate != null && firstLocalDate.isAfter(secondLocalDate)) {
-        showError("Start date must be before or equal to end date");
+        ShowAlert.showError("Start date must be before or equal to end date");
         return;
       }
 
@@ -108,21 +105,13 @@ public class ReportPurchasing {
           event
       );
     } catch (Exception e) {
-      showError("Error generating report: " + e.getMessage());
+      ShowAlert.showError("Terjadi kesalahan saat membuat laporan: " + e.getMessage());
     }
   }
 
   private Date convertToDate(LocalDate localDate) {
     return localDate != null ? 
         Date.from(localDate.atStartOfDay(ZoneId.systemDefault()).toInstant()) : null;
-  }
-
-  private void showError(String message) {
-    Alert alert = new Alert(AlertType.ERROR);
-    alert.setTitle("Error");
-    alert.setHeaderText(null);
-    alert.setContentText(message);
-    alert.showAndWait();
   }
 
   @FXML
@@ -165,7 +154,6 @@ public class ReportPurchasing {
   }
 
   private void setupDateSearchMutualExclusion() {
-    // Disable search when dates are selected
     BuyListDateFirstField.valueProperty().addListener((obs, old, newValue) -> {
         BuyListSearchField.setDisable(newValue != null);
         if (newValue != null) {
@@ -180,7 +168,6 @@ public class ReportPurchasing {
         }
     });
 
-    // Disable dates when search is used
     BuyListSearchField.textProperty().addListener((obs, old, newValue) -> {
         boolean hasText = !newValue.isEmpty();
         BuyListDateFirstField.setDisable(hasText);

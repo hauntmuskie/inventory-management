@@ -9,7 +9,6 @@ import com.lestarieragemilang.desktop.utils.ShowAlert;
 import javafx.collections.FXCollections;
 import javafx.collections.transformation.FilteredList;
 import javafx.fxml.FXML;
-import javafx.scene.control.Alert.AlertType;
 import javafx.scene.control.TableColumn;
 import javafx.scene.control.TableView;
 import javafx.scene.control.TextField;
@@ -39,10 +38,7 @@ public class ReportStock {
     }
     
     if (url == null) {
-      ShowAlert.showAlert(AlertType.ERROR, 
-          "Error", 
-          "Kesalahan Template", 
-          "Template laporan tidak ditemukan");
+      ShowAlert.showError("Template laporan tidak ditemukan");
       return;
     }
 
@@ -68,11 +64,7 @@ public class ReportStock {
         );
       }
     } catch (Exception e) {
-      ShowAlert.showAlert(AlertType.ERROR, 
-          "Error", 
-          "Kesalahan Laporan", 
-          "Terjadi kesalahan saat membuat laporan:", 
-          e.getMessage());
+      ShowAlert.showError("Terjadi kesalahan saat membuat laporan: " + e.getMessage());
     }
   }
 
