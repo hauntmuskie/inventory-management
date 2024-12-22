@@ -1,6 +1,7 @@
 package com.lestarieragemilang.desktop.controller;
 
 import com.jfoenix.controls.JFXButton;
+import com.lestarieragemilang.desktop.App;
 import com.lestarieragemilang.desktop.utils.Redirect;
 import com.lestarieragemilang.desktop.utils.ShowAlert;
 
@@ -8,6 +9,7 @@ import javafx.animation.KeyFrame;
 import javafx.animation.Timeline;
 import javafx.fxml.FXML;
 import javafx.scene.Parent;
+import javafx.scene.Scene;
 import javafx.scene.control.Label;
 import javafx.scene.input.MouseEvent;
 import javafx.scene.layout.AnchorPane;
@@ -100,13 +102,23 @@ public class Layout extends Redirect {
     @FXML
     void setSceneLogin(MouseEvent event) {
         if (ShowAlert.showConfirmation("Konfirmasi", "Login", "Apakah anda yakin ingin kembali ke halaman login?")) {
+            Stage currentStage = getStage();
             switchToLoginScene();
+            currentStage.close();
         }
     }
 
     private void switchToLoginScene() {
-        switchScene(setScene, "login", () -> {
-        });
+        try {
+            Stage loginStage = new Stage();
+            Parent root = App.sceneManager.getScene("login");
+            Scene scene = new Scene(root);
+            loginStage.setScene(scene);
+            loginStage.show();
+        } catch (IOException e) {
+            ShowAlert.showError("Gagal membuka halaman login");
+            throw new RuntimeException("Gagal membuka halaman login", e);
+        }
     }
 
     @Override

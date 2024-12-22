@@ -58,6 +58,8 @@ public class JasperLoader {
 
             final JasperViewer viewer = new JasperViewer(jasperPrint, false);
             Platform.runLater(() -> {
+                // Set specific zoom ratio (77.52%)
+                viewer.setZoomRatio(0.7752f);
                 viewer.setVisible(true);
                 ShowAlert.showSuccess("Laporan berhasil dibuat");
             });

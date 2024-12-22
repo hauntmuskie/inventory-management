@@ -7,6 +7,7 @@ import javafx.scene.layout.AnchorPane;
 import javafx.animation.PauseTransition;
 import javafx.util.Duration;
 import javafx.application.Platform;
+import javafx.stage.Stage;
 
 import java.io.IOException;
 
@@ -48,17 +49,17 @@ public abstract class Redirect {
     Preconditions.checkNotNull(setNewScene, "SetNewScene tidak boleh kosong");
 
     animateFadeOut(currentScene, () -> {
-      PauseTransition delay = new PauseTransition(Duration.seconds(0.5));
-      delay.setOnFinished(_ -> {
+      Platform.runLater(() -> {
         setNewScene.run();
         try {
-          loadScene(newSceneName, currentScene);
-        } catch (IOException ex) {
-          ShowAlert.showError("Gagal mengganti halaman");
-          throw new RuntimeException("Gagal mengganti halaman", ex);
+          Stage currentStage = (Stage) currentScene.getScene().getWindow();
+          if (currentStage != null) {
+            currentStage.hide();
+          }
+        } catch (Exception e) {
+            System.err.println("Error hiding current stage: " + e.getMessage());
         }
       });
-      delay.play();
     });
   }
 }
