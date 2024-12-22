@@ -53,22 +53,38 @@ public class ReportSupplier {
 
     try {
       JasperLoader loader = new JasperLoader();
-      Supplier supplier = supplierTable.getSelectionModel().getSelectedItem();
-      if (supplier != null) {
+      String searchText = supplierSearchField.getText();
+      
+      // If there's a search term, use it to filter the report
+      if (searchText != null && !searchText.isEmpty()) {
         loader.showJasperReportSupplier(
             url,
-            supplier.getSupplierId(),
-            supplier.getSupplierName(),
-            supplier.getContact(),
-            supplier.getAddress(), 
-            supplier.getEmail(),
+            "%" + searchText + "%",
+            "%" + searchText + "%",
+            "%" + searchText + "%",
+            "%" + searchText + "%",
+            "%" + searchText + "%",
             event
         );
       } else {
-        loader.showJasperReportSupplier(
-            url,
-            "%", "%", "%", "%", "%", event
-        );
+        // If no search term, print selected item or all data
+        Supplier supplier = supplierTable.getSelectionModel().getSelectedItem();
+        if (supplier != null) {
+          loader.showJasperReportSupplier(
+              url,
+              supplier.getSupplierId(),
+              supplier.getSupplierName(),
+              supplier.getContact(),
+              supplier.getAddress(), 
+              supplier.getEmail(),
+              event
+          );
+        } else {
+          loader.showJasperReportSupplier(
+              url,
+              "%", "%", "%", "%", "%", event
+          );
+        }
       }
     } catch (Exception e) {
       ShowAlert.showAlert(AlertType.ERROR, 

@@ -44,21 +44,37 @@ public class ReportCategory {
     }
 
     try {
-      Category selectedCategory = categoryTable.getSelectionModel().getSelectedItem();
       JasperLoader loader = new JasperLoader();
-      if (selectedCategory != null) {
-        loader.showJasperReportCategory(url,
-            selectedCategory.getBrand(),
-            selectedCategory.getProductType(),
-            selectedCategory.getSize(),
-            selectedCategory.getWeight().toString(),
-            selectedCategory.getWeightUnit(),
+      String searchText = categorySearchField.getText();
+
+      if (searchText != null && !searchText.isEmpty()) {
+        loader.showJasperReportCategory(
+            url,
+            "%" + searchText + "%",
+            "%" + searchText + "%",
+            "%" + searchText + "%",
+            "%" + searchText + "%",
+            "%" + searchText + "%",
             event
         );
       } else {
-        loader.showJasperReportCategory(url,
-            "%", "%", "%", "%", "%", event
-        );
+        Category selectedCategory = categoryTable.getSelectionModel().getSelectedItem();
+        if (selectedCategory != null) {
+          loader.showJasperReportCategory(
+              url,
+              selectedCategory.getBrand(),
+              selectedCategory.getProductType(),
+              selectedCategory.getSize(),
+              selectedCategory.getWeight().toString(),
+              selectedCategory.getWeightUnit(),
+              event
+          );
+        } else {
+          loader.showJasperReportCategory(
+              url,
+              "%", "%", "%", "%", "%", event
+          );
+        }
       }
     } catch (Exception e) {
       ShowAlert.showError("Terjadi kesalahan saat membuat laporan: " + e.getMessage());

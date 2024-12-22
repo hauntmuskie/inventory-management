@@ -47,22 +47,37 @@ public class ReportReturn {
         }
 
         try {
-            Returns selectedReturn = returnTable.getSelectionModel().getSelectedItem();
             JasperLoader loader = new JasperLoader();
-            if (selectedReturn != null) {
-                String returnDateStr = selectedReturn.getReturnDate().toString();
-                loader.showJasperReportReturn(url,
-                    selectedReturn.getReturnId(),
-                    returnDateStr,
-                    selectedReturn.getReturnType(),
-                    selectedReturn.getInvoiceNumber(),
-                    selectedReturn.getReason(),
+            String searchText = returnSearchField.getText();
+
+            if (searchText != null && !searchText.isEmpty()) {
+                loader.showJasperReportReturn(
+                    url,
+                    "%" + searchText + "%",
+                    "%",
+                    "%",
+                    "%",
+                    "%",
                     event
                 );
             } else {
-                loader.showJasperReportReturn(url,
-                    "%", "%", "%", "%", "%", event
-                );
+                Returns selectedReturn = returnTable.getSelectionModel().getSelectedItem();
+                if (selectedReturn != null) {
+                    loader.showJasperReportReturn(
+                        url,
+                        "%" + selectedReturn.getReturnId() + "%",
+                        selectedReturn.getReturnDate().toString(),
+                        selectedReturn.getReturnType(),
+                        selectedReturn.getInvoiceNumber(),
+                        selectedReturn.getReason(),
+                        event
+                    );
+                } else {
+                    loader.showJasperReportReturn(
+                        url,
+                        "%", "%", "%", "%", "%", event
+                    );
+                }
             }
         } catch (Exception e) {
             ShowAlert.showError("Terjadi kesalahan saat membuat laporan: " + e.getMessage());

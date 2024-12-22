@@ -89,25 +89,37 @@ public class ReportSales {
 
     try {
       JasperLoader loader = new JasperLoader();
+      String searchText = SellListSearchField.getText();
       LocalDate firstLocalDate = SellListDateFirstField.getValue();
       LocalDate secondLocalDate = SellListDateSecondField.getValue();
-      String searchText = SellListSearchField.getText();
 
-      Date firstDate = firstLocalDate != null ? convertToDate(firstLocalDate) : null;
-      Date secondDate = secondLocalDate != null ? convertToDate(secondLocalDate.plusDays(1)) : null;
-
-      if (firstLocalDate != null && secondLocalDate != null && firstLocalDate.isAfter(secondLocalDate)) {
-        ShowAlert.showError("Tanggal awal harus sebelum atau sama dengan tanggal akhir");
-        return;
+      if (searchText != null && !searchText.isEmpty()) {
+        loader.showJasperReportSellList(
+            url,
+            "%" + searchText + "%",
+            null,
+            null,
+            event
+        );
+      } else if (firstLocalDate != null && secondLocalDate != null) {
+        Date firstDate = convertToDate(firstLocalDate);
+        Date secondDate = convertToDate(secondLocalDate.plusDays(1));
+        loader.showJasperReportSellList(
+            url,
+            "%",
+            firstDate,
+            secondDate,
+            event
+        );
+      } else {
+        loader.showJasperReportSellList(
+            url,
+            "%",
+            null,
+            null,
+            event
+        );
       }
-
-      loader.showJasperReportSellList(
-          url,
-          searchText != null && !searchText.isEmpty() ? "%" + searchText + "%" : "%",
-          firstDate,
-          secondDate,
-          event
-      );
     } catch (Exception e) {
       ShowAlert.showAlert(AlertType.ERROR, 
           "Error", 

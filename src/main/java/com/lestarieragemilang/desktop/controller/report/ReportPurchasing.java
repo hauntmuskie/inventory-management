@@ -85,25 +85,37 @@ public class ReportPurchasing {
 
     try {
       JasperLoader loader = new JasperLoader();
+      String searchText = BuyListSearchField.getText();
       LocalDate firstLocalDate = BuyListDateFirstField.getValue();
       LocalDate secondLocalDate = BuyListDateSecondField.getValue();
-      String searchText = BuyListSearchField.getText();
 
-      Date firstDate = firstLocalDate != null ? convertToDate(firstLocalDate) : null;
-      Date secondDate = secondLocalDate != null ? convertToDate(secondLocalDate.plusDays(1)) : null;
-
-      if (firstLocalDate != null && secondLocalDate != null && firstLocalDate.isAfter(secondLocalDate)) {
-        ShowAlert.showError("Start date must be before or equal to end date");
-        return;
+      if (searchText != null && !searchText.isEmpty()) {
+        loader.showJasperReportBuyList(
+            url,
+            "%" + searchText + "%",
+            null,
+            null,
+            event
+        );
+      } else if (firstLocalDate != null && secondLocalDate != null) {
+        Date firstDate = convertToDate(firstLocalDate);
+        Date secondDate = convertToDate(secondLocalDate.plusDays(1));
+        loader.showJasperReportBuyList(
+            url,
+            "%",
+            firstDate,
+            secondDate,
+            event
+        );
+      } else {
+        loader.showJasperReportBuyList(
+            url,
+            "%",
+            null,
+            null,
+            event
+        );
       }
-
-      loader.showJasperReportBuyList(
-          url,
-          searchText != null && !searchText.isEmpty() ? "%" + searchText + "%" : "%",
-          firstDate,
-          secondDate,
-          event
-      );
     } catch (Exception e) {
       ShowAlert.showError("Terjadi kesalahan saat membuat laporan: " + e.getMessage());
     }

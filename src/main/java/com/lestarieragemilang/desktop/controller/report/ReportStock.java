@@ -42,26 +42,44 @@ public class ReportStock {
       return;
     }
 
-    Stock selectedStock = stockTable.getSelectionModel().getSelectedItem();
-    
     try {
       JasperLoader loader = new JasperLoader();
-      if (selectedStock != null) {
-        loader.showJasperReportStock(url,
-            selectedStock.getCategory().getBrand(),
-            selectedStock.getCategory().getProductType(),
-            selectedStock.getCategory().getSize(),
-            selectedStock.getCategory().getWeight().toString(),
-            selectedStock.getCategory().getWeightUnit(),
-            selectedStock.getQuantity().toString(),
-            selectedStock.getPurchasePrice().toString(),
-            selectedStock.getSellingPrice().toString(),
+      String searchText = stockSearchField.getText();
+
+      if (searchText != null && !searchText.isEmpty()) {
+        loader.showJasperReportStock(
+            url,
+            "%" + searchText + "%",
+            "%" + searchText + "%",
+            "%" + searchText + "%",
+            "%" + searchText + "%",
+            "%" + searchText + "%",
+            "%" + searchText + "%",
+            "%" + searchText + "%",
+            "%" + searchText + "%",
             event
         );
       } else {
-        loader.showJasperReportStock(url,
-            "%", "%", "%", "%", "%", "%", "%", "%", event
-        );
+        Stock stock = stockTable.getSelectionModel().getSelectedItem();
+        if (stock != null) {
+          loader.showJasperReportStock(
+              url,
+              stock.getCategory().getBrand(),
+              stock.getCategory().getProductType(),
+              stock.getCategory().getSize(),
+              stock.getCategory().getWeight().toString(),
+              stock.getCategory().getWeightUnit(),
+              stock.getQuantity().toString(),
+              stock.getPurchasePrice().toString(),
+              stock.getSellingPrice().toString(),
+              event
+          );
+        } else {
+          loader.showJasperReportStock(
+              url,
+              "%", "%", "%", "%", "%", "%", "%", "%", event
+          );
+        }
       }
     } catch (Exception e) {
       ShowAlert.showError("Terjadi kesalahan saat membuat laporan: " + e.getMessage());

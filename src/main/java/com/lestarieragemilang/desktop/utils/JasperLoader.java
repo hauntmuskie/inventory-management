@@ -42,7 +42,7 @@ public class JasperLoader {
                 ShowAlert.showError("Template laporan tidak ditemukan");
                 return;
             }
-            
+
             if (!HibernateUtil.isDatabaseAvailable()) {
                 ShowAlert.showDatabaseError("Database tidak tersedia");
                 return;
@@ -64,15 +64,15 @@ public class JasperLoader {
 
         } catch (JRException e) {
             logger.error("Error saat memuat Jasper Report", e);
-            ShowAlert.showError("Gagal memuat laporan: " + e.getMessage() + 
-                              "\nSilakan periksa template laporan");
+            ShowAlert.showError("Gagal memuat laporan: " + e.getMessage() +
+                    "\nSilakan periksa template laporan");
         } catch (Exception e) {
             logger.error("Error tidak terduga", e);
             ShowAlert.showError("Terjadi kesalahan: " + e.getMessage());
         }
     }
 
-    public void showJasperReportSupplier(URL location, String supplierId, String nameSupplier, 
+    public void showJasperReportSupplier(URL location, String supplierId, String nameSupplier,
             String contactSupplier, String addressSupplier, String emailSupplier, MouseEvent event) {
         Map<String, Object> parameters = Maps.newHashMap();
         parameters.put("supplierId", "%" + supplierId + "%");
@@ -123,8 +123,8 @@ public class JasperLoader {
             MouseEvent event) {
         Map<String, Object> parameters = Maps.newHashMap();
         parameters.put("invoicePurchasing", Optional.ofNullable(invoicePurchasing).orElse("%"));
-        parameters.put("firstDate", Optional.ofNullable(firstDate).orElse(new Date(0))); // Default to epoch if null
-        parameters.put("secondDate", Optional.ofNullable(secondDate).orElse(new Date())); // Default to current date if null
+        parameters.put("firstDate", Optional.ofNullable(firstDate).orElse(new Date(0)));
+        parameters.put("secondDate", Optional.ofNullable(secondDate).orElse(new Date()));
         showReport(location, parameters);
     }
 
