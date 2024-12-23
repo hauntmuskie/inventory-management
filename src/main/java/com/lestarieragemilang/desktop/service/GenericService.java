@@ -25,10 +25,23 @@ public class GenericService<T> {
         this.affectedScenes = affectedScenes;
     }
 
+    private void invalidateAllCaches() {
+        // Invalidate all known scenes to ensure data consistency across the application
+        App.sceneManager.invalidateScenes(
+            "stokbesi", 
+            "kategori", 
+            "transaksi", 
+            "retur", 
+            "supplier", 
+            "customer"
+        );
+    }
+
     public void save(T entity) {
         if (!HibernateUtil.isDatabaseAvailable())
             return;
         dao.save(entity);
+        invalidateAllCaches();
         invalidateAffectedScenes();
     }
 
@@ -36,6 +49,7 @@ public class GenericService<T> {
         if (!HibernateUtil.isDatabaseAvailable())
             return;
         dao.update(entity);
+        invalidateAllCaches();
         invalidateAffectedScenes();
     }
 
@@ -54,6 +68,7 @@ public class GenericService<T> {
         if (!HibernateUtil.isDatabaseAvailable())
             return;
         dao.delete(entity);
+        invalidateAllCaches();
         invalidateAffectedScenes();
     }
 
