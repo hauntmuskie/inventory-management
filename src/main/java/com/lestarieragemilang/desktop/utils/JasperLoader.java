@@ -1,5 +1,11 @@
 package com.lestarieragemilang.desktop.utils;
 
+import com.google.common.base.Preconditions;
+import com.google.common.base.Strings;
+import com.google.common.cache.CacheBuilder;
+import com.google.common.cache.CacheLoader;
+import com.google.common.cache.LoadingCache;
+import com.google.common.collect.ImmutableMap;
 import com.google.common.collect.Maps;
 import javafx.application.Platform;
 import javafx.scene.input.MouseEvent;
@@ -10,14 +16,34 @@ import org.hibernate.Session;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
+import javax.annotation.Nonnull;
 import java.net.URL;
 import java.sql.Connection;
 import java.util.Date;
 import java.util.Map;
 import java.util.Optional;
+import java.util.concurrent.ExecutionException;
+import java.util.concurrent.TimeUnit;
 
 public class JasperLoader {
     private static final Logger logger = LoggerFactory.getLogger(JasperLoader.class);
+    private static final float DEFAULT_ZOOM_RATIO = 0.7752f;
+    
+    private final LoadingCache<URL, JasperReport> reportCache = CacheBuilder.newBuilder()
+        .maximumSize(100)
+        .expireAfterWrite(1, TimeUnit.HOURS)
+        .build(new CacheLoader<URL, JasperReport>() {
+            @Override
+            @Nonnull
+            public JasperReport load(@Nonnull URL url) throws JRException {
+                return (JasperReport) JRLoader.loadObject(url);
+            }
+        });
+
+    private static final ImmutableMap<String, Object> BASE_PARAMETERS = ImmutableMap.of(
+        "REPORT_IGNORE_MISSING_FONT", Boolean.TRUE,
+        "REPORT_DEFAULT_FONT", "Sans Serif"
+    );
 
     static {
         DefaultJasperReportsContext context = DefaultJasperReportsContext.getInstance();
@@ -26,76 +52,69 @@ public class JasperLoader {
     }
 
     private Connection getConnection() {
-        if (!HibernateUtil.isDatabaseAvailable()) {
-            ShowAlert.showDatabaseError("Database tidak tersedia. Silakan periksa koneksi database.");
-            throw new RuntimeException("Database tidak tersedia");
-        }
+        Preconditions.checkState(HibernateUtil.isDatabaseAvailable(), "Database tidak tersedia");
 
         final Connection[] conn = new Connection[1];
         try (Session session = HibernateUtil.getSessionFactory().openSession()) {
             session.doWork(connection -> conn[0] = connection);
-            return conn[0];
+            return Preconditions.checkNotNull(conn[0], "Failed to create database connection");
         } catch (Exception e) {
             logger.error("Gagal membuat koneksi database", e);
-            ShowAlert.showDatabaseError("Gagal membuat koneksi database: " + e.getMessage());
             throw new RuntimeException("Gagal membuat koneksi database", e);
         }
     }
 
-    private void showReport(URL location, Map<String, Object> parameters) {
+    private JasperReport getReport(URL location) {
         try {
-            if (location == null) {
-                ShowAlert.showError("Template laporan tidak ditemukan");
-                return;
+            return reportCache.get(Preconditions.checkNotNull(location, "Report location cannot be null"));
+        } catch (ExecutionException e) {
+            throw new RuntimeException("Failed to load report template", e);
+        }
+    }
+
+    private void showReport(URL location, Map<String, Object> parameters) {
+        Preconditions.checkNotNull(location, "Report location cannot be null");
+        
+        try {
+            Map<String, Object> finalParams = Maps.newHashMap(BASE_PARAMETERS);
+            if (parameters != null) {
+                finalParams.putAll(parameters);
             }
 
-            if (parameters == null) {
-                parameters = Maps.newHashMap();
-            }
-            
-            parameters.put("REPORT_IGNORE_MISSING_FONT", Boolean.TRUE);
-            parameters.put("REPORT_DEFAULT_FONT", "Sans Serif");
-
-            if (!HibernateUtil.isDatabaseAvailable()) {
-                ShowAlert.showDatabaseError("Database tidak tersedia");
-                return;
-            }
-
-            JasperReport jasperReport = (JasperReport) JRLoader.loadObject(location);
-            JasperPrint jasperPrint = JasperFillManager.fillReport(jasperReport, parameters, getConnection());
+            JasperReport report = getReport(location);
+            JasperPrint jasperPrint = JasperFillManager.fillReport(report, finalParams, getConnection());
 
             if (jasperPrint.getPages().isEmpty()) {
                 ShowAlert.showInfo("Tidak ada data untuk ditampilkan dalam laporan");
                 return;
             }
 
-            final JasperViewer viewer = new JasperViewer(jasperPrint, false);
             Platform.runLater(() -> {
-                // Set specific zoom ratio (77.52%)
-                viewer.setZoomRatio(0.7752f);
+                JasperViewer viewer = new JasperViewer(jasperPrint, false);
+                viewer.setZoomRatio(DEFAULT_ZOOM_RATIO);
                 viewer.setVisible(true);
                 ShowAlert.showSuccess("Laporan berhasil dibuat");
             });
-
-        } catch (JRException e) {
-            logger.error("Error saat memuat Jasper Report", e);
-            ShowAlert.showError("Gagal memuat laporan: " + e.getMessage() +
-                    "\nSilakan periksa template laporan");
         } catch (Exception e) {
-            logger.error("Error tidak terduga", e);
-            ShowAlert.showError("Terjadi kesalahan: " + e.getMessage());
+            logger.error("Error generating report", e);
+            ShowAlert.showError("Gagal memuat laporan: " + e.getMessage());
         }
     }
 
-    public void showJasperReportSupplier(URL location, String supplierId, String nameSupplier,
-            String contactSupplier, String addressSupplier, String emailSupplier, MouseEvent event) {
-        Map<String, Object> parameters = Maps.newHashMap();
-        parameters.put("supplierId", "%" + supplierId + "%");
-        parameters.put("nameSupplier", "%" + nameSupplier + "%");
-        parameters.put("contactSupplier", "%" + contactSupplier + "%");
-        parameters.put("addressSupplier", "%" + addressSupplier + "%");
-        parameters.put("emailSupplier", "%" + emailSupplier + "%");
-        showReport(location, parameters);
+    private String wrapLikeParam(String param) {
+        return "%" + Strings.nullToEmpty(param) + "%";
+    }
+
+    public void showJasperReportSupplier(URL location, String... params) {
+        Preconditions.checkNotNull(location, "Location cannot be null");
+        ImmutableMap.Builder<String, Object> parameters = ImmutableMap.builder();
+        String[] fields = {"supplierId", "nameSupplier", "contactSupplier", "addressSupplier", "emailSupplier"};
+        
+        for (int i = 0; i < Math.min(params.length, fields.length); i++) {
+            parameters.put(fields[i], wrapLikeParam(params[i]));
+        }
+        
+        showReport(location, parameters.build());
     }
 
     public void showJasperReportCustomer(URL location, String nameCustomer, String contactCustomer,
@@ -136,11 +155,11 @@ public class JasperLoader {
 
     public void showJasperReportBuyList(URL location, String invoicePurchasing, Date firstDate, Date secondDate,
             MouseEvent event) {
-        Map<String, Object> parameters = Maps.newHashMap();
-        parameters.put("invoicePurchasing", Optional.ofNullable(invoicePurchasing).orElse("%"));
-        parameters.put("firstDate", Optional.ofNullable(firstDate).orElse(new Date(0)));
-        parameters.put("secondDate", Optional.ofNullable(secondDate).orElse(new Date()));
-        showReport(location, parameters);
+        showReport(location, ImmutableMap.of(
+            "invoicePurchasing", Strings.isNullOrEmpty(invoicePurchasing) ? "%" : invoicePurchasing,
+            "firstDate", com.google.common.base.Optional.fromNullable(firstDate).or(new Date(0)),
+            "secondDate", com.google.common.base.Optional.fromNullable(secondDate).or(new Date())
+        ));
     }
 
     public void showJasperReportBuy(URL location, Integer buyIdValue) {

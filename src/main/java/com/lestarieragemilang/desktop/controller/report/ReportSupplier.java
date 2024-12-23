@@ -59,12 +59,11 @@ public class ReportSupplier {
       if (searchText != null && !searchText.isEmpty()) {
         loader.showJasperReportSupplier(
             url,
-            "%" + searchText + "%",
-            "%" + searchText + "%",
-            "%" + searchText + "%",
-            "%" + searchText + "%",
-            "%" + searchText + "%",
-            event
+            searchText,
+            searchText,
+            searchText,
+            searchText,
+            searchText
         );
       } else {
         // If no search term, print selected item or all data
@@ -76,13 +75,12 @@ public class ReportSupplier {
               supplier.getSupplierName(),
               supplier.getContact(),
               supplier.getAddress(), 
-              supplier.getEmail(),
-              event
+              supplier.getEmail()
           );
         } else {
           loader.showJasperReportSupplier(
               url,
-              "%", "%", "%", "%", "%", event
+              "%", "%", "%", "%", "%"
           );
         }
       }
