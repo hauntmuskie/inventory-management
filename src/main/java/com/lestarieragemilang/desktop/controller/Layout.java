@@ -37,7 +37,7 @@ public class Layout extends Redirect {
 
     @FXML
     public void initialize() throws IOException {
-        loadScene("StokBesi", setScene);
+        loadSceneWithTransition("StokBesi");
         initializeClock();
     }
 
@@ -83,20 +83,15 @@ public class Layout extends Redirect {
 
     @FXML
     void handleNavButtonClick(MouseEvent event) throws IOException {
-        if (event.getSource() instanceof JFXButton) {
-            JFXButton clickedButton = (JFXButton) event.getSource();
-            String buttonText = clickedButton.getText();
-
-            String sceneName = buttonText.replaceAll("\\s+", "");
-
-            System.out.println("Button clicked: " + buttonText);
-            System.out.println("Loading scene: " + sceneName);
-
-            loadScene(sceneName.toLowerCase(), setScene);
-            setActiveButton(clickedButton);
-        } else {
-            System.err.println("Error: Event source is not a JFXButton");
+        if (!(event.getSource() instanceof JFXButton)) {
+            return;
         }
+
+        JFXButton clickedButton = (JFXButton) event.getSource();
+        String sceneName = clickedButton.getText().replaceAll("\\s+", "");
+        
+        loadSceneWithTransition(sceneName);
+        setActiveButton(clickedButton);
     }
 
     @FXML
@@ -121,8 +116,23 @@ public class Layout extends Redirect {
         }
     }
 
+    private void loadSceneWithTransition(String sceneName) throws IOException {
+        Parent newScene = App.sceneManager.getScene(sceneName.toLowerCase());
+        if (setScene.getChildren().isEmpty()) {
+            newScene.setOpacity(0);
+            setScene.getChildren().setAll(newScene);
+            new animatefx.animation.FadeIn(newScene).play();
+        } else {
+            Parent currentScene = (Parent) setScene.getChildren().get(0);
+            App.sceneManager.transitionTo(currentScene, newScene, () -> {
+                setScene.getChildren().setAll(newScene);
+            });
+        }
+    }
+
     @Override
     protected void animateFadeIn(Parent node) {
+        node.setOpacity(0);
         new animatefx.animation.FadeIn(node).play();
     }
 

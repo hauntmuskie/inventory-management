@@ -19,6 +19,12 @@ import java.util.Optional;
 public class JasperLoader {
     private static final Logger logger = LoggerFactory.getLogger(JasperLoader.class);
 
+    static {
+        DefaultJasperReportsContext context = DefaultJasperReportsContext.getInstance();
+        context.setProperty("net.sf.jasperreports.awt.ignore.missing.font", "true");
+        context.setProperty("net.sf.jasperreports.default.font.name", "Sans Serif");
+    }
+
     private Connection getConnection() {
         if (!HibernateUtil.isDatabaseAvailable()) {
             ShowAlert.showDatabaseError("Database tidak tersedia. Silakan periksa koneksi database.");
@@ -42,6 +48,13 @@ public class JasperLoader {
                 ShowAlert.showError("Template laporan tidak ditemukan");
                 return;
             }
+
+            if (parameters == null) {
+                parameters = Maps.newHashMap();
+            }
+            
+            parameters.put("REPORT_IGNORE_MISSING_FONT", Boolean.TRUE);
+            parameters.put("REPORT_DEFAULT_FONT", "Sans Serif");
 
             if (!HibernateUtil.isDatabaseAvailable()) {
                 ShowAlert.showDatabaseError("Database tidak tersedia");

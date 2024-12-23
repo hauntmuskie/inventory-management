@@ -8,12 +8,11 @@ import com.lestarieragemilang.desktop.utils.ShowAlert;
 import com.lestarieragemilang.desktop.utils.HibernateUtil;
 import javafx.application.Application;
 import javafx.scene.Scene;
+import javafx.scene.Parent;
 import javafx.stage.Stage;
 import javafx.stage.StageStyle;
 
 import java.io.IOException;
-import java.util.Optional;
-
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import animatefx.animation.FadeIn;
@@ -88,11 +87,11 @@ public class App extends Application {
                 invalidateReportScenes();
             }
 
-            Optional.ofNullable(sceneManager.getScene(fxml))
-                .ifPresent(newRoot -> {
-                    new FadeIn(newRoot).play();
-                    scene.setRoot(newRoot);
-                });
+            Parent newRoot = sceneManager.getScene(fxml);
+            if (newRoot != null) {
+                Parent currentRoot = scene.getRoot();
+                sceneManager.transitionTo(currentRoot, newRoot, () -> scene.setRoot(newRoot));
+            }
         } catch (IOException e) {
             log.error("Failed to set root for scene: {}", fxml, e);
             ShowAlert.showError("Gagal memuat halaman: " + fxml + "\n" + Throwables.getRootCause(e).getMessage());

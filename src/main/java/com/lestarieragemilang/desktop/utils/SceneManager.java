@@ -4,6 +4,8 @@ import com.google.common.cache.Cache;
 import com.google.common.cache.CacheBuilder;
 import javafx.fxml.FXMLLoader;
 import javafx.scene.Parent;
+import javafx.animation.FadeTransition;
+import javafx.util.Duration;
 
 import java.io.IOException;
 import java.util.Arrays;
@@ -12,6 +14,7 @@ import java.util.concurrent.TimeUnit;
 public class SceneManager {
     private static final String RESOURCE_PATH = "/com/lestarieragemilang/desktop/ui/";
     private static final long CACHE_EXPIRATION_TIME = 30;
+    private static final Duration TRANSITION_DURATION = Duration.millis(300);
     private final Cache<String, Parent> sceneCache;
 
     public static final String LAYOUT = "layout";
@@ -68,5 +71,24 @@ public class SceneManager {
 
     public void invalidateScenes(String... sceneNames) {
         sceneCache.invalidateAll(Arrays.asList(sceneNames));
+    }
+
+    public void transitionTo(Parent currentScene, Parent newScene, Runnable onFinished) {
+        FadeTransition fadeOut = new FadeTransition(TRANSITION_DURATION, currentScene);
+        fadeOut.setFromValue(1.0);
+        fadeOut.setToValue(0.0);
+
+        FadeTransition fadeIn = new FadeTransition(TRANSITION_DURATION, newScene);
+        fadeIn.setFromValue(0.0);
+        fadeIn.setToValue(1.0);
+
+        fadeOut.setOnFinished(e -> {
+            if (onFinished != null) {
+                onFinished.run();
+            }
+            fadeIn.play();
+        });
+
+        fadeOut.play();
     }
 }

@@ -4,8 +4,6 @@ import com.google.common.base.Preconditions;
 import com.google.common.base.Strings;
 import javafx.scene.Parent;
 import javafx.scene.layout.AnchorPane;
-import javafx.animation.PauseTransition;
-import javafx.util.Duration;
 import javafx.application.Platform;
 import javafx.stage.Stage;
 
