@@ -1,22 +1,24 @@
 package com.lestarieragemilang.desktop.controller;
 
+import java.io.IOException;
+
+import com.lestarieragemilang.desktop.App;
 import com.lestarieragemilang.desktop.model.User;
 import com.lestarieragemilang.desktop.service.UserService;
 import com.lestarieragemilang.desktop.utils.ShowAlert;
+import com.lestarieragemilang.desktop.utils.Redirect;
 
 import javafx.application.Platform;
 import javafx.collections.FXCollections;
 import javafx.event.ActionEvent;
 import javafx.fxml.FXML;
-import javafx.fxml.FXMLLoader;
 import javafx.scene.Parent;
 import javafx.scene.Scene;
 import javafx.scene.control.*;
 import javafx.scene.layout.*;
 import javafx.stage.Stage;
-import java.io.IOException;
 
-public class AuthController {
+public class AuthController extends Redirect {
 
     @FXML
     private AnchorPane anchorPane;
@@ -85,14 +87,24 @@ public class AuthController {
         User user = userService.authenticate(username, password);
         if (user != null) {
             try {
-                FXMLLoader loader = new FXMLLoader(getClass().getResource("/com/lestarieragemilang/desktop/layout.fxml"));
-                Parent root = loader.load();
-                Scene scene = new Scene(root);
-                Stage stage = (Stage) loginView.getScene().getWindow();
-                stage.setScene(scene);
-                stage.show();
-            } catch (IOException e) {
+                Stage currentStage = (Stage) loginView.getScene().getWindow();
+                // Invalidate layout scene before loading
+                App.sceneManager.invalidateScene("layout");
+                
+                switchScene(anchorPane, "layout", () -> {
+                    try {
+                        Parent layoutRoot = App.sceneManager.getScene("layout");
+                        Scene layoutScene = new Scene(layoutRoot);
+                        currentStage.setScene(layoutScene);
+                        currentStage.show();
+                    } catch (IOException e) {
+                        ShowAlert.showError("Gagal memuat tampilan utama");
+                        e.printStackTrace();
+                    }
+                });
+            } catch (Exception e) {
                 ShowAlert.showError("Terjadi kesalahan saat memuat tampilan utama");
+                e.printStackTrace();
             }
         } else {
             ShowAlert.showError("Username atau password tidak valid");
@@ -101,8 +113,28 @@ public class AuthController {
 
     @FXML
     void showLoginView(ActionEvent event) {
-        loginView.setVisible(true);
-        registerView.setVisible(false);
+        try {
+            Parent loginRoot = App.sceneManager.getScene("login");
+            loginView.getChildren().setAll(loginRoot);
+            loginView.setVisible(true);
+            registerView.setVisible(false);
+            animateFadeIn(loginView);
+        } catch (IOException e) {
+            ShowAlert.showError("Gagal memuat tampilan login");
+        }
+    }
+
+    @Override
+    protected void animateFadeIn(Parent node) {
+        node.setOpacity(0);
+        new animatefx.animation.FadeIn(node).play();
+    }
+
+    @Override
+    protected void animateFadeOut(Parent node, Runnable onFinished) {
+        animatefx.animation.FadeOut fadeOut = new animatefx.animation.FadeOut(node);
+        fadeOut.setOnFinished(_ -> onFinished.run());
+        fadeOut.play();
     }
 
     @FXML

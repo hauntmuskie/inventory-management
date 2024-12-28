@@ -22,7 +22,7 @@ import jfxtras.styles.jmetro.Style;
 public class App extends Application {
 
     private static final Logger log = LoggerFactory.getLogger(App.class);
-    private static final String INITIAL_SCENE = "layout";
+    private static final String INITIAL_SCENE = "login";
     private static final int WIDTH = 1200;
     private static final int HEIGHT = 650;
     private static Scene scene;

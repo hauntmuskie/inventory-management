@@ -89,7 +89,7 @@ public class Layout extends Redirect {
 
         JFXButton clickedButton = (JFXButton) event.getSource();
         String sceneName = clickedButton.getText().replaceAll("\\s+", "");
-        
+
         loadSceneWithTransition(sceneName);
         setActiveButton(clickedButton);
     }
@@ -97,22 +97,34 @@ public class Layout extends Redirect {
     @FXML
     void setSceneLogin(MouseEvent event) {
         if (ShowAlert.showConfirmation("Konfirmasi", "Login", "Apakah anda yakin ingin kembali ke halaman login?")) {
-            Stage currentStage = getStage();
-            switchToLoginScene();
-            currentStage.close();
-        }
-    }
-
-    private void switchToLoginScene() {
-        try {
-            Stage loginStage = new Stage();
-            Parent root = App.sceneManager.getScene("login");
-            Scene scene = new Scene(root);
-            loginStage.setScene(scene);
-            loginStage.show();
-        } catch (IOException e) {
-            ShowAlert.showError("Gagal membuka halaman login");
-            throw new RuntimeException("Gagal membuka halaman login", e);
+            try {
+                Stage currentStage = getStage();
+                // Invalidate both scenes before switching
+                App.sceneManager.invalidateScenes("login", "layout");
+                
+                switchScene(setScene, "login", () -> {
+                    try {
+                        Stage loginStage = new Stage();
+                        Parent loginRoot = App.sceneManager.getScene("login");
+                        Scene loginScene = new Scene(loginRoot);
+                        loginStage.setScene(loginScene);
+                        loginStage.setTitle("Login");
+                        
+                        // Ensure we close the current stage before showing the login stage
+                        if (currentStage != null) {
+                            currentStage.close();
+                        }
+                        loginStage.show();
+                        
+                    } catch (IOException e) {
+                        ShowAlert.showError("Gagal membuka halaman login");
+                        e.printStackTrace();
+                    }
+                });
+            } catch (Exception e) {
+                ShowAlert.showError("Gagal kembali ke halaman login");
+                e.printStackTrace();
+            }
         }
     }
 

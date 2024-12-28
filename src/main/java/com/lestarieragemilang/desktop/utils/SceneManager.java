@@ -82,7 +82,7 @@ public class SceneManager {
         fadeIn.setFromValue(0.0);
         fadeIn.setToValue(1.0);
 
-        fadeOut.setOnFinished(e -> {
+        fadeOut.setOnFinished(_ -> {
             if (onFinished != null) {
                 onFinished.run();
             }
