@@ -126,6 +126,7 @@ public class CustomerController extends HibernateUtil {
                     ShowAlert.showSuccess("Data pelanggan berhasil diubah");
                     loadCustomers();
                     resetCustomerButton();
+                    customerTable.refresh(); // Add this line
                 })
                 .show();
     }

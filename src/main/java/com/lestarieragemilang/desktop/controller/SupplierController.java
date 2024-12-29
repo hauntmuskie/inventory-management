@@ -129,6 +129,7 @@ public class SupplierController extends HibernateUtil {
                     ShowAlert.showSuccess("Data supplier berhasil diubah");
                     loadSuppliers();
                     resetSupplierButton();
+                    supplierTable.refresh(); // Add this line
                 })
                 .show();
     }

@@ -217,6 +217,7 @@ public class ReturnsController extends HibernateUtil {
                     ShowAlert.showSuccess("Data retur berhasil diperbarui.");
                     loadReturns();
                     resetReturnButton();
+                    returnTable.refresh(); // Add this line
                 })
                 .show();
     }

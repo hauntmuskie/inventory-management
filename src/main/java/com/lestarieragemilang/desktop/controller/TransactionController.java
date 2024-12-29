@@ -435,6 +435,7 @@ public class TransactionController extends HibernateUtil {
 
         pendingPurchases.remove(selectedPurchase);
         updateBuyTotalPrice();
+        buyTable.refresh(); // Add this line
     }
 
     @FXML
@@ -454,6 +455,7 @@ public class TransactionController extends HibernateUtil {
 
         pendingSales.remove(selectedSale);
         updateSellTotalPrice();
+        sellTable.refresh(); // Add this line
     }
 
     @FXML

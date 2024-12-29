@@ -229,6 +229,7 @@ public class CategoryController extends HibernateUtil {
                     ShowAlert.showSuccess("Data kategori berhasil diubah");
                     loadCategories();
                     clearFields();
+                    categoryTable.refresh(); // Add this line
                 })
                 .show();
     }
