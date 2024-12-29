@@ -2,6 +2,7 @@ package com.lestarieragemilang.desktop.controller;
 
 import com.jfoenix.controls.JFXButton;
 import com.lestarieragemilang.desktop.App;
+import com.lestarieragemilang.desktop.utils.HibernateUtil;
 import com.lestarieragemilang.desktop.utils.Redirect;
 import com.lestarieragemilang.desktop.utils.ShowAlert;
 
@@ -72,6 +73,8 @@ public class Layout extends Redirect {
     @FXML
     void isExitApp(MouseEvent event) {
         if (ShowAlert.showConfirmation("Exit", "Konfirmasi", "Apakah Anda yakin ingin keluar?")) {
+            // Cleanup before exit
+            HibernateUtil.shutdown();
             System.exit(0);
         }
     }
@@ -98,10 +101,11 @@ public class Layout extends Redirect {
     void setSceneLogin(MouseEvent event) {
         if (ShowAlert.showConfirmation("Konfirmasi", "Login", "Apakah anda yakin ingin kembali ke halaman login?")) {
             try {
+                HibernateUtil.shutdown();
+
                 Stage currentStage = getStage();
-                // Invalidate both scenes before switching
                 App.sceneManager.invalidateScenes("login", "layout");
-                
+
                 switchScene(setScene, "login", () -> {
                     try {
                         Stage loginStage = new Stage();
@@ -109,13 +113,12 @@ public class Layout extends Redirect {
                         Scene loginScene = new Scene(loginRoot);
                         loginStage.setScene(loginScene);
                         loginStage.setTitle("Login");
-                        
-                        // Ensure we close the current stage before showing the login stage
+
                         if (currentStage != null) {
                             currentStage.close();
                         }
                         loginStage.show();
-                        
+
                     } catch (IOException e) {
                         ShowAlert.showError("Gagal membuka halaman login");
                         e.printStackTrace();

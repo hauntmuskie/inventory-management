@@ -12,11 +12,10 @@ public class AdminRegistrationUtil {
 
     public static void main(String[] args) {
         Scanner scanner = new Scanner(System.in);
-        
+
         System.out.println("=== Admin Registration Utility ===");
         System.out.println("Please enter the required information:");
 
-        // Get user input
         System.out.print("Email: ");
         String email = scanner.nextLine();
 
@@ -26,7 +25,6 @@ public class AdminRegistrationUtil {
         System.out.print("Password: ");
         String password = scanner.nextLine();
 
-        // Validate input
         if (validateInput(email, username, password)) {
             registerAdmin(email, username, password);
         }
@@ -48,7 +46,7 @@ public class AdminRegistrationUtil {
             userService.save(user);
             System.out.println("Admin registered successfully!");
             System.out.println("Username: " + username);
-            
+
         } catch (Exception e) {
             System.err.println("Error registering admin: " + e.getMessage());
         }

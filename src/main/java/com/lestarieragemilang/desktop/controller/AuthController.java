@@ -1,11 +1,14 @@
 package com.lestarieragemilang.desktop.controller;
 
-import java.io.IOException;
-
+import com.google.common.base.Preconditions;
+import com.google.common.base.Strings;
+import com.google.common.collect.ImmutableList;
+import com.google.common.eventbus.EventBus;
 import com.lestarieragemilang.desktop.App;
 import com.lestarieragemilang.desktop.model.User;
 import com.lestarieragemilang.desktop.service.UserService;
 import com.lestarieragemilang.desktop.utils.ShowAlert;
+import com.lestarieragemilang.desktop.utils.HibernateUtil;
 import com.lestarieragemilang.desktop.utils.Redirect;
 
 import javafx.application.Platform;
@@ -18,96 +21,103 @@ import javafx.scene.control.*;
 import javafx.scene.layout.*;
 import javafx.stage.Stage;
 
+import java.io.IOException;
+import java.util.Optional;
+
 public class AuthController extends Redirect {
 
     @FXML
     private AnchorPane anchorPane;
-
     @FXML
     private StackPane authStackPane;
-
     @FXML
     private PasswordField confirmPassword;
-
     @FXML
     private Label greetingText;
-
     @FXML
     private PasswordField loginPassword;
-
     @FXML
     private TextField loginUsername;
-
     @FXML
     private VBox loginView;
-
     @FXML
     private ListView<String> profileListView;
-
     @FXML
     private TextField registerEmail;
-
     @FXML
     private PasswordField registerPassword;
-
     @FXML
     private TextField registerUsername;
-
     @FXML
     private VBox registerView;
 
     private final UserService userService;
+    private final EventBus eventBus;
 
     public AuthController() {
         this.userService = new UserService();
+        this.eventBus = new EventBus();
     }
 
     @FXML
     public void initialize() {
         loadUsers();
+        eventBus.register(this);
     }
 
     private void loadUsers() {
-        profileListView.setItems(FXCollections.observableArrayList(
-                userService.findAll().stream()
-                        .map(User::getUsername)
-                        .toList()));
+        ImmutableList<String> usernames = userService.findAll().stream()
+                .map(User::getUsername)
+                .collect(ImmutableList.toImmutableList());
+
+        profileListView.setItems(FXCollections.observableArrayList(usernames));
     }
 
     @FXML
     void loginToApp(ActionEvent event) {
-        String username = loginUsername.getText();
-        String password = loginPassword.getText();
+        try {
+            validateLoginInput();
+            Optional<User> user = authenticateUser();
 
-        if (username.isEmpty() || password.isEmpty()) {
-            ShowAlert.showValidationError("Mohon isi semua field yang diperlukan");
-            return;
+            user.ifPresentOrElse(
+                    this::handleSuccessfulLogin,
+                    () -> ShowAlert.showError("Username atau password tidak valid"));
+        } catch (IllegalArgumentException e) {
+            ShowAlert.showValidationError(e.getMessage());
+        } catch (Exception e) {
+            ShowAlert.showError("Terjadi kesalahan saat login");
+            e.printStackTrace();
         }
+    }
 
-        User user = userService.authenticate(username, password);
-        if (user != null) {
-            try {
-                Stage currentStage = (Stage) loginView.getScene().getWindow();
-                // Invalidate layout scene before loading
-                App.sceneManager.invalidateScene("layout");
-                
-                switchScene(anchorPane, "layout", () -> {
-                    try {
-                        Parent layoutRoot = App.sceneManager.getScene("layout");
-                        Scene layoutScene = new Scene(layoutRoot);
-                        currentStage.setScene(layoutScene);
-                        currentStage.show();
-                    } catch (IOException e) {
-                        ShowAlert.showError("Gagal memuat tampilan utama");
-                        e.printStackTrace();
-                    }
-                });
-            } catch (Exception e) {
-                ShowAlert.showError("Terjadi kesalahan saat memuat tampilan utama");
-                e.printStackTrace();
-            }
-        } else {
-            ShowAlert.showError("Username atau password tidak valid");
+    private void validateLoginInput() {
+        Preconditions.checkArgument(!Strings.isNullOrEmpty(loginUsername.getText()), "Username tidak boleh kosong");
+        Preconditions.checkArgument(!Strings.isNullOrEmpty(loginPassword.getText()), "Password tidak boleh kosong");
+    }
+
+    private Optional<User> authenticateUser() {
+        return Optional.ofNullable(
+                userService.authenticate(loginUsername.getText(), loginPassword.getText()));
+    }
+
+    private void handleSuccessfulLogin(User user) {
+        try {
+            Stage currentStage = (Stage) loginView.getScene().getWindow();
+            App.sceneManager.invalidateScene("layout");
+
+            switchScene(anchorPane, "layout", () -> {
+                try {
+                    Parent layoutRoot = App.sceneManager.getScene("layout");
+                    currentStage.setScene(new Scene(layoutRoot));
+                    currentStage.show();
+                } catch (IOException e) {
+                    ShowAlert.showError("Gagal memuat tampilan utama");
+                    e.printStackTrace();
+                }
+            });
+        } catch (Exception e) {
+            ShowAlert.showError("Terjadi kesalahan saat memuat tampilan utama");
+            e.printStackTrace();
         }
     }
 
@@ -126,12 +136,16 @@ public class AuthController extends Redirect {
 
     @Override
     protected void animateFadeIn(Parent node) {
+        Preconditions.checkNotNull(node, "Node cannot be null");
         node.setOpacity(0);
         new animatefx.animation.FadeIn(node).play();
     }
 
     @Override
     protected void animateFadeOut(Parent node, Runnable onFinished) {
+        Preconditions.checkNotNull(node, "Node cannot be null");
+        Preconditions.checkNotNull(onFinished, "Callback cannot be null");
+
         animatefx.animation.FadeOut fadeOut = new animatefx.animation.FadeOut(node);
         fadeOut.setOnFinished(_ -> onFinished.run());
         fadeOut.play();
@@ -139,6 +153,7 @@ public class AuthController extends Redirect {
 
     @FXML
     void exitApp(ActionEvent event) {
+        HibernateUtil.shutdown();
         Platform.exit();
     }
 }

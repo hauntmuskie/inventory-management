@@ -37,6 +37,9 @@ public class Purchasing {
     @Column(name = "price_total", nullable = false, precision = 10, scale = 2)
     private BigDecimal priceTotal;
 
+    @Column(name = "total_price", nullable = false, precision = 10, scale = 2)
+    private BigDecimal totalPrice;
+
     // toString invoice
     @Override
     public String toString() {
@@ -114,5 +117,26 @@ public class Purchasing {
 
     public void setPriceTotal(BigDecimal priceTotal) {
         this.priceTotal = priceTotal;
+    }
+
+    public BigDecimal getTotalPrice() {
+        return totalPrice;
+    }
+
+    public void setTotalPrice(BigDecimal totalPrice) {
+        this.totalPrice = totalPrice;
+    }
+
+    // Add this to your constructor or initialization method
+    public void calculateTotalPrice() {
+        this.totalPrice = this.subTotal; // or your calculation logic
+    }
+
+    @PrePersist
+    @PreUpdate
+    public void prePersist() {
+        if (totalPrice == null) {
+            calculateTotalPrice();
+        }
     }
 }
