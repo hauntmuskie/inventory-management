@@ -175,12 +175,12 @@ public class StockController extends HibernateUtil {
                             new BigDecimal(NumberFormatter.getNumericValue(((TextField) fields.get(3)).getText())));
                     stock.setSellingPrice(
                             new BigDecimal(NumberFormatter.getNumericValue(((TextField) fields.get(4)).getText())));
-                    CompletableFuture.runAsync(() -> stockService.update(stock));
+                    CompletableFuture.runAsync(() -> {
+                        stockService.update(stock);
+                        Platform.runLater(this::loadStocks);
+                    });
                 })
-                .afterSave(() -> {
-                    loadStocks();
-                    resetStockButton();
-                })
+                .afterSave(this::resetStockButton)
                 .show();
     }
 
@@ -212,7 +212,8 @@ public class StockController extends HibernateUtil {
                             resetStockButton();
                         }));
             } catch (ConstraintViolationException e) {
-                ShowAlert.showError("Terjadi kesalahan saat menghapus stok. Stok mungkin masih terhubung dengan data lain.");
+                ShowAlert.showError(
+                        "Terjadi kesalahan saat menghapus stok. Stok mungkin masih terhubung dengan data lain.");
             }
         }
     }
