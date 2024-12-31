@@ -24,13 +24,21 @@
         <jbcrypt.version>0.4</jbcrypt.version>
         <jasperreports.version>6.20.6</jasperreports.version>
         <jasperreports-fonts.version>7.0.1</jasperreports-fonts.version>
-        <!-- Test dependencies -->
 
-        <!-- Plugins -->
+        <!-- Test dependencies -->
+        <allure.version>2.29.1</allure.version>
+        <junit5.version>5.11.4</junit5.version>
+
+        <!-- Main Plugins -->
         <maven-compiler-plugin.version>3.13.0</maven-compiler-plugin.version>
         <javafx-maven-plugin.version>0.0.8</javafx-maven-plugin.version>
         <exec-maven-plugin.version>3.4.1</exec-maven-plugin.version>
         <main.class>com.lestarieragemilang.desktop.Launcher</main.class>
+
+        <!-- Test Plugins -->
+        <maven-surefire-plugin.version>2.22.2</maven-surefire-plugin.version>
+        <allure-maven.version>2.10.0</allure-maven.version>
+        <aspectj.version>1.9.7</aspectj.version>
     </properties>
 
     <dependencies>
@@ -142,6 +150,20 @@
             <version>${jasperreports-fonts.version}</version>
         </dependency>
 
+        <!-- Testing dependencies-->
+        <dependency>
+            <groupId>io.qameta.allure</groupId>
+            <artifactId>allure-junit5</artifactId>
+            <version>${allure.version}</version>
+            <scope>test</scope>
+        </dependency>
+        <dependency>
+            <groupId>org.junit.jupiter</groupId>
+            <artifactId>junit-jupiter-api</artifactId>
+            <version>${junit5.version}</version>
+            <scope>test</scope>
+        </dependency>
+
 
     </dependencies>
     <build>
@@ -175,6 +197,46 @@
                         <argument>--enable-native-access=ALL-UNNAMED</argument>
                         <argument>--enable-native-access=javafx.graphics</argument>
                     </arguments>
+                </configuration>
+            </plugin>
+
+            <!-- Allure report plugin-->
+            <plugin>
+                <groupId>org.apache.maven.plugins</groupId>
+                <artifactId>maven-surefire-plugin</artifactId>
+                <version>${maven-surefire-plugin.version}</version>
+                <configuration>
+                    <testFailureIgnore>false</testFailureIgnore>
+                    <argLine>
+                        -javaagent:"${settings.localRepository}/org/aspectj/aspectjweaver/${aspectj.version}/aspectjweaver-${aspectj.version}.jar"
+                    </argLine>
+                    <properties>
+                        <property>
+                            <name>listener</name>
+                            <value>io.qameta.allure.junit4.AllureJunit5</value>
+                        </property>
+                    </properties>
+                    <systemProperties>
+                        <property>
+                            <name>allure.results.directory</name>
+                            <value>${project.build.directory}/allure-results</value>
+                        </property>
+                    </systemProperties>
+                </configuration>
+                <dependencies>
+                    <dependency>
+                        <groupId>org.aspectj</groupId>
+                        <artifactId>aspectjweaver</artifactId>
+                        <version>${aspectj.version}</version>
+                    </dependency>
+                </dependencies>
+            </plugin>
+            <plugin>
+                <groupId>io.qameta.allure</groupId>
+                <artifactId>allure-maven</artifactId>
+                <version>${allure-maven.version}</version>
+                <configuration>
+                    <reportVersion>2.15.0</reportVersion>
                 </configuration>
             </plugin>
         </plugins>
