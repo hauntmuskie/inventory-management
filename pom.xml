@@ -28,6 +28,7 @@
         <!-- Test dependencies -->
         <allure.version>2.29.1</allure.version>
         <junit5.version>5.11.4</junit5.version>
+        <mockito-core.version>4.11.0</mockito-core.version>
 
         <!-- Main Plugins -->
         <maven-compiler-plugin.version>3.13.0</maven-compiler-plugin.version>
@@ -36,9 +37,10 @@
         <main.class>com.lestarieragemilang.desktop.Launcher</main.class>
 
         <!-- Test Plugins -->
-        <maven-surefire-plugin.version>2.22.2</maven-surefire-plugin.version>
+        <maven-surefire-plugin.version>3.1.0</maven-surefire-plugin.version>
         <allure-maven.version>2.10.0</allure-maven.version>
         <aspectj.version>1.9.7</aspectj.version>
+
     </properties>
 
     <dependencies>
@@ -161,6 +163,12 @@
             <groupId>org.junit.jupiter</groupId>
             <artifactId>junit-jupiter-api</artifactId>
             <version>${junit5.version}</version>
+            <scope>test</scope>
+        </dependency>
+        <dependency>
+            <groupId>org.mockito</groupId>
+            <artifactId>mockito-core</artifactId>
+            <version>${mockito-core.version}</version>
             <scope>test</scope>
         </dependency>
 
