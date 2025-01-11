@@ -8,6 +8,7 @@ import com.lestarieragemilang.desktop.utils.ShowAlert;
 
 import javafx.animation.KeyFrame;
 import javafx.animation.Timeline;
+import javafx.application.Platform;
 import javafx.fxml.FXML;
 import javafx.scene.Parent;
 import javafx.scene.Scene;
@@ -131,29 +132,37 @@ public class Layout extends Redirect {
         }
     }
 
-    private void loadSceneWithTransition(String sceneName) throws IOException {
-        Parent newScene = App.sceneManager.getScene(sceneName.toLowerCase());
-        if (setScene.getChildren().isEmpty()) {
-            newScene.setOpacity(0);
-            setScene.getChildren().setAll(newScene);
-            new animatefx.animation.FadeIn(newScene).play();
-        } else {
-            Parent currentScene = (Parent) setScene.getChildren().get(0);
-            App.sceneManager.transitionTo(currentScene, newScene, () -> {
-                setScene.getChildren().setAll(newScene);
+    private void loadSceneWithTransition(String sceneName) {
+        App.sceneManager.getSceneAsync(sceneName.toLowerCase())
+            .thenAcceptAsync(newScene -> {
+                if (setScene.getChildren().isEmpty()) {
+                    newScene.setOpacity(0);
+                    setScene.getChildren().setAll(newScene);
+                    new animatefx.animation.FadeIn(newScene).setSpeed(2.0).play();
+                } else {
+                    Parent currentScene = (Parent) setScene.getChildren().get(0);
+                    App.sceneManager.transitionTo(currentScene, newScene, () -> {
+                        setScene.getChildren().setAll(newScene);
+                    });
+                }
+            }, Platform::runLater)
+            .exceptionally(e -> {
+                ShowAlert.showError("Failed to load scene: " + sceneName);
+                e.printStackTrace();
+                return null;
             });
-        }
     }
 
     @Override
     protected void animateFadeIn(Parent node) {
         node.setOpacity(0);
-        new animatefx.animation.FadeIn(node).play();
+        new animatefx.animation.FadeIn(node).setSpeed(2.0).play();
     }
 
     @Override
     protected void animateFadeOut(Parent node, Runnable onFinished) {
         animatefx.animation.FadeOut fadeOut = new animatefx.animation.FadeOut(node);
+        fadeOut.setSpeed(2.0);
         fadeOut.setOnFinished(_ -> onFinished.run());
         fadeOut.play();
     }

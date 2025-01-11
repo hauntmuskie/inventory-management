@@ -11,7 +11,7 @@
         <maven.compiler.release>22</maven.compiler.release>
         <javafx.version>24-ea+5</javafx.version>
         <hibernate.version>7.0.0.Beta1</hibernate.version>
-        <mysql.version>9.1.0</mysql.version>
+        <mysql.version>8.0.33</mysql.version>
         <slf4j.version>2.0.7</slf4j.version>
         <main.class>com.lestarieragemilang.desktop.Launcher</main.class>
         <hikaricp.version>5.1.0</hikaricp.version>
@@ -74,8 +74,8 @@
             <version>${hibernate.version}</version>
         </dependency>
         <dependency>
-            <groupId>com.mysql</groupId>
-            <artifactId>mysql-connector-j</artifactId>
+            <groupId>mysql</groupId>
+            <artifactId>mysql-connector-java</artifactId>
             <version>${mysql.version}</version>
         </dependency>
         <dependency>

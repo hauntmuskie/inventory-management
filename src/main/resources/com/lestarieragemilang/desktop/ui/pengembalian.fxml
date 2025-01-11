@@ -69,7 +69,7 @@
                                           <HBox alignment="CENTER_LEFT" prefHeight="40.0"
                                              prefWidth="930.0" spacing="15.0">
                                              <children>
-                                                <Label text="ID PENGEMBALIAN">
+                                                <Label text="KODE PENGEMBALIAN">
                                                    <font>
                                                       <Font size="18.0" />
                                                    </font>
@@ -84,7 +84,7 @@
                                           <DatePicker fx:id="returnDate"
                                              style="-fx-background-radius: 7;" />
                                           <TextField fx:id="returnIDIncrement" disable="true"
-                                             promptText="Auto-Generated"
+                                             promptText="Dibuat Otomatis"
                                              style="-fx-background-radius: 7;" />
                                        </children>
                                     </VBox>
@@ -177,7 +177,7 @@
                               <JFXButton fx:id="editReturnButtonText" buttonType="RAISED"
                                  onAction="#editReturnButton" prefHeight="30.0" prefWidth="97.0"
                                  style="-fx-background-color: #131313; -fx-background-radius: 10; -fx-cursor: HAND; -fx-font-weight: bold; -fx-text-fill: #E8E7DE; -fx-border-radius: 10;"
-                                 text="EDIT" textFill="WHITE">
+                                 text="UBAH" textFill="WHITE">
                                  <font>
                                     <Font size="14.0" />
                                  </font>
@@ -206,7 +206,7 @@
                               <TableColumn fx:id="returnDateCol" prefWidth="75.0"
                                  text="TANGGAL PENGEMBALIAN" />
                               <TableColumn fx:id="returnIDCol" prefWidth="75.0"
-                                 text="ID PENGEMBALIAN" />
+                                 text="KODE PENGEMBALIAN" />
                               <TableColumn fx:id="returnInvoiceCol" prefWidth="75.0" text="FAKTUR" />
                               <TableColumn fx:id="returnTypeCol" prefWidth="75.0"
                                  text="JENIS PENGEMBALIAN" />

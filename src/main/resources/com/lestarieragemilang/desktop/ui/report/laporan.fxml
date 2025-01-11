@@ -144,7 +144,7 @@
                         </children>
                      </VBox>
 
-                     <!-- Supplier - Bottom Center -->
+                     <!-- Pemasok - Bottom Center -->
                      <VBox alignment="CENTER" layoutX="370.0" layoutY="391.0" spacing="10.0">
                         <children>
                            <ImageView fitHeight="100.0" fitWidth="100.0">
@@ -152,7 +152,7 @@
                                  <Image url="@../../Assets/Images/delivery-fast-fill_.png" />
                               </image>
                            </ImageView>
-                           <Label style="-fx-font-size: 20px; -fx-font-weight: bold;" text="Supplier">
+                           <Label style="-fx-font-size: 20px; -fx-font-weight: bold;" text="Pemasok">
                               <effect>
                                  <DropShadow>
                                     <color>
@@ -161,7 +161,7 @@
                                  </DropShadow>
                               </effect>
                            </Label>
-                           <JFXButton buttonType="RAISED" onMouseClicked="#setSceneReportSupplier" prefHeight="50.0" prefWidth="230.0" style="-fx-background-color: #333; -fx-background-radius: 10; -fx-text-fill: white; -fx-font-weight: bold; -fx-border-radius: 10; -fx-font-size: 20; -fx-cursor: hand;" text="Laporan Supplier" />
+                           <JFXButton buttonType="RAISED" onMouseClicked="#setSceneReportSupplier" prefHeight="50.0" prefWidth="230.0" style="-fx-background-color: #333; -fx-background-radius: 10; -fx-text-fill: white; -fx-font-weight: bold; -fx-border-radius: 10; -fx-font-size: 20; -fx-cursor: hand;" text="Laporan Pemasok" />
                         </children>
                      </VBox>
                   </AnchorPane>

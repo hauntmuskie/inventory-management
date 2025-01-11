@@ -47,7 +47,7 @@
                                           <HBox alignment="CENTER_LEFT" prefHeight="40.0"
                                              prefWidth="140.0" spacing="15.0">
                                              <children>
-                                                <Label text="ID PELANGGAN">
+                                                <Label text="KODE PELANGGAN">
                                                    <font>
                                                       <Font size="18.0" />
                                                    </font>
@@ -153,7 +153,7 @@
                               <JFXButton fx:id="editCustomerButtonText" buttonType="RAISED"
                                  onAction="#editCustomerButton" prefHeight="30.0" prefWidth="97.0"
                                  style="-fx-background-color: #131313; -fx-background-radius: 10; -fx-cursor: HAND; -fx-text-fill: #E8E7DE; -fx-border-radius: 10; -fx-font-weight: bold;"
-                                 text="EDIT" textFill="WHITE">
+                                 text="UBAH" textFill="WHITE">
                                  <font>
                                     <Font size="14.0" />
                                  </font>
@@ -180,7 +180,7 @@
                            AnchorPane.topAnchor="0.0">
                            <columns>
                               <TableColumn fx:id="customerIDCol" prefWidth="75.0"
-                                 text="ID PELANGGAN" />
+                                 text="KODE PELANGGAN" />
                               <TableColumn fx:id="customerNameCol" prefWidth="75.0"
                                  text="NAMA PELANGGAN" />
                               <TableColumn fx:id="customerContactCol" prefWidth="75.0" text="KONTAK" />

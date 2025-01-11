@@ -148,7 +148,7 @@
                                 <Font size="14.0" />
                             </font>
                         </JFXButton>
-                        <JFXButton fx:id="navButtons" alignment="BASELINE_LEFT" onMouseClicked="#handleNavButtonClick" prefHeight="50.0" prefWidth="120.0" style="-fx-background-color: #EEEEEE; -fx-background-radius: 10; -fx-text-fill: #333333; -fx-cursor: hand; -fx-font-weight: bold; -fx-border-radius: 10;" text="Supplier" GridPane.columnIndex="1" GridPane.rowIndex="1">
+                        <JFXButton fx:id="navButtons" alignment="BASELINE_LEFT" onMouseClicked="#handleNavButtonClick" prefHeight="50.0" prefWidth="120.0" style="-fx-background-color: #EEEEEE; -fx-background-radius: 10; -fx-text-fill: #333333; -fx-cursor: hand; -fx-font-weight: bold; -fx-border-radius: 10;" text="Pemasok" GridPane.columnIndex="1" GridPane.rowIndex="1">
                             <font>
                                 <Font size="14.0" />
                             </font>
@@ -203,7 +203,7 @@
                 </HBox>
                 <HBox alignment="CENTER" layoutX="967.0" layoutY="20.0" prefHeight="40.0" prefWidth="215.0" spacing="20.0">
                     <children>
-                        <JFXButton alignment="BASELINE_CENTER" onMouseClicked="#setSceneLogin" prefHeight="40.0" prefWidth="85.0" style="-fx-background-radius: 10; -fx-cursor: hand; -fx-background-color: #FBF6E2; -fx-text-fill: #333333; -fx-border-color: gray; -fx-border-radius: 10; -fx-font-weight: bold;" text="LOG OUT" textFill="WHITE">
+                        <JFXButton alignment="BASELINE_CENTER" onMouseClicked="#setSceneLogin" prefHeight="40.0" prefWidth="85.0" style="-fx-background-radius: 10; -fx-cursor: hand; -fx-background-color: #FBF6E2; -fx-text-fill: #333333; -fx-border-color: gray; -fx-border-radius: 10; -fx-font-weight: bold;" text="KELUAR" textFill="WHITE">
                             <font>
                                 <Font size="14.0" />
                             </font>

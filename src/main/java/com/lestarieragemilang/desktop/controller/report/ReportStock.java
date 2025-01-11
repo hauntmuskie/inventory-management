@@ -124,15 +124,15 @@ public class ReportStock {
 
   private void setupTable(List<Stock> stocks) {
     List<TableColumn<Stock, ?>> columns = List.of(
-        TableUtils.createColumn("Stock ID", "stockId"),
-        TableUtils.createColumn("Brand", "category.brand"),
-        TableUtils.createColumn("Product Type", "category.productType"),
-        TableUtils.createColumn("Size", "category.size"),
-        TableUtils.createColumn("Weight", "category.weight"),
-        TableUtils.createColumn("Weight Unit", "category.weightUnit"),
-        TableUtils.createColumn("Quantity", "quantity"),
-        TableUtils.createFormattedColumn("Purchase Price", "purchasePrice"),
-        TableUtils.createFormattedColumn("Selling Price", "sellingPrice")
+        TableUtils.createColumn("ID Stok", "stockId"),
+        TableUtils.createColumn("Merek", "category.brand"),
+        TableUtils.createColumn("Tipe Produk", "category.productType"),
+        TableUtils.createColumn("Ukuran", "category.size"),
+        TableUtils.createColumn("Berat", "category.weight"),
+        TableUtils.createColumn("Satuan Berat", "category.weightUnit"),
+        TableUtils.createColumn("Jumlah", "quantity"),
+        TableUtils.createFormattedColumn("Harga Beli", "purchasePrice"),
+        TableUtils.createFormattedColumn("Harga Jual", "sellingPrice")
     );
 
     TableUtils.populateTable(stockTable, columns, stocks);

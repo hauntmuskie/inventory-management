@@ -7,6 +7,7 @@ import com.lestarieragemilang.desktop.utils.SceneManager;
 import com.lestarieragemilang.desktop.utils.ShowAlert;
 import com.lestarieragemilang.desktop.utils.HibernateUtil;
 import javafx.application.Application;
+import javafx.application.Platform;
 import javafx.scene.Scene;
 import javafx.scene.Parent;
 import javafx.stage.Stage;
@@ -22,7 +23,7 @@ import jfxtras.styles.jmetro.Style;
 public class App extends Application {
 
     private static final Logger log = LoggerFactory.getLogger(App.class);
-    private static final String INITIAL_SCENE = "login";
+    private static final String INITIAL_SCENE = "layout";
     private static final int WIDTH = 1200;
     private static final int HEIGHT = 650;
     private static Scene scene;
@@ -80,22 +81,22 @@ public class App extends Application {
     }
 
     public static void setRoot(String fxml) {
-        try {
-            Preconditions.checkNotNull(fxml, "FXML name cannot be null");
-            
-            if (SceneManager.REPORT_MAIN.equals(fxml)) {
-                invalidateReportScenes();
-            }
-
-            Parent newRoot = sceneManager.getScene(fxml);
-            if (newRoot != null) {
-                Parent currentRoot = scene.getRoot();
-                sceneManager.transitionTo(currentRoot, newRoot, () -> scene.setRoot(newRoot));
-            }
-        } catch (IOException e) {
-            log.error("Failed to set root for scene: {}", fxml, e);
-            ShowAlert.showError("Gagal memuat halaman: " + fxml + "\n" + Throwables.getRootCause(e).getMessage());
+        if (SceneManager.REPORT_MAIN.equals(fxml)) {
+            invalidateReportScenes();
         }
+
+        sceneManager.getSceneAsync(fxml)
+            .thenAcceptAsync(newRoot -> {
+                if (newRoot != null) {
+                    Parent currentRoot = scene.getRoot();
+                    sceneManager.transitionTo(currentRoot, newRoot, () -> scene.setRoot(newRoot));
+                }
+            }, Platform::runLater)
+            .exceptionally(e -> {
+                log.error("Failed to set root for scene: {}", fxml, e);
+                ShowAlert.showError("Failed to load page: " + fxml);
+                return null;
+            });
     }
 
     private static void invalidateReportScenes() {

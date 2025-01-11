@@ -50,7 +50,7 @@
                                           <HBox alignment="CENTER_LEFT" prefHeight="40.0"
                                              prefWidth="930.0" spacing="15.0">
                                              <children>
-                                                <Label text="ID SUPPLIER">
+                                                <Label text="KODE SUPPLIER">
                                                    <font>
                                                       <Font size="18.0" />
                                                    </font>
@@ -197,7 +197,7 @@
                            AnchorPane.leftAnchor="20.0" AnchorPane.rightAnchor="20.0"
                            AnchorPane.topAnchor="0.0">
                            <columns>
-                              <TableColumn fx:id="supplierIDCol" prefWidth="75.0" text="ID SUPPLIER" />
+                              <TableColumn fx:id="supplierIDCol" prefWidth="75.0" text="KODE SUPPLIER" />
                               <TableColumn fx:id="supplierNameCol" prefWidth="75.0"
                                  text="NAMA SUPPLIER" />
                               <TableColumn fx:id="supplierContactCol" prefWidth="75.0" text="KONTAK" />

@@ -9,6 +9,11 @@
         <property name="hibernate.connection.username">root</property>
         <property name="hibernate.connection.password"></property>
         
+        <!-- Transaction Settings -->
+        <property name="hibernate.connection.isolation">4</property>
+        <property name="hibernate.transaction.jta.platform">org.hibernate.engine.transaction.jta.platform.internal.NoJtaPlatform</property>
+        <property name="hibernate.current_session_context_class">thread</property>
+        
         <!-- Connection Pool Settings -->
         <property name="hibernate.hikari.minimumIdle">5</property>
         <property name="hibernate.hikari.maximumPoolSize">10</property>

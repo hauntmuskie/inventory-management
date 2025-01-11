@@ -40,9 +40,9 @@
                                             <children>
                                                 <Label
                                                     style="-fx-font-size: 18px; -fx-text-fill: gray;"
-                                                    text="Username" />
+                                                    text="Nama Pengguna" />
                                                 <TextField fx:id="loginUsername" prefHeight="40.0"
-                                                    promptText="Masukan Username"
+                                                    promptText="Masukkan Nama Pengguna"
                                                     style="-fx-background-radius: 20; -fx-border-radius: 20; -fx-background-color: rgba(255,255,255,1); -fx-text-fill: gray; -fx-prompt-text-fill: #e0e0e0; -fx-font-weight: bold;">
                                                     <font>
                                                         <Font name="System Bold" size="12.0" />
@@ -50,9 +50,9 @@
                                                 </TextField>
                                                 <Label
                                                     style="-fx-font-size: 18px; -fx-text-fill: gray;"
-                                                    text="Password" />
+                                                    text="Kata Sandi" />
                                                 <PasswordField fx:id="loginPassword"
-                                                    prefHeight="40.0" promptText="Masukan Password"
+                                                    prefHeight="40.0" promptText="Masukkan Kata Sandi"
                                                     style="-fx-background-radius: 20; -fx-border-radius: 20; -fx-background-color: rgba(255,255,255,1); -fx-text-fill: gray; -fx-prompt-text-fill: #e0e0e0; -fx-font-weight: bold;">
                                                     <font>
                                                         <Font name="System Bold" size="12.0" />
@@ -111,31 +111,31 @@
                                                     <children>
                                                         <Label
                                                             style="-fx-font-size: 18px; -fx-text-fill: gray;"
-                                                            text="Email" />
+                                                            text="Surel" />
                                                         <TextField fx:id="registerEmail"
                                                             prefHeight="40.0"
-                                                            promptText="Masukan Email"
+                                                            promptText="Masukkan Surel"
                                                             style="-fx-background-radius: 10; -fx-border-radius: 10; -fx-border-color: gray; -fx-background-color: rgba(255,255,255,1); -fx-text-fill: gray; -fx-prompt-text-fill: #e0e0e0;" />
                                                         <Label
                                                             style="-fx-font-size: 18px; -fx-text-fill: gray;"
-                                                            text="Username" />
+                                                            text="Nama Pengguna" />
                                                         <TextField fx:id="registerUsername"
                                                             prefHeight="40.0"
-                                                            promptText="Masukan Username"
+                                                            promptText="Masukkan Nama Pengguna"
                                                             style="-fx-background-radius: 10; -fx-border-radius: 10; -fx-border-color: gray; -fx-background-color: rgba(255,255,255,1); -fx-text-fill: gray; -fx-prompt-text-fill: #e0e0e0;" />
                                                         <Label
                                                             style="-fx-font-size: 18px; -fx-text-fill: gray;"
-                                                            text="Password" />
+                                                            text="Kata Sandi" />
                                                         <PasswordField fx:id="registerPassword"
                                                             prefHeight="40.0"
-                                                            promptText="Masukan Password"
+                                                            promptText="Masukkan Kata Sandi"
                                                             style="-fx-background-radius: 10; -fx-border-radius: 10; -fx-border-color: gray; -fx-background-color: rgba(255,255,255,1); -fx-text-fill: gray; -fx-prompt-text-fill: #e0e0e0;" />
                                                         <Label
                                                             style="-fx-font-size: 18px; -fx-text-fill: gray;"
-                                                            text="Konfirmasi Password" />
+                                                            text="Konfirmasi Kata Sandi" />
                                                         <PasswordField fx:id="confirmPassword"
                                                             prefHeight="40.0"
-                                                            promptText="Konfirmasi Password"
+                                                            promptText="Konfirmasi Kata Sandi"
                                                             style="-fx-background-radius: 10; -fx-border-radius: 10; -fx-border-color: gray; -fx-background-color: rgba(255,255,255,1); -fx-text-fill: gray; -fx-prompt-text-fill: #e0e0e0;" />
                                                     </children>
                                                 </VBox>

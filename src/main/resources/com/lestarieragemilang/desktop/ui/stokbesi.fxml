@@ -52,7 +52,7 @@
                                                             prefHeight="40.0" prefWidth="930.0"
                                                             spacing="15.0">
                                                             <children>
-                                                                <Label text="ID STOK">
+                                                                <Label text="KODE STOK">
                                                                     <font>
                                                                         <Font size="18.0" />
                                                                     </font>
@@ -63,7 +63,7 @@
                                                             prefHeight="40.0" prefWidth="930.0"
                                                             spacing="15.0">
                                                             <children>
-                                                                <Label text="ID KATEGORI">
+                                                                <Label text="KODE KATEGORI">
                                                                     <font>
                                                                         <Font size="18.0" />
                                                                     </font>
@@ -95,7 +95,7 @@
                                                             prefHeight="40.0" prefWidth="930.0"
                                                             spacing="15.0">
                                                             <children>
-                                                                <Label text="STOK">
+                                                                <Label text="JUMLAH">
                                                                     <font>
                                                                         <Font size="18.0" />
                                                                     </font>
@@ -125,13 +125,13 @@
                                                     prefWidth="200.0" spacing="15.0">
                                                     <children>
                                                         <TextField fx:id="stockQuantityField"
-                                                            promptText="Enter quantity"
+                                                            promptText="Masukkan jumlah"
                                                             style="-fx-background-radius: 7;" />
                                                         <TextField fx:id="stockBuyPriceField"
-                                                            promptText="Enter purchase price"
+                                                            promptText="Masukkan harga beli"
                                                             style="-fx-background-radius: 7;" />
                                                         <TextField fx:id="stockSellPriceField"
-                                                            promptText="Enter selling price"
+                                                            promptText="Masukkan harga jual"
                                                             style="-fx-background-radius: 7;" />
                                                     </children>
                                                 </VBox>
@@ -163,7 +163,7 @@
                                             onAction="#editStockButton" prefHeight="30.0"
                                             prefWidth="100.0"
                                             style="-fx-background-color: #131313; -fx-background-radius: 10; -fx-cursor: HAND; -fx-text-fill: #E8E7DE; -fx-font-weight: bold; -fx-border-radius: 10;"
-                                            text="EDIT" textFill="WHITE">
+                                            text="UBAH" textFill="WHITE">
                                             <font>
                                                 <Font size="14.0" />
                                             </font>
@@ -192,9 +192,9 @@
                                     AnchorPane.rightAnchor="20.0" AnchorPane.topAnchor="0.0">
                                     <columns>
                                         <TableColumn fx:id="stockIDCol" prefWidth="75.0"
-                                            text="ID STOK" />
+                                            text="KODE STOK" />
                                         <TableColumn fx:id="stockOnCategoryIDCol" prefWidth="75.0"
-                                            text="ID KATEGORI" />
+                                            text="KODE KATEGORI" />
                                         <TableColumn fx:id="stockBrandCol" prefWidth="75.0"
                                             text="MEREK" />
                                         <TableColumn fx:id="stockTypeCol" prefWidth="75.0"
@@ -206,7 +206,7 @@
                                         <TableColumn fx:id="stockUnitCol" prefWidth="75.0"
                                             text="SATUAN" />
                                         <TableColumn fx:id="stockQuantityCol" prefWidth="75.0"
-                                            text="STOK" />
+                                            text="JUMLAH" />
                                         <TableColumn fx:id="stockBuyPriceCol" prefWidth="75.0"
                                             text="HARGA BELI" />
                                         <TableColumn fx:id="stockSellPriceCol" prefWidth="75.0"

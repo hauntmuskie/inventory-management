@@ -54,7 +54,7 @@
                                                 <TableColumn fx:id="buyInvoiceCol" prefWidth="75.0"
                                                    text="FAKTUR" />
                                                 <TableColumn fx:id="buyOnSupplierNameCol"
-                                                   prefWidth="75.0" text="NAMA SUPPLIER" />
+                                                   prefWidth="75.0" text="NAMA PEMASOK" />
                                                 <TableColumn fx:id="buyBrandCol" prefWidth="75.0"
                                                    text="MEREK" />
                                                 <TableColumn fx:id="buyTypeCol" prefWidth="75.0"
@@ -189,7 +189,7 @@
                                                                spacing="15.0">
                                                                <children>
                                                                   <Label style="-fx-font-size: 18;"
-                                                                     text="ID STOK">
+                                                                     text="KODE STOK">
                                                                      <font>
                                                                         <Font size="18.0" />
                                                                      </font>
@@ -259,7 +259,7 @@
                                                                spacing="15.0">
                                                                <children>
                                                                   <Label style="-fx-font-size: 18;"
-                                                                     text="ID SUPPLIER">
+                                                                     text="KODE PEMASOK">
                                                                      <font>
                                                                         <Font size="18.0" />
                                                                      </font>
@@ -271,7 +271,7 @@
                                                                spacing="15.0">
                                                                <children>
                                                                   <Label style="-fx-font-size: 18;"
-                                                                     text="NAMA SUPPLIER">
+                                                                     text="NAMA PEMASOK">
                                                                      <font>
                                                                         <Font size="18.0" />
                                                                      </font>
@@ -540,7 +540,7 @@
                                                                spacing="15.0">
                                                                <children>
                                                                   <Label style="-fx-font-size: 18;"
-                                                                     text="ID STOK">
+                                                                     text="KODE STOK">
                                                                      <font>
                                                                         <Font size="18.0" />
                                                                      </font>
@@ -610,7 +610,7 @@
                                                                spacing="15.0">
                                                                <children>
                                                                   <Label style="-fx-font-size: 18;"
-                                                                     text="ID PELANGGAN">
+                                                                     text="KODE PELANGGAN">
                                                                      <font>
                                                                         <Font size="18.0" />
                                                                      </font>

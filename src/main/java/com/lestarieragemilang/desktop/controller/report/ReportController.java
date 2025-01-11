@@ -1,12 +1,11 @@
 package com.lestarieragemilang.desktop.controller.report;
 
+import javafx.application.Platform;
 import javafx.fxml.FXML;
 import javafx.scene.Parent;
 import javafx.scene.input.MouseEvent;
 import javafx.scene.layout.AnchorPane;
 import javafx.scene.layout.BorderPane;
-import java.io.IOException;
-
 import com.lestarieragemilang.desktop.App;
 import com.lestarieragemilang.desktop.utils.Redirect;
 import com.lestarieragemilang.desktop.utils.SceneManager;
@@ -23,23 +22,28 @@ public class ReportController extends Redirect {
     private String currentScene = SceneManager.REPORT_MAIN;
 
     private void loadReportScene(String sceneName) {
-        try {
-            if (!currentScene.equals(sceneName)) {
-                Parent newScene = App.sceneManager.getScene(sceneName);
-                if (setScene.getChildren().isEmpty()) {
-                    setScene.getChildren().setAll(newScene);
-                    animateFadeIn(newScene);
-                } else {
-                    Parent currentSceneNode = (Parent) setScene.getChildren().get(0);
-                    App.sceneManager.transitionTo(currentSceneNode, newScene, () -> {
-                        setScene.getChildren().setAll(newScene);
-                        currentScene = sceneName;
-                    });
-                }
-            }
-        } catch (IOException e) {
-            ShowAlert.showError("Gagal memuat laporan: " + sceneName);
+        if (currentScene.equals(sceneName)) {
+            return;
         }
+
+        App.sceneManager.getSceneAsync(sceneName)
+                .thenAcceptAsync(newScene -> {
+                    if (setScene.getChildren().isEmpty()) {
+                        setScene.getChildren().setAll(newScene);
+                        animateFadeIn(newScene);
+                    } else {
+                        Parent currentSceneNode = (Parent) setScene.getChildren().get(0);
+                        App.sceneManager.transitionTo(currentSceneNode, newScene, () -> {
+                            setScene.getChildren().setAll(newScene);
+                            currentScene = sceneName;
+                        });
+                    }
+                }, Platform::runLater)
+                .exceptionally(e -> {
+                    ShowAlert.showError("Gagal memuat laporan: " + sceneName);
+                    e.printStackTrace();
+                    return null;
+                });
     }
 
     @FXML
@@ -87,13 +91,14 @@ public class ReportController extends Redirect {
     @Override
     protected void animateFadeIn(Parent node) {
         node.setOpacity(0);
-        new animatefx.animation.FadeIn(node).play();
+        new animatefx.animation.FadeIn(node).setSpeed(2.0).play();
     }
 
     @Override
     protected void animateFadeOut(Parent node, Runnable onFinished) {
         animatefx.animation.FadeOut fadeOut = new animatefx.animation.FadeOut(node);
-        fadeOut.setOnFinished(e -> onFinished.run());
+        fadeOut.setSpeed(2.0);
+        fadeOut.setOnFinished(_ -> onFinished.run());
         fadeOut.play();
     }
 }
