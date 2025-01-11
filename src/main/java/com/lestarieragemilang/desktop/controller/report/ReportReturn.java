@@ -117,11 +117,11 @@ public class ReportReturn {
 
     private void setupTable(List<Returns> returns) {
         List<TableColumn<Returns, ?>> columns = List.of(
-            TableUtils.createColumn("Return ID", "returnId"),
-            TableUtils.createColumn("Return Date", "returnDate"),
-            TableUtils.createColumn("Return Type", "returnType"),
-            TableUtils.createColumn("Invoice Number", "invoiceNumber"),
-            TableUtils.createColumn("Reason", "reason")
+            TableUtils.createColumn("Kode Retur", "returnId"),
+            TableUtils.createColumn("Tanggal Retur", "returnDate"),
+            TableUtils.createColumn("Tipe Retur", "returnType"),
+            TableUtils.createColumn("Nomor Faktur", "invoiceNumber"),
+            TableUtils.createColumn("Alasan", "reason")
         );
 
         TableUtils.populateTable(returnTable, columns, returns);

@@ -146,12 +146,12 @@ public class ReportPurchasing {
 
   private void setupTable(List<Purchasing> purchases) {
     List<TableColumn<Purchasing, ?>> columns = List.of(
-        TableUtils.createColumn("Date", "purchaseDate"),
-        TableUtils.createColumn("Invoice", "invoiceNumber"),
-        TableUtils.createColumn("Supplier", "supplier.supplierName"),
-        TableUtils.createColumn("Stock", "stock.category.brand"),
-        TableUtils.createColumn("Quantity", "quantity"),
-        TableUtils.createFormattedColumn("Price", "price"),
+        TableUtils.createColumn("Tanggal", "purchaseDate"),
+        TableUtils.createColumn("Nomor Faktur", "invoiceNumber"),
+        TableUtils.createColumn("Pemasok", "supplier.supplierName"),
+        TableUtils.createColumn("Stok", "stock.category.brand"),
+        TableUtils.createColumn("Jumlah", "quantity"),
+        TableUtils.createFormattedColumn("Harga", "price"),
         TableUtils.createFormattedColumn("Sub Total", "subTotal"),
         TableUtils.createFormattedColumn("Total", "priceTotal")
     );

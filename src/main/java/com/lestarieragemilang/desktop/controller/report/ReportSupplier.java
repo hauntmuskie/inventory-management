@@ -128,11 +128,11 @@ public class ReportSupplier {
 
   private void setupTable(List<Supplier> suppliers) {
     List<TableColumn<Supplier, ?>> columns = List.of(
-        TableUtils.createColumn("Supplier ID", "supplierId"),
-        TableUtils.createColumn("Name", "supplierName"),
-        TableUtils.createColumn("Contact", "contact"),
-        TableUtils.createColumn("Address", "address"),
-        TableUtils.createColumn("Email", "email")
+        TableUtils.createColumn("Kode Pemasok", "supplierId"),
+        TableUtils.createColumn("Nama", "supplierName"),
+        TableUtils.createColumn("Kontak", "contact"),
+        TableUtils.createColumn("Alamat", "address"),
+        TableUtils.createColumn("Surel", "email")
     );
 
     TableUtils.populateTable(supplierTable, columns, suppliers);

@@ -26,10 +26,10 @@
             </Text>
             <TableView fx:id="returnTable" layoutX="-104.0" layoutY="277.0" prefHeight="300.0" prefWidth="930.0" AnchorPane.bottomAnchor="10.0" AnchorPane.leftAnchor="20.0" AnchorPane.rightAnchor="20.0">
                <columns>
-                  <TableColumn fx:id="returnIdCol" prefWidth="100.0" text="RETURN ID" />
+                  <TableColumn fx:id="returnIdCol" prefWidth="100.0" text="KODE PENGEMBALIAN" />
                   <TableColumn fx:id="returnDateCol" prefWidth="100.0" text="TANGGAL" />
-                  <TableColumn fx:id="returnTypeCol" prefWidth="100.0" text="TIPE RETURN" />
-                  <TableColumn fx:id="invoiceNumberCol" prefWidth="120.0" text="NO FAKTUR" />
+                  <TableColumn fx:id="returnTypeCol" prefWidth="100.0" text="JENIS PENGEMBALIAN" />
+                  <TableColumn fx:id="invoiceNumberCol" prefWidth="120.0" text="NOMOR FAKTUR" />
                   <TableColumn fx:id="reasonCol" prefWidth="200.0" text="ALASAN" />
                </columns>
                <columnResizePolicy>

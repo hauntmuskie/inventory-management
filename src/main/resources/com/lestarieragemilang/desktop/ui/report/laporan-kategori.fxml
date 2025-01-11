@@ -36,7 +36,7 @@
                prefWidth="970.0" AnchorPane.bottomAnchor="10.0" AnchorPane.leftAnchor="20.0"
                AnchorPane.rightAnchor="20.0">
                <columns>
-                  <TableColumn fx:id="categoryIDCol" prefWidth="75.0" text="ID KATEGORI" />
+                  <TableColumn fx:id="categoryIDCol" prefWidth="75.0" text="KODE KATEGORI" />
                   <TableColumn fx:id="brandCategoryCol" prefWidth="75.0" text="MEREK" />
                   <TableColumn fx:id="typeCategoryCol" prefWidth="75.0" text="JENIS" />
                   <TableColumn fx:id="sizeCategoryCol" prefWidth="75.0" text="UKURAN" />

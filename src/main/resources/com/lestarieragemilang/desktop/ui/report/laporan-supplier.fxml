@@ -36,11 +36,11 @@
                prefWidth="930.0" AnchorPane.bottomAnchor="10.0" AnchorPane.leftAnchor="20.0"
                AnchorPane.rightAnchor="20.0">
                <columns>
-                  <TableColumn fx:id="supplierIDCol" prefWidth="100.0" text="ID SUPPLIER" />
-                  <TableColumn fx:id="supplierNameCol" prefWidth="150.0" text="NAMA SUPPLIER" />
+                  <TableColumn fx:id="supplierIDCol" prefWidth="100.0" text="KODE PEMASOK" />
+                  <TableColumn fx:id="supplierNameCol" prefWidth="150.0" text="NAMA PEMASOK" />
                   <TableColumn fx:id="contactCol" prefWidth="120.0" text="KONTAK" />
                   <TableColumn fx:id="addressCol" prefWidth="200.0" text="ALAMAT" />
-                  <TableColumn fx:id="emailCol" prefWidth="150.0" text="EMAIL" />
+                  <TableColumn fx:id="emailCol" prefWidth="150.0" text="SUREL" />
                </columns>
                <columnResizePolicy>
                   <TableView fx:constant="CONSTRAINED_RESIZE_POLICY" />

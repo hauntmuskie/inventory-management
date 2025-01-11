@@ -122,11 +122,11 @@ public class ReportCustomer {
 
   private void setupTable(List<Customer> customers) {
     List<TableColumn<Customer, ?>> columns = List.of(
-        TableUtils.createColumn("Customer ID", "customerId"),
-        TableUtils.createColumn("Name", "customerName"),
-        TableUtils.createColumn("Contact", "contact"),
-        TableUtils.createColumn("Address", "address"),
-        TableUtils.createColumn("Email", "email")
+        TableUtils.createColumn("Kode Pelanggan", "customerId"),
+        TableUtils.createColumn("Nama", "customerName"),
+        TableUtils.createColumn("Kontak", "contact"),
+        TableUtils.createColumn("Alamat", "address"),
+        TableUtils.createColumn("Surel", "email")
     );
 
     TableUtils.populateTable(customerTable, columns, customers);

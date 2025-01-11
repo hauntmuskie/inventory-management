@@ -116,12 +116,12 @@ public class ReportCategory {
 
   private void setupTable(List<Category> categories) {
     List<TableColumn<Category, ?>> columns = List.of(
-        TableUtils.createColumn("Category ID", "categoryId"),
-        TableUtils.createColumn("Brand", "brand"),
-        TableUtils.createColumn("Product Type", "productType"),
-        TableUtils.createColumn("Size", "size"),
-        TableUtils.createColumn("Weight", "weight"),
-        TableUtils.createColumn("Weight Unit", "weightUnit")
+        TableUtils.createColumn("Kode Kategori", "categoryId"),
+        TableUtils.createColumn("Merek", "brand"),
+        TableUtils.createColumn("Tipe Produk", "productType"),
+        TableUtils.createColumn("Ukuran", "size"),
+        TableUtils.createColumn("Berat", "weight"),
+        TableUtils.createColumn("Satuan Berat", "weightUnit")
     );
 
     TableUtils.populateTable(categoryTable, columns, categories);

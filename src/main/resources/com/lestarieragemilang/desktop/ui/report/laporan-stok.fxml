@@ -36,14 +36,14 @@
                prefWidth="930.0" AnchorPane.bottomAnchor="10.0" AnchorPane.leftAnchor="20.0"
                AnchorPane.rightAnchor="20.0">
                <columns>
-                  <TableColumn fx:id="stockIDCol" prefWidth="75.0" text="ID STOK" />
-                  <TableColumn fx:id="stockOnCategoryIDCol" prefWidth="75.0" text="ID KATEGORI" />
+                  <TableColumn fx:id="stockIDCol" prefWidth="75.0" text="KODE STOK" />
+                  <TableColumn fx:id="stockOnCategoryIDCol" prefWidth="75.0" text="KODE KATEGORI" />
                   <TableColumn fx:id="stockBrandCol" prefWidth="75.0" text="MEREK" />
                   <TableColumn fx:id="stockTypeCol" prefWidth="75.0" text="JENIS" />
                   <TableColumn fx:id="stockSizeCol" prefWidth="95.0" text="UKURAN" />
                   <TableColumn fx:id="stockWeightCol" prefWidth="91.0" text="BERAT" />
                   <TableColumn fx:id="stockUnitCol" prefWidth="75.0" text="SATUAN" />
-                  <TableColumn fx:id="stockQuantityCol" prefWidth="75.0" text="STOK" />
+                  <TableColumn fx:id="stockQuantityCol" prefWidth="75.0" text="JUMLAH STOK" />
                   <TableColumn fx:id="stockBuyPriceCol" prefWidth="75.0" text="HARGA BELI" />
                   <TableColumn fx:id="stockSellPriceCol" prefWidth="75.0" text="HARGA JUAL" />
                </columns>

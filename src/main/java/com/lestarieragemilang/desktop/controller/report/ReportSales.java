@@ -167,12 +167,12 @@ public class ReportSales {
 
   private void setupTable(List<Sales> sales) {
     List<TableColumn<Sales, ?>> columns = List.of(
-        TableUtils.createColumn("Date", "saleDate"),
-        TableUtils.createColumn("Invoice", "invoiceNumber"),
-        TableUtils.createColumn("Customer", "customer.customerName"),
-        TableUtils.createColumn("Stock", "stock.category.brand"),
-        TableUtils.createColumn("Quantity", "quantity"),
-        TableUtils.createFormattedColumn("Price", "price"),
+        TableUtils.createColumn("Tanggal", "saleDate"),
+        TableUtils.createColumn("Nomor Faktur", "invoiceNumber"),
+        TableUtils.createColumn("Pelanggan", "customer.customerName"),
+        TableUtils.createColumn("Stok", "stock.category.brand"),
+        TableUtils.createColumn("Jumlah", "quantity"),
+        TableUtils.createFormattedColumn("Harga", "price"),
         TableUtils.createFormattedColumn("Sub Total", "subTotal"),
         TableUtils.createFormattedColumn("Total", "priceTotal")
     );

@@ -124,7 +124,7 @@ public class ReportStock {
 
   private void setupTable(List<Stock> stocks) {
     List<TableColumn<Stock, ?>> columns = List.of(
-        TableUtils.createColumn("ID Stok", "stockId"),
+        TableUtils.createColumn("Kode Stok", "stockId"),
         TableUtils.createColumn("Merek", "category.brand"),
         TableUtils.createColumn("Tipe Produk", "category.productType"),
         TableUtils.createColumn("Ukuran", "category.size"),
