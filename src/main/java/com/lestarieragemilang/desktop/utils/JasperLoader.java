@@ -24,6 +24,9 @@ import java.util.Map;
 import java.util.Optional;
 import java.util.concurrent.ExecutionException;
 import java.util.concurrent.TimeUnit;
+import java.util.HashMap;
+import java.io.File;
+import java.net.URISyntaxException;
 
 public class JasperLoader {
     private static final Logger logger = LoggerFactory.getLogger(JasperLoader.class);
@@ -40,9 +43,25 @@ public class JasperLoader {
                 }
             });
 
-    private static final ImmutableMap<String, Object> BASE_PARAMETERS = ImmutableMap.of(
-            "REPORT_IGNORE_MISSING_FONT", Boolean.TRUE,
-            "REPORT_DEFAULT_FONT", "DejaVu Sans");
+    private static String getResourcePath(String resourceName) {
+        try {
+            URL resource = JasperLoader.class.getResource(resourceName);
+            if (resource == null) {
+                logger.error("Resource not found: {}", resourceName);
+                return "";
+            }
+            return new File(resource.toURI()).getAbsolutePath();
+        } catch (URISyntaxException e) {
+            logger.error("Error converting resource URL to path", e);
+            return "";
+        }
+    }
+
+    private static final ImmutableMap<String, Object> BASE_PARAMETERS = ImmutableMap.<String, Object>builder()
+            .put("REPORT_IGNORE_MISSING_FONT", Boolean.TRUE)
+            .put("REPORT_DEFAULT_FONT", "DejaVu Sans")
+            .put("IMAGE_PATH", getResourcePath("/com/lestarieragemilang/desktop/jasper/image/6057567234160706437.png"))
+            .build();
 
     static {
         DefaultJasperReportsContext context = DefaultJasperReportsContext.getInstance();
