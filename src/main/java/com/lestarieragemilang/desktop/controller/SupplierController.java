@@ -41,7 +41,7 @@ public class SupplierController extends HibernateUtil {
     private GenericService<Supplier> supplierService;
 
     public void initialize() {
-        supplierService = new GenericService<>(new GenericDao<>(Supplier.class), "SUP", 3);
+        supplierService = new GenericService<>(new GenericDao<>(Supplier.class), "PMS", 3);  // Changed from SUP to PMS
 
         initializeSupplierTable();
         loadSuppliers();
@@ -53,11 +53,11 @@ public class SupplierController extends HibernateUtil {
 
     private void initializeSupplierTable() {
         List<TableColumn<Supplier, ?>> columns = List.of(
-                TableUtils.createColumn("Supplier ID", "supplierId"),
-                TableUtils.createColumn("Name", "supplierName"),
-                TableUtils.createColumn("Contact", "contact"),
-                TableUtils.createColumn("Email", "email"),
-                TableUtils.createColumn("Address", "address"));
+                TableUtils.createColumn("Kode Pemasok", "supplierId"),
+                TableUtils.createColumn("Nama", "supplierName"),
+                TableUtils.createColumn("Kontak", "contact"),
+                TableUtils.createColumn("Surel", "email"),
+                TableUtils.createColumn("Alamat", "address"));
         TableUtils.populateTable(supplierTable, columns, supplierService.findAll());
     }
 
@@ -69,7 +69,7 @@ public class SupplierController extends HibernateUtil {
     private void generateAndSetSupplierId() {
         String newSupplierId;
         do {
-            newSupplierId = IdGenerator.generateRandomId("SUP", 1000);
+            newSupplierId = IdGenerator.generateRandomId("PMS", 1000);  // Changed from SUP to PMS
         } while (supplierIdExists(newSupplierId));
 
         supplierIDIncrement.setText(newSupplierId);
@@ -84,7 +84,7 @@ public class SupplierController extends HibernateUtil {
     private void addSupplierButton(ActionEvent event) {
         String supplierId = supplierIDIncrement.getText();
         if (supplierIdExists(supplierId)) {
-            ShowAlert.showWarning("ID Supplier sudah ada di database");
+            ShowAlert.showWarning("ID Pemasok sudah ada di database");
             generateAndSetSupplierId();
             return;
         }
@@ -97,7 +97,7 @@ public class SupplierController extends HibernateUtil {
         supplier.setAddress(supplierAddressField.getText());
 
         supplierService.save(supplier);
-        ShowAlert.showSuccess("Data supplier berhasil ditambahkan");
+        ShowAlert.showSuccess("Data pemasok berhasil ditambahkan");
         loadSuppliers();
         resetSupplierButton();
     }
@@ -106,18 +106,18 @@ public class SupplierController extends HibernateUtil {
     private void editSupplierButton(ActionEvent event) {
         Supplier selectedSupplier = supplierTable.getSelectionModel().getSelectedItem();
         if (selectedSupplier == null) {
-            ShowAlert.showWarning("Silahkan pilih supplier yang akan diubah");
+            ShowAlert.showWarning("Silakan pilih pemasok yang akan diubah");
             return;
         }
 
         GenericEditPopup.create(Supplier.class)
-                .withTitle("Edit Supplier")
+                .withTitle("Ubah Pemasok")
                 .forItem(selectedSupplier)
-                .addField("Supplier ID", new TextField(selectedSupplier.getSupplierId()), true)
-                .addField("Name", new TextField(selectedSupplier.getSupplierName()))
-                .addField("Contact", new TextField(selectedSupplier.getContact()))
-                .addField("Email", new TextField(selectedSupplier.getEmail()))
-                .addField("Address", new TextField(selectedSupplier.getAddress()))
+                .addField("Kode Pemasok", new TextField(selectedSupplier.getSupplierId()), true)
+                .addField("Nama", new TextField(selectedSupplier.getSupplierName()))
+                .addField("Kontak", new TextField(selectedSupplier.getContact()))
+                .addField("Surel", new TextField(selectedSupplier.getEmail()))
+                .addField("Alamat", new TextField(selectedSupplier.getAddress()))
                 .onSave((supplier, fields) -> {
                     supplier.setSupplierName(((TextField) fields.get(1)).getText());
                     supplier.setContact(((TextField) fields.get(2)).getText());
@@ -126,7 +126,7 @@ public class SupplierController extends HibernateUtil {
                     supplierService.update(supplier);
                 })
                 .afterSave(() -> {
-                    ShowAlert.showSuccess("Data supplier berhasil diubah");
+                    ShowAlert.showSuccess("Data pemasok berhasil diubah");
                     loadSuppliers();
                     resetSupplierButton();
                     supplierTable.refresh(); // Add this line
@@ -138,13 +138,13 @@ public class SupplierController extends HibernateUtil {
     private void removeSupplierButton(ActionEvent event) {
         Supplier selectedSupplier = supplierTable.getSelectionModel().getSelectedItem();
         if (selectedSupplier == null) {
-            ShowAlert.showWarning("Silahkan pilih supplier yang akan dihapus");
+            ShowAlert.showWarning("Silakan pilih pemasok yang akan dihapus");
             return;
         }
 
-        if (ShowAlert.showYesNo("Konfirmasi Hapus", "Apakah Anda yakin ingin menghapus data supplier ini?")) {
+        if (ShowAlert.showYesNo("Konfirmasi Hapus", "Apakah Anda yakin ingin menghapus data pemasok ini?")) {
             supplierService.delete(selectedSupplier);
-            ShowAlert.showSuccess("Data supplier berhasil dihapus");
+            ShowAlert.showSuccess("Data pemasok berhasil dihapus");
             loadSuppliers();
             resetSupplierButton();
         }

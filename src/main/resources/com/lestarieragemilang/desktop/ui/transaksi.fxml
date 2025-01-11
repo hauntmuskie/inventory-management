@@ -339,7 +339,7 @@
                                                    onAction="#resetBuyButton" prefHeight="30.0"
                                                    prefWidth="124.0"
                                                    style="-fx-background-color: #131313; -fx-background-radius: 10; -fx-cursor: HAND; -fx-text-fill: #E8E7DE; -fx-font-weight: bold; -fx-border-radius: 10;"
-                                                   text="RESET" textFill="WHITE">
+                                                   text="BERSIHKAN" textFill="WHITE">
                                                    <font>
                                                       <Font size="14.0" />
                                                    </font>
@@ -690,7 +690,7 @@
                                                    onAction="#resetSellButton" prefHeight="30.0"
                                                    prefWidth="97.0"
                                                    style="-fx-background-color: #131313; -fx-background-radius: 10; -fx-cursor: HAND; -fx-text-fill: #E8E7DE; -fx-font-weight: bold; -fx-border-radius: 10;"
-                                                   text="RESET" textFill="WHITE">
+                                                   text="BERSIHKAN" textFill="WHITE">
                                                    <font>
                                                       <Font size="14.0" />
                                                    </font>

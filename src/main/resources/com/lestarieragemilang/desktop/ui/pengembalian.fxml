@@ -161,7 +161,7 @@
                               <JFXButton buttonType="RAISED" onAction="#resetReturnButton"
                                  prefHeight="30.0" prefWidth="97.0"
                                  style="-fx-background-color: #131313; -fx-background-radius: 10; -fx-cursor: HAND; -fx-font-weight: bold; -fx-text-fill: #E8E7DE; -fx-border-radius: 10;"
-                                 text="RESET" textFill="WHITE">
+                                 text="BERSIHKAN" textFill="WHITE">
                                  <font>
                                     <Font size="14.0" />
                                  </font>

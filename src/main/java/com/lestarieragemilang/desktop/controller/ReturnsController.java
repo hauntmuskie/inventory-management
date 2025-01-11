@@ -48,9 +48,9 @@ public class ReturnsController extends HibernateUtil {
     private GenericService<Sales> salesService;
 
     public void initialize() {
-        returnService = new GenericService<>(new GenericDao<>(Returns.class), "RTN", 3);
-        purchasingService = new GenericService<>(new GenericDao<>(Purchasing.class), "PCH", 3);
-        salesService = new GenericService<>(new GenericDao<>(Sales.class), "SLS", 3);
+        returnService = new GenericService<>(new GenericDao<>(Returns.class), "RET", 3);
+        purchasingService = new GenericService<>(new GenericDao<>(Purchasing.class), "BLI", 3);
+        salesService = new GenericService<>(new GenericDao<>(Sales.class), "JUL", 3);
 
         initializeInvoiceComboBox();
         initializeReturnTable();
@@ -101,11 +101,11 @@ public class ReturnsController extends HibernateUtil {
 
     private void initializeReturnTable() {
         List<TableColumn<Returns, ?>> columns = List.of(
-                TableUtils.createColumn("Return ID", "returnId"),
-                TableUtils.createColumn("Date", "returnDate"),
-                TableUtils.createColumn("Invoice", "invoiceNumber"),
-                TableUtils.createColumn("Type", "returnType"),
-                TableUtils.createColumn("Reason", "reason"));
+                TableUtils.createColumn("Kode Retur", "returnId"),
+                TableUtils.createColumn("Tanggal", "returnDate"),
+                TableUtils.createColumn("No. Faktur", "invoiceNumber"),
+                TableUtils.createColumn("Tipe", "returnType"),
+                TableUtils.createColumn("Alasan", "reason"));
         TableUtils.populateTable(returnTable, columns, returnService.findAll());
     }
 
@@ -117,7 +117,7 @@ public class ReturnsController extends HibernateUtil {
     private void generateAndSetReturnId() {
         String newReturnId;
         do {
-            newReturnId = IdGenerator.generateRandomId("RTN", 1000);
+            newReturnId = IdGenerator.generateRandomId("RET", 1000);
         } while (returnIdExists(newReturnId));
 
         returnIDIncrement.setText(newReturnId);
@@ -132,7 +132,7 @@ public class ReturnsController extends HibernateUtil {
     private void addReturnButton() {
         String returnId = returnIDIncrement.getText();
         if (returnIdExists(returnId)) {
-            ShowAlert.showWarning("ID Retur sudah ada dalam sistem. ID baru akan dibuat.");
+            ShowAlert.showWarning("Kode Retur sudah ada dalam sistem. Kode baru akan dibuat.");
             generateAndSetReturnId();
             return;
         }
@@ -149,10 +149,10 @@ public class ReturnsController extends HibernateUtil {
 
         if (selectedInvoice instanceof Purchasing) {
             returnItem.setInvoiceNumber(((Purchasing) selectedInvoice).getInvoiceNumber());
-            returnItem.setReturnType("Buy");
+            returnItem.setReturnType("Beli");
         } else if (selectedInvoice instanceof Sales) {
             returnItem.setInvoiceNumber(((Sales) selectedInvoice).getInvoiceNumber());
-            returnItem.setReturnType("Sell");
+            returnItem.setReturnType("Jual");
         } else {
             ShowAlert.showWarning("Silakan pilih faktur terlebih dahulu.");
             return;
@@ -183,13 +183,13 @@ public class ReturnsController extends HibernateUtil {
         }
 
         GenericEditPopup.create(Returns.class)
-                .withTitle("Edit Return")
+                .withTitle("Ubah Retur")
                 .forItem(selectedReturn)
-                .addField("Return ID", new TextField(selectedReturn.getReturnId()), true)
-                .addField("Date", new DatePicker(selectedReturn.getReturnDate()))
-                .addField("Invoice", new ComboBox<>(returnInvoicePurchasing.getItems()))
-                .addField("Type", new TextField(selectedReturn.getReturnType()))
-                .addField("Reason", new TextArea(selectedReturn.getReason()))
+                .addField("Kode Retur", new TextField(selectedReturn.getReturnId()), true)
+                .addField("Tanggal", new DatePicker(selectedReturn.getReturnDate()))
+                .addField("Faktur", new ComboBox<>(returnInvoicePurchasing.getItems()))
+                .addField("Tipe", new TextField(selectedReturn.getReturnType()))
+                .addField("Alasan", new TextArea(selectedReturn.getReason()))
                 .onSave((returnItem, fields) -> {
                     returnItem.setReturnDate(((DatePicker) fields.get(1)).getValue());
 
@@ -201,10 +201,10 @@ public class ReturnsController extends HibernateUtil {
 
                     if (selectedInvoice instanceof Purchasing) {
                         returnItem.setInvoiceNumber(((Purchasing) selectedInvoice).getInvoiceNumber());
-                        returnItem.setReturnType("Buy");
+                        returnItem.setReturnType("Beli");
                     } else if (selectedInvoice instanceof Sales) {
                         returnItem.setInvoiceNumber(((Sales) selectedInvoice).getInvoiceNumber());
-                        returnItem.setReturnType("Sell");
+                        returnItem.setReturnType("Jual");
                     } else {
                         ShowAlert.showWarning("Silakan pilih faktur terlebih dahulu.");
                         return;

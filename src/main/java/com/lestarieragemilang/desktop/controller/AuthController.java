@@ -81,18 +81,18 @@ public class AuthController extends Redirect {
 
             user.ifPresentOrElse(
                     this::handleSuccessfulLogin,
-                    () -> ShowAlert.showError("Username atau password tidak valid"));
+                    () -> ShowAlert.showError("Nama pengguna atau kata sandi tidak valid"));
         } catch (IllegalArgumentException e) {
             ShowAlert.showValidationError(e.getMessage());
         } catch (Exception e) {
-            ShowAlert.showError("Terjadi kesalahan saat login");
+            ShowAlert.showError("Terjadi kesalahan saat masuk");
             e.printStackTrace();
         }
     }
 
     private void validateLoginInput() {
-        Preconditions.checkArgument(!Strings.isNullOrEmpty(loginUsername.getText()), "Username tidak boleh kosong");
-        Preconditions.checkArgument(!Strings.isNullOrEmpty(loginPassword.getText()), "Password tidak boleh kosong");
+        Preconditions.checkArgument(!Strings.isNullOrEmpty(loginUsername.getText()), "Nama pengguna tidak boleh kosong");
+        Preconditions.checkArgument(!Strings.isNullOrEmpty(loginPassword.getText()), "Kata sandi tidak boleh kosong");
     }
 
     private Optional<User> authenticateUser() {
@@ -130,7 +130,7 @@ public class AuthController extends Redirect {
             registerView.setVisible(false);
             animateFadeIn(loginView);
         } catch (IOException e) {
-            ShowAlert.showError("Gagal memuat tampilan login");
+            ShowAlert.showError("Gagal memuat tampilan masuk");
         }
     }
 

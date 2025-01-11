@@ -127,7 +127,7 @@
                                     <VBox fx:id="supplierAddressField1" alignment="BASELINE_CENTER"
                                        prefHeight="57.0" prefWidth="116.0">
                                        <children>
-                                          <Label alignment="BASELINE_CENTER" text="EMAIL">
+                                          <Label alignment="BASELINE_CENTER" text="SUREL">
                                              <font>
                                                 <Font size="18.0" />
                                              </font>
@@ -155,7 +155,7 @@
                               <JFXButton buttonType="RAISED" onAction="#resetSupplierButton"
                                  prefHeight="30.0" prefWidth="97.0"
                                  style="-fx-background-color: #131313; -fx-background-radius: 10; -fx-cursor: HAND; -fx-font-weight: bold; -fx-border-radius: 10; -fx-text-fill: #E8E7DE;"
-                                 text="RESET" textFill="WHITE">
+                                 text="BERSIHKAN" textFill="WHITE">
                                  <font>
                                     <Font size="14.0" />
                                  </font>
@@ -202,7 +202,7 @@
                                  text="NAMA SUPPLIER" />
                               <TableColumn fx:id="supplierContactCol" prefWidth="75.0" text="KONTAK" />
                               <TableColumn fx:id="supplierAddressCol" prefWidth="75.0" text="ALAMAT" />
-                              <TableColumn fx:id="supplierEmailCol" prefWidth="75.0" text="EMAIL" />
+                              <TableColumn fx:id="supplierEmailCol" prefWidth="75.0" text="SUREL" />
                            </columns>
                            <columnResizePolicy>
                               <TableView fx:constant="CONSTRAINED_RESIZE_POLICY" />

@@ -107,7 +107,7 @@
                                           <HBox alignment="CENTER_LEFT" prefHeight="40.0"
                                              prefWidth="930.0" spacing="15.0">
                                              <children>
-                                                <Label text="EMAIL">
+                                                <Label text="SUREL">
                                                    <font>
                                                       <Font size="18.0" />
                                                    </font>
@@ -137,7 +137,7 @@
                               <JFXButton buttonType="RAISED" onAction="#resetCustomerButton"
                                  prefHeight="30.0" prefWidth="91.0"
                                  style="-fx-background-color: #131313; -fx-background-radius: 10; -fx-cursor: HAND; -fx-text-fill: #E8E7DE; -fx-border-radius: 10; -fx-font-weight: bold;"
-                                 text="RESET" textFill="WHITE">
+                                 text="BERSIHKAN" textFill="WHITE">
                                  <font>
                                     <Font size="14.0" />
                                  </font>
@@ -185,7 +185,7 @@
                                  text="NAMA PELANGGAN" />
                               <TableColumn fx:id="customerContactCol" prefWidth="75.0" text="KONTAK" />
                               <TableColumn fx:id="customerAddressCol" prefWidth="75.0" text="ALAMAT" />
-                              <TableColumn fx:id="customerEmailCol" prefWidth="75.0" text="EMAIL" />
+                              <TableColumn fx:id="customerEmailCol" prefWidth="75.0" text="SUREL" />
                            </columns>
                            <columnResizePolicy>
                               <TableView fx:constant="CONSTRAINED_RESIZE_POLICY" />

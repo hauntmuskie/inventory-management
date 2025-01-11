@@ -35,8 +35,8 @@ public class StockController extends HibernateUtil {
     private final GenericService<Category> categoryService;
 
     public StockController() {
-        this.stockService = new GenericService<>(new GenericDao<>(Stock.class), "STK", 3);
-        this.categoryService = new GenericService<>(new GenericDao<>(Category.class), "CAT", 3);
+        this.stockService = new GenericService<>(new GenericDao<>(Stock.class), "BRG", 3);
+        this.categoryService = new GenericService<>(new GenericDao<>(Category.class), "KTG", 3);
     }
 
     public void initialize() {
@@ -70,16 +70,16 @@ public class StockController extends HibernateUtil {
 
     private void initializeStockTable() {
         List<TableColumn<Stock, ?>> columns = List.of(
-                TableUtils.createColumn("Stock ID", "stockId"),
-                TableUtils.createColumn("Category ID", "category.categoryId"),
-                TableUtils.createColumn("Brand", "category.brand"),
-                TableUtils.createColumn("Type", "category.productType"),
-                TableUtils.createColumn("Size", "category.size"),
-                TableUtils.createColumn("Weight", "category.weight"),
-                TableUtils.createColumn("Unit", "category.weightUnit"),
-                TableUtils.createColumn("Quantity", "quantity"),
-                TableUtils.createFormattedColumn("Buy Price", "purchasePrice"),
-                TableUtils.createFormattedColumn("Sell Price", "sellingPrice"));
+                TableUtils.createColumn("Kode Barang", "stockId"),
+                TableUtils.createColumn("Kode Kategori", "category.categoryId"),
+                TableUtils.createColumn("Merek", "category.brand"),
+                TableUtils.createColumn("Jenis", "category.productType"),
+                TableUtils.createColumn("Ukuran", "category.size"),
+                TableUtils.createColumn("Berat", "category.weight"),
+                TableUtils.createColumn("Satuan", "category.weightUnit"),
+                TableUtils.createColumn("Jumlah", "quantity"),
+                TableUtils.createFormattedColumn("Harga Beli", "purchasePrice"),
+                TableUtils.createFormattedColumn("Harga Jual", "sellingPrice"));
         TableUtils.populateTable(stockTable, columns, stockService.findAll());
     }
 
@@ -98,7 +98,7 @@ public class StockController extends HibernateUtil {
     private void generateAndSetStockId() {
         String newStockId;
         do {
-            newStockId = IdGenerator.generateRandomId("STK", 1000);
+            newStockId = IdGenerator.generateRandomId("BRG", 1000);
         } while (stockIdExists(newStockId));
 
         stockIDIncrement.setText(newStockId);
@@ -113,7 +113,7 @@ public class StockController extends HibernateUtil {
     private void addStockButton() {
         String stockId = stockIDIncrement.getText();
         if (stockIdExists(stockId)) {
-            ShowAlert.showWarning("ID Stok sudah ada di database.");
+            ShowAlert.showWarning("Kode barang sudah ada di database.");
             generateAndSetStockId();
             return;
         }
@@ -146,7 +146,7 @@ public class StockController extends HibernateUtil {
     private void editStockButton() {
         Stock selectedStock = stockTable.getSelectionModel().getSelectedItem();
         if (selectedStock == null) {
-            ShowAlert.showWarning("Silakan pilih stok yang akan diubah");
+            ShowAlert.showWarning("Silakan pilih barang yang akan diubah");
             return;
         }
 
@@ -161,13 +161,13 @@ public class StockController extends HibernateUtil {
         }
 
         GenericEditPopup.create(Stock.class)
-                .withTitle("Edit Stock")
+                .withTitle("Ubah Barang")
                 .forItem(selectedStock)
-                .addField("Stock ID", new TextField(selectedStock.getStockId()), true)
-                .addField("Category", categoryComboBox) // Use the pre-set categoryComboBox
-                .addField("Quantity", new TextField(String.valueOf(selectedStock.getQuantity())))
-                .addField("Purchase Price", createFormattedTextField(selectedStock.getPurchasePrice()))
-                .addField("Selling Price", createFormattedTextField(selectedStock.getSellingPrice()))
+                .addField("Kode Barang", new TextField(selectedStock.getStockId()), true)
+                .addField("Kategori", categoryComboBox) // Use the pre-set categoryComboBox
+                .addField("Jumlah", new TextField(String.valueOf(selectedStock.getQuantity())))
+                .addField("Harga Beli", createFormattedTextField(selectedStock.getPurchasePrice()))
+                .addField("Harga Jual", createFormattedTextField(selectedStock.getSellingPrice()))
                 .onSave((stock, fields) -> {
                     stock.setCategory(((JFXComboBox<Category>) fields.get(1)).getValue());
                     stock.setQuantity(Integer.parseInt(((TextField) fields.get(2)).getText()));
@@ -194,26 +194,26 @@ public class StockController extends HibernateUtil {
     private void removeStockButton() {
         Stock selectedStock = stockTable.getSelectionModel().getSelectedItem();
         if (selectedStock == null) {
-            ShowAlert.showWarning("Silakan pilih stok yang akan dihapus");
+            ShowAlert.showWarning("Silakan pilih barang yang akan dihapus");
             return;
         }
 
         if (!stockService.canDelete(selectedStock)) {
-            ShowAlert.showError("Stok tidak dapat dihapus karena masih terhubung dengan data lain");
+            ShowAlert.showError("Barang tidak dapat dihapus karena masih terhubung dengan data lain");
             return;
         }
 
-        if (ShowAlert.showYesNo("Konfirmasi Hapus", "Apakah Anda yakin ingin menghapus stok ini?")) {
+        if (ShowAlert.showYesNo("Konfirmasi Hapus", "Apakah Anda yakin ingin menghapus barang ini?")) {
             try {
                 CompletableFuture.runAsync(() -> stockService.delete(selectedStock))
                         .thenRun(() -> Platform.runLater(() -> {
-                            ShowAlert.showSuccess("Data stok berhasil dihapus");
+                            ShowAlert.showSuccess("Data barang berhasil dihapus");
                             loadStocks();
                             resetStockButton();
                         }));
             } catch (ConstraintViolationException e) {
                 ShowAlert.showError(
-                        "Terjadi kesalahan saat menghapus stok. Stok mungkin masih terhubung dengan data lain.");
+                        "Terjadi kesalahan saat menghapus barang. Barang mungkin masih terhubung dengan data lain.");
             }
         }
     }

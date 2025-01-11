@@ -190,26 +190,26 @@ public class TransactionController extends HibernateUtil {
 
     private void initializeTables() {
         List<TableColumn<Purchasing, ?>> buyColumns = List.of(
-                TableUtils.createColumn("Brand", "stock.category.brand"),
-                TableUtils.createColumn("Type", "stock.category.productType"),
-                TableUtils.createColumn("Date", "purchaseDate"),
-                TableUtils.createColumn("Invoice", "invoiceNumber"),
-                TableUtils.createColumn("Supplier", "supplier.supplierId"),
-                TableUtils.createColumn("Quantity", "quantity"),
-                TableUtils.createFormattedColumn("Price", "price"),
+                TableUtils.createColumn("Merek", "stock.category.brand"),
+                TableUtils.createColumn("Tipe", "stock.category.productType"),
+                TableUtils.createColumn("Tanggal", "purchaseDate"),
+                TableUtils.createColumn("No Faktur", "invoiceNumber"),
+                TableUtils.createColumn("Pemasok", "supplier.supplierId"),
+                TableUtils.createColumn("Jumlah", "quantity"),
+                TableUtils.createFormattedColumn("Harga", "price"),
                 TableUtils.createFormattedColumn("Sub Total", "subTotal"),
                 TableUtils.createFormattedColumn("Total", "priceTotal"));
         buyTable.getColumns().setAll(buyColumns);
         buyTable.setItems(pendingPurchases);
 
         List<TableColumn<Sales, ?>> sellColumns = List.of(
-                TableUtils.createColumn("Brand", "stock.category.brand"),
-                TableUtils.createColumn("Type", "stock.category.productType"),
-                TableUtils.createColumn("Date", "saleDate"),
-                TableUtils.createColumn("Invoice", "invoiceNumber"),
-                TableUtils.createColumn("Customer", "customer.customerId"),
-                TableUtils.createColumn("Quantity", "quantity"),
-                TableUtils.createFormattedColumn("Price", "price"), // Changed to formatted
+                TableUtils.createColumn("Merek", "stock.category.brand"),
+                TableUtils.createColumn("Tipe", "stock.category.productType"),
+                TableUtils.createColumn("Tanggal", "saleDate"),
+                TableUtils.createColumn("No Faktur", "invoiceNumber"),
+                TableUtils.createColumn("Pelanggan", "customer.customerId"),
+                TableUtils.createColumn("Jumlah", "quantity"),
+                TableUtils.createFormattedColumn("Harga", "price"), // Changed to formatted
                 TableUtils.createFormattedColumn("Sub Total", "subTotal"), // Changed to formatted
                 TableUtils.createFormattedColumn("Total", "priceTotal")); // Changed to formatted
         sellTable.getColumns().setAll(sellColumns);
@@ -275,7 +275,7 @@ public class TransactionController extends HibernateUtil {
             pendingPurchases.add(purchasing);
             updateBuyTotalPrice();
             resetBuyButton(event);
-            ShowAlert.showSuccess("Pembelian berhasil ditambahkan ke daftar pending");
+            ShowAlert.showSuccess("Pembelian berhasil ditambahkan ke daftar menunggu");
         } catch (Exception e) {
             ShowAlert.showError("Gagal menambahkan pembelian: " + e.getMessage());
         }
@@ -314,7 +314,11 @@ public class TransactionController extends HibernateUtil {
 
     private String generateInvoiceNumber(String prefix, Stock stock) {
         LocalDate currentDate = LocalDate.now();
-        return String.format("%s-%s-%s-%03d", prefix, stock.getStockId(), currentDate, getNextInvoiceSequence(prefix));
+        return String.format("%s-%s-%s-%03d", 
+            prefix.equals("PUR") ? "BLI" : "JUL", 
+            stock.getStockId(), 
+            currentDate, 
+            getNextInvoiceSequence(prefix));
     }
 
     private int getNextInvoiceSequence(String prefix) {
@@ -326,7 +330,11 @@ public class TransactionController extends HibernateUtil {
     private String generateUniqueInvoiceNumber(String prefix, Stock stock) {
         LocalDate currentDate = LocalDate.now();
         long timestamp = System.currentTimeMillis();
-        return String.format("%s-%s-%s-%d", prefix, stock.getStockId(), currentDate, timestamp % 1000);
+        return String.format("%s-%s-%s-%d", 
+            prefix.equals("PUR") ? "BLI" : "JUL",
+            stock.getStockId(), 
+            currentDate, 
+            timestamp % 1000);
     }
 
     @FXML
@@ -422,7 +430,7 @@ public class TransactionController extends HibernateUtil {
     private void editBuyButton(ActionEvent event) {
         Purchasing selectedPurchase = buyTable.getSelectionModel().getSelectedItem();
         if (selectedPurchase == null) {
-            ShowAlert.showWarning("Silakan pilih pembelian yang akan diedit");
+            ShowAlert.showWarning("Silahkan pilih pembelian yang akan diubah");
             return;
         }
 
@@ -442,7 +450,7 @@ public class TransactionController extends HibernateUtil {
     private void editSellButton(ActionEvent event) {
         Sales selectedSale = sellTable.getSelectionModel().getSelectedItem();
         if (selectedSale == null) {
-            ShowAlert.showWarning("Silakan pilih penjualan yang akan diedit");
+            ShowAlert.showWarning("Silahkan pilih penjualan yang akan diubah");
             return;
         }
 
@@ -462,7 +470,7 @@ public class TransactionController extends HibernateUtil {
     private void removeBuyButton(ActionEvent event) {
         Purchasing selectedPurchase = buyTable.getSelectionModel().getSelectedItem();
         if (selectedPurchase == null) {
-            ShowAlert.showWarning("Silakan pilih pembelian yang akan dihapus");
+            ShowAlert.showWarning("Silahkan pilih pembelian yang akan dihapus");
             return;
         }
 
@@ -477,7 +485,7 @@ public class TransactionController extends HibernateUtil {
     private void removeSellButton(ActionEvent event) {
         Sales selectedSale = sellTable.getSelectionModel().getSelectedItem();
         if (selectedSale == null) {
-            ShowAlert.showWarning("Silakan pilih penjualan yang akan dihapus");
+            ShowAlert.showWarning("Silahkan pilih penjualan yang akan dihapus");
             return;
         }
 
@@ -520,7 +528,7 @@ public class TransactionController extends HibernateUtil {
         if (buyDate.getValue() == null || buyStockIDDropdown.getValue() == null ||
                 supplierIDDropDown.getValue() == null || buyTotalField.getText().isEmpty() ||
                 buyPriceField.getText().isEmpty()) {
-            ShowAlert.showValidationError("Mohon lengkapi semua field yang diperlukan");
+            ShowAlert.showValidationError("Mohon lengkapi semua kolom yang diperlukan");
             return false;
         }
         return true;
@@ -530,7 +538,7 @@ public class TransactionController extends HibernateUtil {
         if (sellDate.getValue() == null || sellStockIDDropdown.getValue() == null ||
                 customerIDDropDown.getValue() == null || sellTotalField.getText().isEmpty() ||
                 sellPriceField.getText().isEmpty()) {
-            ShowAlert.showValidationError("Mohon lengkapi semua field yang diperlukan");
+            ShowAlert.showValidationError("Mohon lengkapi semua kolom yang diperlukan");
             return false;
         }
         return true;

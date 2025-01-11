@@ -92,12 +92,12 @@ public class CategoryController extends HibernateUtil {
 
     private void initializeCategoryTable() {
         List<TableColumn<Category, ?>> columns = List.of(
-                TableUtils.createColumn("Category ID", "categoryId"),
-                TableUtils.createColumn("Brand", "brand"),
-                TableUtils.createColumn("Type", "productType"),
-                TableUtils.createColumn("Size", "size"),
-                TableUtils.createColumn("Weight", "weight"),
-                TableUtils.createColumn("Unit", "weightUnit"));
+                TableUtils.createColumn("Kode Kategori", "categoryId"),
+                TableUtils.createColumn("Merek", "brand"),
+                TableUtils.createColumn("Tipe", "productType"),
+                TableUtils.createColumn("Ukuran", "size"),
+                TableUtils.createColumn("Berat", "weight"),
+                TableUtils.createColumn("Satuan", "weightUnit"));
         TableUtils.populateTable(categoryTable, columns, categoryService.findAll());
     }
 
@@ -130,7 +130,7 @@ public class CategoryController extends HibernateUtil {
     private void handleSave() {
         String categoryId = categoryIdField.getText();
         if (categoryIdExists(categoryId)) {
-            ShowAlert.showWarning("ID Kategori sudah ada di database");
+            ShowAlert.showWarning("Kode Kategori sudah ada di database");
             generateAndSetCategoryId();
             return;
         }
@@ -209,14 +209,14 @@ public class CategoryController extends HibernateUtil {
         weightUnitComboBox.setValue(selectedCategory.getWeightUnit());
 
         GenericEditPopup.create(Category.class)
-                .withTitle("Edit Category")
+                .withTitle("Ubah Kategori")
                 .forItem(selectedCategory)
-                .addField("Category ID", new TextField(selectedCategory.getCategoryId()), true)
-                .addField("Brand", brandComboBox) // Use the pre-set brandComboBox
-                .addField("Type", typeComboBox) // Use the pre-set typeComboBox
-                .addField("Size", sizeComboBox) // Use the pre-set sizeComboBox
-                .addField("Weight", new TextField(selectedCategory.getWeight().toString()))
-                .addField("Weight Unit", weightUnitComboBox) // Use the pre-set weightUnitComboBox
+                .addField("Kode Kategori", new TextField(selectedCategory.getCategoryId()), true)
+                .addField("Merek", brandComboBox) // Use the pre-set brandComboBox
+                .addField("Tipe", typeComboBox) // Use the pre-set typeComboBox
+                .addField("Ukuran", sizeComboBox) // Use the pre-set sizeComboBox
+                .addField("Berat", new TextField(selectedCategory.getWeight().toString()))
+                .addField("Satuan Berat", weightUnitComboBox) // Use the pre-set weightUnitComboBox
                 .onSave((category, fields) -> {
                     category.setBrand(((ComboBox<String>) fields.get(1)).getValue());
                     category.setProductType(((ComboBox<String>) fields.get(2)).getValue());

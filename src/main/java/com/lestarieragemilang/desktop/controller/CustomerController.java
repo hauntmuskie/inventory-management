@@ -33,7 +33,7 @@ public class CustomerController extends HibernateUtil {
     private GenericService<Customer> customerService;
 
     public void initialize() {
-        customerService = new GenericService<>(new GenericDao<>(Customer.class), "CUST", 3);
+        customerService = new GenericService<>(new GenericDao<>(Customer.class), "PLG", 3);
         initializeCustomerTable();
         loadCustomers();
         generateAndSetCustomerId();
@@ -43,10 +43,10 @@ public class CustomerController extends HibernateUtil {
 
     private void initializeCustomerTable() {
         List<TableColumn<Customer, ?>> columns = List.of(
-                TableUtils.createColumn("Customer ID", "customerId"),
-                TableUtils.createColumn("Name", "customerName"),
-                TableUtils.createColumn("Contact", "contact"),
-                TableUtils.createColumn("Address", "address"),
+                TableUtils.createColumn("Kode Pelanggan", "customerId"),
+                TableUtils.createColumn("Nama", "customerName"),
+                TableUtils.createColumn("Kontak", "contact"),
+                TableUtils.createColumn("Alamat", "address"),
                 TableUtils.createColumn("Email", "email"));
         TableUtils.populateTable(customerTable, columns, customerService.findAll());
     }
@@ -59,7 +59,7 @@ public class CustomerController extends HibernateUtil {
     private void generateAndSetCustomerId() {
         String newCustomerId;
         do {
-            newCustomerId = IdGenerator.generateRandomId("CUST", 1000);
+            newCustomerId = IdGenerator.generateRandomId("PLG", 1000);
         } while (customerIdExists(newCustomerId));
 
         customerIDIncrement.setText(newCustomerId);
@@ -108,12 +108,12 @@ public class CustomerController extends HibernateUtil {
         }
 
         GenericEditPopup.create(Customer.class)
-                .withTitle("Edit Customer")
+                .withTitle("Ubah Data Pelanggan")
                 .forItem(selectedCustomer)
-                .addField("Customer ID", new TextField(selectedCustomer.getCustomerId()), true)
-                .addField("Name", new TextField(selectedCustomer.getCustomerName()))
-                .addField("Contact", new TextField(selectedCustomer.getContact()))
-                .addField("Address", new TextField(selectedCustomer.getAddress()))
+                .addField("Kode Pelanggan", new TextField(selectedCustomer.getCustomerId()), true)
+                .addField("Nama", new TextField(selectedCustomer.getCustomerName()))
+                .addField("Kontak", new TextField(selectedCustomer.getContact()))
+                .addField("Alamat", new TextField(selectedCustomer.getAddress()))
                 .addField("Email", new TextField(selectedCustomer.getEmail()))
                 .onSave((customer, fields) -> {
                     customer.setCustomerName(((TextField) fields.get(1)).getText());
