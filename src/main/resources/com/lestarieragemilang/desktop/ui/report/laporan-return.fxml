@@ -14,7 +14,7 @@
       <AnchorPane prefHeight="573.0" prefWidth="970.0">
          <children>
             <TextField fx:id="returnSearchField" layoutX="360.0" layoutY="216.0" prefHeight="32.0" prefWidth="250.0" style="-fx-background-radius: 5;" />
-            <JFXButton buttonType="RAISED" layoutX="839.0" layoutY="217.0" onMouseClicked="#printJasperReturn" prefHeight="30.0" prefWidth="111.0" style="-fx-background-color: #131313; -fx-background-radius: 10; -fx-cursor: HAND; -fx-font-weight: bold; -fx-text-fill: white;" text="PRINT DATA" textFill="WHITE">
+            <JFXButton buttonType="RAISED" layoutX="839.0" layoutY="217.0" onMouseClicked="#printJasperReturn" prefHeight="30.0" prefWidth="140.0" style="-fx-background-color: #131313; -fx-background-radius: 10; -fx-cursor: HAND; -fx-font-weight: bold; -fx-text-fill: white;" text="CETAK LAPORAN" textFill="WHITE">
                <font>
                   <Font size="14.0" />
                </font>

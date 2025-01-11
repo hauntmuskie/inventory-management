@@ -19,15 +19,15 @@
             <TextField fx:id="supplierSearchField" layoutX="360.0" layoutY="216.0" prefHeight="32.0"
                prefWidth="250.0" style="-fx-background-radius: 5;" />
             <JFXButton buttonType="RAISED" layoutX="839.0" layoutY="217.0"
-               onMouseClicked="#printJasperSupplier" prefHeight="30.0" prefWidth="111.0"
+               onMouseClicked="#printJasperSupplier" prefHeight="30.0" prefWidth="140.0"
                style="-fx-background-color: #131313; -fx-background-radius: 10; -fx-cursor: HAND; -fx-font-weight: bold; -fx-text-fill: white;"
-               text="PRINT DATA" textFill="WHITE">
+               text="CETAK LAPORAN" textFill="WHITE">
                <font>
                   <Font size="14.0" />
                </font>
             </JFXButton>
             <Text layoutX="349.0" layoutY="53.0" strokeType="OUTSIDE" strokeWidth="0.0"
-               text="LAPORAN SUPPLIER" AnchorPane.topAnchor="14.0">
+               text="LAPORAN PEMASOK" AnchorPane.topAnchor="14.0">
                <font>
                   <Font name="System Bold" size="36.0" />
                </font>
