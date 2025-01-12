@@ -252,6 +252,10 @@ public class TransactionController extends HibernateUtil {
 
     @FXML
     private void addBuyButton(ActionEvent event) {
+        if (!ShowAlert.showYesNo("Konfirmasi Tambah", "Apakah Anda yakin ingin menambah pembelian ini?")) {
+            return;
+        }
+
         if (!validateBuyFields()) {
             return;
         }
@@ -259,8 +263,32 @@ public class TransactionController extends HibernateUtil {
         try {
             Stock selectedStock = buyStockIDDropdown.getValue();
             Supplier selectedSupplier = supplierIDDropDown.getValue();
-            int quantity = Integer.parseInt(buyTotalField.getText());
-            BigDecimal price = new BigDecimal(NumberFormatter.getNumericValue(buyPriceField.getText()));
+            
+            // Validate quantity
+            int quantity;
+            try {
+                quantity = Integer.parseInt(buyTotalField.getText());
+                if (quantity <= 0) {
+                    ShowAlert.showValidationError("Jumlah harus lebih besar dari 0");
+                    return;
+                }
+            } catch (NumberFormatException e) {
+                ShowAlert.showValidationError("Format jumlah tidak valid");
+                return;
+            }
+
+            // Validate price
+            BigDecimal price;
+            try {
+                price = new BigDecimal(NumberFormatter.getNumericValue(buyPriceField.getText()));
+                if (price.compareTo(BigDecimal.ZERO) <= 0) {
+                    ShowAlert.showValidationError("Harga harus lebih besar dari 0");
+                    return;
+                }
+            } catch (Exception e) {
+                ShowAlert.showValidationError("Format harga tidak valid");
+                return;
+            }
 
             Purchasing purchasing = new Purchasing();
             purchasing.setPurchaseDate(buyDate.getValue());
@@ -283,6 +311,10 @@ public class TransactionController extends HibernateUtil {
 
     @FXML
     private void addSellButton(ActionEvent event) {
+        if (!ShowAlert.showYesNo("Konfirmasi Tambah", "Apakah Anda yakin ingin menambah penjualan ini?")) {
+            return;
+        }
+
         if (!validateSellFields()) {
             return;
         }
@@ -290,8 +322,36 @@ public class TransactionController extends HibernateUtil {
         try {
             Stock selectedStock = sellStockIDDropdown.getValue();
             Customer selectedCustomer = customerIDDropDown.getValue();
-            int quantity = Integer.parseInt(sellTotalField.getText());
-            BigDecimal price = new BigDecimal(NumberFormatter.getNumericValue(sellPriceField.getText()));
+            
+            // Validate quantity
+            int quantity;
+            try {
+                quantity = Integer.parseInt(sellTotalField.getText());
+                if (quantity <= 0) {
+                    ShowAlert.showValidationError("Jumlah harus lebih besar dari 0");
+                    return;
+                }
+                if (quantity > selectedStock.getQuantity()) {
+                    ShowAlert.showValidationError("Stok tidak mencukupi. Stok tersedia: " + selectedStock.getQuantity());
+                    return;
+                }
+            } catch (NumberFormatException e) {
+                ShowAlert.showValidationError("Format jumlah tidak valid");
+                return;
+            }
+
+            // Validate price
+            BigDecimal price;
+            try {
+                price = new BigDecimal(NumberFormatter.getNumericValue(sellPriceField.getText()));
+                if (price.compareTo(BigDecimal.ZERO) <= 0) {
+                    ShowAlert.showValidationError("Harga harus lebih besar dari 0");
+                    return;
+                }
+            } catch (Exception e) {
+                ShowAlert.showValidationError("Format harga tidak valid");
+                return;
+            }
 
             Sales sales = new Sales();
             sales.setSaleDate(sellDate.getValue());
@@ -306,7 +366,7 @@ public class TransactionController extends HibernateUtil {
             pendingSales.add(sales);
             updateSellTotalPrice();
             resetSellButton(event);
-            ShowAlert.showSuccess("Penjualan berhasil ditambahkan ke daftar pending");
+            ShowAlert.showSuccess("Penjualan berhasil ditambahkan ke daftar menunggu");
         } catch (Exception e) {
             ShowAlert.showError("Gagal menambahkan penjualan: " + e.getMessage());
         }
@@ -525,20 +585,48 @@ public class TransactionController extends HibernateUtil {
     }
 
     private boolean validateBuyFields() {
-        if (buyDate.getValue() == null || buyStockIDDropdown.getValue() == null ||
-                supplierIDDropDown.getValue() == null || buyTotalField.getText().isEmpty() ||
-                buyPriceField.getText().isEmpty()) {
-            ShowAlert.showValidationError("Mohon lengkapi semua kolom yang diperlukan");
+        if (buyDate.getValue() == null) {
+            ShowAlert.showValidationError("Tanggal pembelian harus diisi");
+            return false;
+        }
+        if (buyStockIDDropdown.getValue() == null) {
+            ShowAlert.showValidationError("Barang harus dipilih");
+            return false;
+        }
+        if (supplierIDDropDown.getValue() == null) {
+            ShowAlert.showValidationError("Pemasok harus dipilih");
+            return false;
+        }
+        if (buyTotalField.getText().isEmpty()) {
+            ShowAlert.showValidationError("Jumlah harus diisi");
+            return false;
+        }
+        if (buyPriceField.getText().isEmpty()) {
+            ShowAlert.showValidationError("Harga harus diisi");
             return false;
         }
         return true;
     }
 
     private boolean validateSellFields() {
-        if (sellDate.getValue() == null || sellStockIDDropdown.getValue() == null ||
-                customerIDDropDown.getValue() == null || sellTotalField.getText().isEmpty() ||
-                sellPriceField.getText().isEmpty()) {
-            ShowAlert.showValidationError("Mohon lengkapi semua kolom yang diperlukan");
+        if (sellDate.getValue() == null) {
+            ShowAlert.showValidationError("Tanggal penjualan harus diisi");
+            return false;
+        }
+        if (sellStockIDDropdown.getValue() == null) {
+            ShowAlert.showValidationError("Barang harus dipilih");
+            return false;
+        }
+        if (customerIDDropDown.getValue() == null) {
+            ShowAlert.showValidationError("Pelanggan harus dipilih");
+            return false;
+        }
+        if (sellTotalField.getText().isEmpty()) {
+            ShowAlert.showValidationError("Jumlah harus diisi");
+            return false;
+        }
+        if (sellPriceField.getText().isEmpty()) {
+            ShowAlert.showValidationError("Harga harus diisi");
             return false;
         }
         return true;

@@ -82,6 +82,10 @@ public class SupplierController extends HibernateUtil {
 
     @FXML
     private void addSupplierButton(ActionEvent event) {
+        if (!ShowAlert.showYesNo("Konfirmasi Tambah", "Apakah Anda yakin ingin menambah data pemasok ini?")) {
+            return;
+        }
+
         String supplierId = supplierIDIncrement.getText();
         if (supplierIdExists(supplierId)) {
             ShowAlert.showWarning("ID Pemasok sudah ada di database");
@@ -89,17 +93,31 @@ public class SupplierController extends HibernateUtil {
             return;
         }
 
-        Supplier supplier = new Supplier();
-        supplier.setSupplierId(supplierId);
-        supplier.setSupplierName(supplierNameField.getText());
-        supplier.setContact(supplierContactField.getText());
-        supplier.setEmail(supplierEmailField.getText());
-        supplier.setAddress(supplierAddressField.getText());
+        try {
+            // Validate required fields
+            if (supplierNameField.getText().trim().isEmpty()) {
+                ShowAlert.showValidationError("Nama pemasok tidak boleh kosong");
+                return;
+            }
+            if (supplierContactField.getText().trim().isEmpty()) {
+                ShowAlert.showValidationError("Kontak pemasok tidak boleh kosong");
+                return;
+            }
 
-        supplierService.save(supplier);
-        ShowAlert.showSuccess("Data pemasok berhasil ditambahkan");
-        loadSuppliers();
-        resetSupplierButton();
+            Supplier supplier = new Supplier();
+            supplier.setSupplierId(supplierId);
+            supplier.setSupplierName(supplierNameField.getText().trim());
+            supplier.setContact(supplierContactField.getText().trim());
+            supplier.setEmail(supplierEmailField.getText().trim());
+            supplier.setAddress(supplierAddressField.getText().trim());
+
+            supplierService.save(supplier);
+            ShowAlert.showSuccess("Data pemasok berhasil ditambahkan");
+            loadSuppliers();
+            resetSupplierButton();
+        } catch (Exception e) {
+            ShowAlert.showError("Gagal menambahkan data pemasok: " + e.getMessage());
+        }
     }
 
     @FXML
@@ -119,17 +137,39 @@ public class SupplierController extends HibernateUtil {
                 .addField("Surel", new TextField(selectedSupplier.getEmail()))
                 .addField("Alamat", new TextField(selectedSupplier.getAddress()))
                 .onSave((supplier, fields) -> {
-                    supplier.setSupplierName(((TextField) fields.get(1)).getText());
-                    supplier.setContact(((TextField) fields.get(2)).getText());
-                    supplier.setEmail(((TextField) fields.get(3)).getText());
-                    supplier.setAddress(((TextField) fields.get(4)).getText());
-                    supplierService.update(supplier);
+                    if (!ShowAlert.showYesNo("Konfirmasi Ubah", "Apakah Anda yakin ingin mengubah data pemasok ini?")) {
+                        return;
+                    }
+
+                    try {
+                        // Validate required fields
+                        String name = ((TextField) fields.get(1)).getText().trim();
+                        String contact = ((TextField) fields.get(2)).getText().trim();
+                        
+                        if (name.isEmpty()) {
+                            ShowAlert.showValidationError("Nama pemasok tidak boleh kosong");
+                            return;
+                        }
+                        if (contact.isEmpty()) {
+                            ShowAlert.showValidationError("Kontak pemasok tidak boleh kosong");
+                            return;
+                        }
+
+                        supplier.setSupplierName(name);
+                        supplier.setContact(contact);
+                        supplier.setEmail(((TextField) fields.get(3)).getText().trim());
+                        supplier.setAddress(((TextField) fields.get(4)).getText().trim());
+                        
+                        supplierService.update(supplier);
+                        ShowAlert.showSuccess("Data pemasok berhasil diubah");
+                    } catch (Exception e) {
+                        ShowAlert.showError("Gagal mengubah data pemasok: " + e.getMessage());
+                    }
                 })
                 .afterSave(() -> {
-                    ShowAlert.showSuccess("Data pemasok berhasil diubah");
                     loadSuppliers();
                     resetSupplierButton();
-                    supplierTable.refresh(); // Add this line
+                    supplierTable.refresh();
                 })
                 .show();
     }
@@ -142,11 +182,22 @@ public class SupplierController extends HibernateUtil {
             return;
         }
 
-        if (ShowAlert.showYesNo("Konfirmasi Hapus", "Apakah Anda yakin ingin menghapus data pemasok ini?")) {
+        if (!supplierService.canDelete(selectedSupplier)) {
+            ShowAlert.showError("Pemasok tidak dapat dihapus karena masih terhubung dengan data lain");
+            return;
+        }
+
+        if (!ShowAlert.showYesNo("Konfirmasi Hapus", "Apakah Anda yakin ingin menghapus data pemasok ini?")) {
+            return;
+        }
+
+        try {
             supplierService.delete(selectedSupplier);
             ShowAlert.showSuccess("Data pemasok berhasil dihapus");
             loadSuppliers();
             resetSupplierButton();
+        } catch (Exception e) {
+            ShowAlert.showError("Gagal menghapus data pemasok: " + e.getMessage());
         }
     }
 

@@ -111,6 +111,10 @@ public class StockController extends HibernateUtil {
 
     @FXML
     private void addStockButton() {
+        if (!ShowAlert.showYesNo("Konfirmasi Tambah", "Apakah Anda yakin ingin menambah barang ini?")) {
+            return;
+        }
+
         String stockId = stockIDIncrement.getText();
         if (stockIdExists(stockId)) {
             ShowAlert.showWarning("Kode barang sudah ada di database.");
@@ -118,18 +122,29 @@ public class StockController extends HibernateUtil {
             return;
         }
 
-        Stock stock = new Stock();
-        stock.setStockId(stockId);
-        stock.setCategory(categoryIDDropDown.getValue());
-        stock.setQuantity(Integer.parseInt(stockQuantityField.getText()));
-        stock.setPurchasePrice(new BigDecimal(NumberFormatter.getNumericValue(stockBuyPriceField.getText())));
-        stock.setSellingPrice(new BigDecimal(NumberFormatter.getNumericValue(stockSellPriceField.getText())));
+        try {
+            Stock stock = new Stock();
+            stock.setStockId(stockId);
+            stock.setCategory(categoryIDDropDown.getValue());
+            stock.setQuantity(Integer.parseInt(stockQuantityField.getText()));
+            stock.setPurchasePrice(new BigDecimal(NumberFormatter.getNumericValue(stockBuyPriceField.getText())));
+            stock.setSellingPrice(new BigDecimal(NumberFormatter.getNumericValue(stockSellPriceField.getText())));
 
-        CompletableFuture.runAsync(() -> stockService.save(stock))
-                .thenRun(() -> Platform.runLater(() -> {
-                    loadStocks();
-                    resetStockButton();
-                }));
+            CompletableFuture.runAsync(() -> stockService.save(stock))
+                    .thenRun(() -> Platform.runLater(() -> {
+                        ShowAlert.showSuccess("Data barang berhasil ditambahkan");
+                        loadStocks();
+                        resetStockButton();
+                    }))
+                    .exceptionally(e -> {
+                        Platform.runLater(() -> ShowAlert.showError("Gagal menambahkan data barang: " + e.getMessage()));
+                        return null;
+                    });
+        } catch (NumberFormatException e) {
+            ShowAlert.showValidationError("Mohon periksa format input angka");
+        } catch (Exception e) {
+            ShowAlert.showError("Terjadi kesalahan: " + e.getMessage());
+        }
     }
 
     @FXML
@@ -169,16 +184,31 @@ public class StockController extends HibernateUtil {
                 .addField("Harga Beli", createFormattedTextField(selectedStock.getPurchasePrice()))
                 .addField("Harga Jual", createFormattedTextField(selectedStock.getSellingPrice()))
                 .onSave((stock, fields) -> {
-                    stock.setCategory(((JFXComboBox<Category>) fields.get(1)).getValue());
-                    stock.setQuantity(Integer.parseInt(((TextField) fields.get(2)).getText()));
-                    stock.setPurchasePrice(
-                            new BigDecimal(NumberFormatter.getNumericValue(((TextField) fields.get(3)).getText())));
-                    stock.setSellingPrice(
-                            new BigDecimal(NumberFormatter.getNumericValue(((TextField) fields.get(4)).getText())));
-                    CompletableFuture.runAsync(() -> {
-                        stockService.update(stock);
-                        Platform.runLater(this::loadStocks);
-                    });
+                    if (!ShowAlert.showYesNo("Konfirmasi Ubah", "Apakah Anda yakin ingin mengubah data barang ini?")) {
+                        return;
+                    }
+                    try {
+                        stock.setCategory(((JFXComboBox<Category>) fields.get(1)).getValue());
+                        stock.setQuantity(Integer.parseInt(((TextField) fields.get(2)).getText()));
+                        stock.setPurchasePrice(
+                                new BigDecimal(NumberFormatter.getNumericValue(((TextField) fields.get(3)).getText())));
+                        stock.setSellingPrice(
+                                new BigDecimal(NumberFormatter.getNumericValue(((TextField) fields.get(4)).getText())));
+                        CompletableFuture.runAsync(() -> {
+                            stockService.update(stock);
+                            Platform.runLater(() -> {
+                                ShowAlert.showSuccess("Data barang berhasil diubah");
+                                loadStocks();
+                            });
+                        }).exceptionally(e -> {
+                            Platform.runLater(() -> ShowAlert.showError("Gagal mengubah data barang: " + e.getMessage()));
+                            return null;
+                        });
+                    } catch (NumberFormatException e) {
+                        ShowAlert.showValidationError("Mohon periksa format input angka");
+                    } catch (Exception e) {
+                        ShowAlert.showError("Terjadi kesalahan: " + e.getMessage());
+                    }
                 })
                 .afterSave(this::resetStockButton)
                 .show();
@@ -203,19 +233,25 @@ public class StockController extends HibernateUtil {
             return;
         }
 
-        if (ShowAlert.showYesNo("Konfirmasi Hapus", "Apakah Anda yakin ingin menghapus barang ini?")) {
-            try {
-                CompletableFuture.runAsync(() -> stockService.delete(selectedStock))
-                        .thenRun(() -> Platform.runLater(() -> {
-                            ShowAlert.showSuccess("Data barang berhasil dihapus");
-                            loadStocks();
-                            resetStockButton();
-                        }));
-            } catch (ConstraintViolationException e) {
-                ShowAlert.showError(
-                        "Terjadi kesalahan saat menghapus barang. Barang mungkin masih terhubung dengan data lain.");
-            }
+        if (!ShowAlert.showYesNo("Konfirmasi Hapus", "Apakah Anda yakin ingin menghapus barang ini?")) {
+            return;
         }
+
+        CompletableFuture.runAsync(() -> {
+            try {
+                stockService.delete(selectedStock);
+                Platform.runLater(() -> {
+                    ShowAlert.showSuccess("Data barang berhasil dihapus");
+                    loadStocks();
+                    resetStockButton();
+                });
+            } catch (ConstraintViolationException e) {
+                Platform.runLater(() -> ShowAlert.showError(
+                        "Terjadi kesalahan saat menghapus barang. Barang mungkin masih terhubung dengan data lain."));
+            } catch (Exception e) {
+                Platform.runLater(() -> ShowAlert.showError("Gagal menghapus data barang: " + e.getMessage()));
+            }
+        });
     }
 
     @FXML

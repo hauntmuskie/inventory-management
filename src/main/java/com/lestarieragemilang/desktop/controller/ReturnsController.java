@@ -131,6 +131,10 @@ public class ReturnsController extends HibernateUtil {
 
     @FXML
     private void addReturnButton() {
+        if (!ShowAlert.showYesNo("Konfirmasi Tambah", "Apakah Anda yakin ingin menambah data retur ini?")) {
+            return;
+        }
+
         String returnId = returnIDIncrement.getText();
         if (returnIdExists(returnId)) {
             ShowAlert.showWarning("Kode Retur sudah ada dalam sistem. Kode baru akan dibuat.");
@@ -138,32 +142,36 @@ public class ReturnsController extends HibernateUtil {
             return;
         }
 
-        Object selectedInvoice = returnInvoicePurchasing.getValue();
-        if (selectedInvoice == null) {
+        if (returnInvoicePurchasing.getValue() == null) {
             ShowAlert.showValidationError("Silakan pilih faktur terlebih dahulu.");
             return;
         }
 
-        Returns returnItem = new Returns();
-        returnItem.setReturnId(returnId);
-        returnItem.setReturnDate(returnDate.getValue());
+        try {
+            Returns returnItem = new Returns();
+            returnItem.setReturnId(returnId);
+            returnItem.setReturnDate(returnDate.getValue());
 
-        if (selectedInvoice instanceof Purchasing) {
-            returnItem.setInvoiceNumber(((Purchasing) selectedInvoice).getInvoiceNumber());
-            returnItem.setReturnType("Beli");
-        } else if (selectedInvoice instanceof Sales) {
-            returnItem.setInvoiceNumber(((Sales) selectedInvoice).getInvoiceNumber());
-            returnItem.setReturnType("Jual");
-        } else {
-            ShowAlert.showWarning("Silakan pilih faktur terlebih dahulu.");
-            return;
+            Object selectedInvoice = returnInvoicePurchasing.getValue();
+            if (selectedInvoice instanceof Purchasing) {
+                returnItem.setInvoiceNumber(((Purchasing) selectedInvoice).getInvoiceNumber());
+                returnItem.setReturnType("Beli");
+            } else if (selectedInvoice instanceof Sales) {
+                returnItem.setInvoiceNumber(((Sales) selectedInvoice).getInvoiceNumber());
+                returnItem.setReturnType("Jual");
+            } else {
+                ShowAlert.showWarning("Silakan pilih faktur terlebih dahulu.");
+                return;
+            }
+
+            returnItem.setReason(returnReasonField.getText());
+            returnService.save(returnItem);
+            ShowAlert.showSuccess("Data retur berhasil ditambahkan");
+            loadReturns();
+            resetReturnButton();
+        } catch (Exception e) {
+            ShowAlert.showError("Gagal menambahkan data retur: " + e.getMessage());
         }
-
-        returnItem.setReason(returnReasonField.getText());
-
-        returnService.save(returnItem);
-        loadReturns();
-        resetReturnButton();
     }
 
     @FXML
@@ -255,27 +263,35 @@ public class ReturnsController extends HibernateUtil {
                 .addField("Faktur", invoiceComboBox)
                 .addField("Alasan", new TextArea(selectedReturn.getReason()))
                 .onSave((returnItem, fields) -> {
-                    returnItem.setReturnDate(((DatePicker) fields.get(1)).getValue());
-
-                    Object selectedInvoice = ((ComboBox<?>) fields.get(3)).getValue();
-                    if (selectedInvoice == null) {
-                        ShowAlert.showValidationError("Silakan pilih faktur terlebih dahulu.");
+                    if (!ShowAlert.showYesNo("Konfirmasi Ubah", "Apakah Anda yakin ingin mengubah data retur ini?")) {
                         return;
                     }
 
-                    if (selectedInvoice instanceof Purchasing) {
-                        returnItem.setInvoiceNumber(((Purchasing) selectedInvoice).getInvoiceNumber());
-                        returnItem.setReturnType("Beli");
-                    } else if (selectedInvoice instanceof Sales) {
-                        returnItem.setInvoiceNumber(((Sales) selectedInvoice).getInvoiceNumber());
-                        returnItem.setReturnType("Jual");
-                    }
+                    try {
+                        returnItem.setReturnDate(((DatePicker) fields.get(1)).getValue());
 
-                    returnItem.setReason(((TextArea) fields.get(4)).getText());
-                    returnService.update(returnItem);
+                        Object selectedInvoice = ((ComboBox<?>) fields.get(3)).getValue();
+                        if (selectedInvoice == null) {
+                            ShowAlert.showValidationError("Silakan pilih faktur terlebih dahulu.");
+                            return;
+                        }
+
+                        if (selectedInvoice instanceof Purchasing) {
+                            returnItem.setInvoiceNumber(((Purchasing) selectedInvoice).getInvoiceNumber());
+                            returnItem.setReturnType("Beli");
+                        } else if (selectedInvoice instanceof Sales) {
+                            returnItem.setInvoiceNumber(((Sales) selectedInvoice).getInvoiceNumber());
+                            returnItem.setReturnType("Jual");
+                        }
+
+                        returnItem.setReason(((TextArea) fields.get(4)).getText());
+                        returnService.update(returnItem);
+                        ShowAlert.showSuccess("Data retur berhasil diperbarui");
+                    } catch (Exception e) {
+                        ShowAlert.showError("Gagal mengubah data retur: " + e.getMessage());
+                    }
                 })
                 .afterSave(() -> {
-                    ShowAlert.showSuccess("Data retur berhasil diperbarui.");
                     loadReturns();
                     resetReturnButton();
                     returnTable.refresh();
@@ -291,11 +307,17 @@ public class ReturnsController extends HibernateUtil {
             return;
         }
 
-        if (ShowAlert.showYesNo("Konfirmasi Hapus", "Apakah Anda yakin ingin menghapus data retur ini?")) {
+        if (!ShowAlert.showYesNo("Konfirmasi Hapus", "Apakah Anda yakin ingin menghapus data retur ini?")) {
+            return;
+        }
+
+        try {
             returnService.delete(selectedReturn);
-            ShowAlert.showSuccess("Data retur berhasil dihapus.");
+            ShowAlert.showSuccess("Data retur berhasil dihapus");
             loadReturns();
             resetReturnButton();
+        } catch (Exception e) {
+            ShowAlert.showError("Gagal menghapus data retur: " + e.getMessage());
         }
     }
 

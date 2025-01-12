@@ -66,26 +66,39 @@ public class AuthController extends Redirect {
     }
 
     private void loadUsers() {
-        ImmutableList<String> usernames = userService.findAll().stream()
-                .map(User::getUsername)
-                .collect(ImmutableList.toImmutableList());
+        try {
+            ImmutableList<String> usernames = userService.findAll().stream()
+                    .map(User::getUsername)
+                    .collect(ImmutableList.toImmutableList());
 
-        profileListView.setItems(FXCollections.observableArrayList(usernames));
+            profileListView.setItems(FXCollections.observableArrayList(usernames));
+        } catch (Exception e) {
+            ShowAlert.showDatabaseError("Gagal memuat daftar pengguna: " + e.getMessage());
+            e.printStackTrace();
+        }
     }
 
     @FXML
     void loginToApp(ActionEvent event) {
         try {
             validateLoginInput();
-            Optional<User> user = authenticateUser();
+            
+            if (!ShowAlert.showConfirmation("Konfirmasi Login", "Konfirmasi Masuk", 
+                "Apakah Anda yakin ingin masuk dengan akun ini?")) {
+                return;
+            }
 
+            Optional<User> user = authenticateUser();
             user.ifPresentOrElse(
-                    this::handleSuccessfulLogin,
+                    u -> {
+                        handleSuccessfulLogin(u);
+                        ShowAlert.showSuccess("Berhasil masuk ke sistem");
+                    },
                     () -> ShowAlert.showError("Nama pengguna atau kata sandi tidak valid"));
         } catch (IllegalArgumentException e) {
             ShowAlert.showValidationError(e.getMessage());
         } catch (Exception e) {
-            ShowAlert.showError("Terjadi kesalahan saat masuk");
+            ShowAlert.showDatabaseError("Terjadi kesalahan saat masuk: " + e.getMessage());
             e.printStackTrace();
         }
     }
@@ -111,12 +124,12 @@ public class AuthController extends Redirect {
                     currentStage.setScene(new Scene(layoutRoot));
                     currentStage.show();
                 } catch (IOException e) {
-                    ShowAlert.showError("Gagal memuat tampilan utama");
+                    ShowAlert.showError("Gagal memuat tampilan utama: " + e.getMessage());
                     e.printStackTrace();
                 }
             });
         } catch (Exception e) {
-            ShowAlert.showError("Terjadi kesalahan saat memuat tampilan utama");
+            ShowAlert.showError("Terjadi kesalahan saat memuat tampilan utama: " + e.getMessage());
             e.printStackTrace();
         }
     }
@@ -153,7 +166,10 @@ public class AuthController extends Redirect {
 
     @FXML
     void exitApp(ActionEvent event) {
-        HibernateUtil.shutdown();
-        Platform.exit();
+        if (ShowAlert.showYesNo("Konfirmasi Keluar", 
+            "Apakah Anda yakin ingin keluar dari aplikasi?")) {
+            HibernateUtil.shutdown();
+            Platform.exit();
+        }
     }
 }

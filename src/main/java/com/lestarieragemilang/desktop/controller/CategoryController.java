@@ -5,6 +5,7 @@ import javafx.collections.transformation.FilteredList;
 import javafx.fxml.FXML;
 import javafx.scene.control.*;
 
+import com.google.common.base.Strings;
 import com.lestarieragemilang.desktop.model.Category;
 import com.lestarieragemilang.desktop.repository.GenericDao;
 import com.lestarieragemilang.desktop.service.GenericService;
@@ -102,8 +103,12 @@ public class CategoryController extends HibernateUtil {
     }
 
     private void loadCategories() {
-        List<Category> categories = categoryService.findAll();
-        categoryTable.setItems(FXCollections.observableArrayList(categories));
+        try {
+            List<Category> categories = categoryService.findAll();
+            categoryTable.setItems(FXCollections.observableArrayList(categories));
+        } catch (Exception e) {
+            ShowAlert.showDatabaseError("Gagal memuat data kategori: " + e.getMessage());
+        }
     }
 
     private void generateAndSetCategoryId() {
@@ -128,64 +133,129 @@ public class CategoryController extends HibernateUtil {
 
     @FXML
     private void handleSave() {
-        String categoryId = categoryIdField.getText();
-        if (categoryIdExists(categoryId)) {
-            ShowAlert.showWarning("Kode Kategori sudah ada di database");
-            generateAndSetCategoryId();
-            return;
+        try {
+            if (!validateFields()) {
+                return;
+            }
+
+            String categoryId = categoryIdField.getText();
+            if (categoryIdExists(categoryId)) {
+                ShowAlert.showWarning("Kode Kategori sudah ada di database");
+                generateAndSetCategoryId();
+                return;
+            }
+
+            if (!ShowAlert.showConfirmation("Konfirmasi Simpan", "Konfirmasi Simpan Data", 
+                "Apakah Anda yakin ingin menyimpan data kategori ini?")) {
+                return;
+            }
+
+            Category category = new Category();
+            category.setCategoryId(categoryId);
+            category.setBrand(brandComboBox.getValue());
+            category.setProductType(typeComboBox.getValue());
+            category.setSize(sizeComboBox.getValue());
+            category.setWeight(new BigDecimal(weightField.getText()));
+            category.setWeightUnit(weightUnitComboBox.getValue());
+
+            categoryService.save(category);
+            ShowAlert.showSuccess("Data kategori berhasil ditambahkan");
+            loadCategories();
+            clearFields();
+        } catch (NumberFormatException e) {
+            ShowAlert.showError("Nilai berat harus berupa angka");
+        } catch (Exception e) {
+            ShowAlert.showError("Terjadi kesalahan: " + e.getMessage());
         }
-
-        Category category = new Category();
-        category.setCategoryId(categoryId);
-        category.setBrand(brandComboBox.getValue());
-        category.setProductType(typeComboBox.getValue());
-        category.setSize(sizeComboBox.getValue());
-        category.setWeight(new BigDecimal(weightField.getText()));
-        category.setWeightUnit(weightUnitComboBox.getValue());
-
-        categoryService.save(category);
-        ShowAlert.showSuccess("Data kategori berhasil ditambahkan");
-        loadCategories();
-        clearFields();
     }
 
     @FXML
     private void handleUpdate() {
-        Category selectedCategory = categoryTable.getSelectionModel().getSelectedItem();
-        if (selectedCategory == null) {
-            ShowAlert.showWarning("Silahkan pilih kategori yang akan diubah");
-            return;
+        try {
+            Category selectedCategory = categoryTable.getSelectionModel().getSelectedItem();
+            if (selectedCategory == null) {
+                ShowAlert.showWarning("Silahkan pilih kategori yang akan diubah");
+                return;
+            }
+
+            if (!validateFields()) {
+                return;
+            }
+
+            if (!ShowAlert.showConfirmation("Konfirmasi Ubah", "Konfirmasi Ubah Data", 
+                "Apakah Anda yakin ingin mengubah data kategori ini?")) {
+                return;
+            }
+
+            Category category = new Category();
+            category.setId(selectedCategory.getId());
+            category.setCategoryId(selectedCategory.getCategoryId());
+            category.setBrand(brandComboBox.getValue());
+            category.setProductType(typeComboBox.getValue());
+            category.setSize(sizeComboBox.getValue());
+            category.setWeight(new BigDecimal(weightField.getText()));
+            category.setWeightUnit(weightUnitComboBox.getValue());
+
+            categoryService.update(category);
+            ShowAlert.showSuccess("Data kategori berhasil diubah");
+            loadCategories();
+            clearFields();
+        } catch (NumberFormatException e) {
+            ShowAlert.showError("Nilai berat harus berupa angka");
+        } catch (Exception e) {
+            ShowAlert.showError("Terjadi kesalahan: " + e.getMessage());
         }
-
-        Category category = new Category();
-        category.setId(selectedCategory.getId());
-        category.setCategoryId(selectedCategory.getCategoryId());
-        category.setBrand(brandComboBox.getValue());
-        category.setProductType(typeComboBox.getValue());
-        category.setSize(sizeComboBox.getValue());
-        category.setWeight(new BigDecimal(weightField.getText()));
-        category.setWeightUnit(weightUnitComboBox.getValue());
-
-        categoryService.update(category);
-        ShowAlert.showSuccess("Data kategori berhasil diubah");
-        loadCategories();
-        clearFields();
     }
 
     @FXML
     private void handleDelete() {
-        Category selectedCategory = categoryTable.getSelectionModel().getSelectedItem();
-        if (selectedCategory == null) {
-            ShowAlert.showWarning("Silahkan pilih kategori yang akan dihapus");
-            return;
-        }
+        try {
+            Category selectedCategory = categoryTable.getSelectionModel().getSelectedItem();
+            if (selectedCategory == null) {
+                ShowAlert.showWarning("Silahkan pilih kategori yang akan dihapus");
+                return;
+            }
 
-        if (ShowAlert.showYesNo("Konfirmasi Hapus", "Apakah Anda yakin ingin menghapus data kategori ini?")) {
+            if (!ShowAlert.showConfirmation("Konfirmasi Hapus", "Konfirmasi Hapus Data", 
+                "Apakah Anda yakin ingin menghapus data kategori ini?")) {
+                return;
+            }
+
             categoryService.delete(selectedCategory);
             ShowAlert.showSuccess("Data kategori berhasil dihapus");
             loadCategories();
             clearFields();
+        } catch (Exception e) {
+            ShowAlert.showError("Terjadi kesalahan saat menghapus: " + e.getMessage());
         }
+    }
+
+    private boolean validateFields() {
+        if (Strings.isNullOrEmpty(categoryIdField.getText())) {
+            ShowAlert.showValidationError("Kode kategori tidak boleh kosong");
+            return false;
+        }
+        if (brandComboBox.getValue() == null) {
+            ShowAlert.showValidationError("Merek harus dipilih");
+            return false;
+        }
+        if (typeComboBox.getValue() == null) {
+            ShowAlert.showValidationError("Tipe produk harus dipilih");
+            return false;
+        }
+        if (sizeComboBox.getValue() == null) {
+            ShowAlert.showValidationError("Ukuran harus dipilih");
+            return false;
+        }
+        if (Strings.isNullOrEmpty(weightField.getText())) {
+            ShowAlert.showValidationError("Berat tidak boleh kosong");
+            return false;
+        }
+        if (weightUnitComboBox.getValue() == null) {
+            ShowAlert.showValidationError("Satuan berat harus dipilih");
+            return false;
+        }
+        return true;
     }
 
     @SuppressWarnings("unchecked")
