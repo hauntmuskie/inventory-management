@@ -16,6 +16,7 @@ import javafx.scene.control.Label;
 import javafx.scene.input.MouseEvent;
 import javafx.scene.layout.AnchorPane;
 import javafx.stage.Stage;
+import javafx.stage.StageStyle;
 import javafx.util.Duration;
 
 import java.io.IOException;
@@ -108,6 +109,7 @@ public class Layout extends Redirect {
                 switchScene(setScene, "login", () -> {
                     try {
                         Stage loginStage = new Stage();
+                        loginStage.initStyle(StageStyle.UNDECORATED); // Add this line
 
                         // Close current connections before loading new scene
                         HibernateUtil.shutdown();

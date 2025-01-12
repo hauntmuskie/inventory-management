@@ -47,7 +47,7 @@ public class CustomerController extends HibernateUtil {
                 TableUtils.createColumn("Nama", "customerName"),
                 TableUtils.createColumn("Kontak", "contact"),
                 TableUtils.createColumn("Alamat", "address"),
-                TableUtils.createColumn("Email", "email"));
+                TableUtils.createColumn("Surel", "email"));
         TableUtils.populateTable(customerTable, columns, customerService.findAll());
     }
 
