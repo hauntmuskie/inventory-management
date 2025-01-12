@@ -44,23 +44,54 @@ public class HibernateUtil {
         return databaseAvailable;
     }
 
-    public static void shutdown() {
+    public static void reinitialize() {
+        if (sessionFactory != null && !sessionFactory.isClosed()) {
+            shutdown();
+        }
+
+        try {
+            Configuration configuration = new Configuration().configure(
+                    App.class.getResource("hibernate.cfg.xml"));
+            sessionFactory = configuration.buildSessionFactory();
+            databaseAvailable = true;
+
+            ServiceRegistry serviceRegistry = ((org.hibernate.internal.SessionFactoryImpl) sessionFactory)
+                    .getServiceRegistry();
+            hikariDataSource = serviceRegistry
+                    .getService(ConnectionProvider.class)
+                    .unwrap(HikariDataSource.class);
+
+            logger.info("Database connection reinitialized successfully");
+        } catch (Exception e) {
+            logger.error("Failed to reinitialize database connection", e);
+            sessionFactory = null;
+            hikariDataSource = null;
+            databaseAvailable = false;
+        }
+    }
+
+    public static synchronized void shutdown() {
         if (hikariDataSource != null && !hikariDataSource.isClosed()) {
             try {
-                logger.info("Menutup koneksi pool HikariCP");
+                logger.info("Closing HikariCP connection pool");
                 hikariDataSource.close();
             } catch (Exception e) {
-                logger.error("Terjadi kesalahan saat menutup koneksi pool HikariCP", e);
+                logger.error("Error closing HikariCP connection pool", e);
+            } finally {
+                hikariDataSource = null;
             }
         }
 
         if (sessionFactory != null && !sessionFactory.isClosed()) {
             try {
-                logger.info("Menutup Hibernate SessionFactory");
+                logger.info("Closing Hibernate SessionFactory");
                 sessionFactory.close();
             } catch (Exception e) {
-                logger.error("Terjadi kesalahan saat menutup Hibernate", e);
+                logger.error("Error closing Hibernate SessionFactory", e);
+            } finally {
+                sessionFactory = null;
             }
         }
+        databaseAvailable = false;
     }
 }

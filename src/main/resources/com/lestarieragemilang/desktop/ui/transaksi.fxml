@@ -357,7 +357,7 @@
                                                    buttonType="RAISED" onAction="#editBuyButton"
                                                    prefHeight="30.0" prefWidth="97.0"
                                                    style="-fx-background-color: #131313; -fx-background-radius: 10; -fx-cursor: HAND; -fx-text-fill: #E8E7DE; -fx-font-weight: bold; -fx-border-radius: 10;"
-                                                   text="EDIT" textFill="WHITE">
+                                                   text="UBAH" textFill="WHITE">
                                                    <font>
                                                       <Font size="14.0" />
                                                    </font>
@@ -708,7 +708,7 @@
                                                    buttonType="RAISED" onAction="#editSellButton"
                                                    prefHeight="30.0" prefWidth="97.0"
                                                    style="-fx-background-color: #131313; -fx-background-radius: 10; -fx-cursor: HAND; -fx-text-fill: #E8E7DE; -fx-font-weight: bold; -fx-border-radius: 10;"
-                                                   text="EDIT" textFill="WHITE">
+                                                   text="UBAH" textFill="WHITE">
                                                    <font>
                                                       <Font size="14.0" />
                                                    </font>

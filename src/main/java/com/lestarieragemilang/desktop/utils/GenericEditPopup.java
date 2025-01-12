@@ -10,6 +10,7 @@ import java.util.Optional;
 import java.util.function.BiConsumer;
 import javafx.scene.control.TextInputControl;
 import javafx.application.Platform;
+import javafx.scene.Node;
 
 public final class GenericEditPopup<T> {
     private static final String ERROR_CLASS_NULL = "Tipe kelas tidak boleh kosong";
@@ -50,7 +51,7 @@ public final class GenericEditPopup<T> {
         return this;
     }
 
-    public GenericEditPopup<T> addField(String label, Control field, boolean isDisabled) {
+    public GenericEditPopup<T> addField(String label, Node field, boolean isDisabled) {
         Preconditions.checkNotNull(label, ERROR_LABEL_NULL);
         Preconditions.checkNotNull(field, ERROR_FIELD_NULL);
 
@@ -58,12 +59,15 @@ public final class GenericEditPopup<T> {
             initializeTextField((TextInputControl) field);
         }
 
-        field.setDisable(isDisabled);
+        if (field instanceof Control) {
+            ((Control) field).setDisable(isDisabled);
+        }
+        
         fieldConfigsBuilder.add(new FieldConfig<>(label, field));
         return this;
     }
 
-    public GenericEditPopup<T> addField(String label, Control field) {
+    public GenericEditPopup<T> addField(String label, Node field) {
         return addField(label, field, false);
     }
 
@@ -134,13 +138,15 @@ public final class GenericEditPopup<T> {
             FieldConfig<T> config = fieldConfigs.get(i);
             grid.add(new Label(config.getLabel() + ":"), 0, i);
 
-            Control field = config.getField();
-            if (field instanceof TextInputControl) {
-                validateTextFields(ImmutableList.of(field));
+            Node field = config.getField();
+            if (field instanceof Control) {
+                if (field instanceof TextInputControl) {
+                    validateTextFields(ImmutableList.of((Control) field));
+                }
+                fieldsBuilder.add((Control) field);
             }
-
+            
             grid.add(field, 1, i);
-            fieldsBuilder.add(field);
         }
 
         return fieldsBuilder.build();
@@ -171,9 +177,9 @@ public final class GenericEditPopup<T> {
 
     private static final class FieldConfig<T> {
         private final String label;
-        private final Control field;
+        private final Node field;
 
-        public FieldConfig(String label, Control field) {
+        public FieldConfig(String label, Node field) {
             this.label = Preconditions.checkNotNull(label, ERROR_LABEL_NULL);
             this.field = Preconditions.checkNotNull(field, ERROR_FIELD_NULL);
         }
@@ -182,7 +188,7 @@ public final class GenericEditPopup<T> {
             return label;
         }
 
-        public Control getField() {
+        public Node getField() {
             return field;
         }
     }

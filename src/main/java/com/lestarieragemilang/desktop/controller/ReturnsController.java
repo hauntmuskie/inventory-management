@@ -3,6 +3,7 @@ package com.lestarieragemilang.desktop.controller;
 import javafx.collections.FXCollections;
 import javafx.fxml.FXML;
 import javafx.scene.control.*;
+import javafx.scene.layout.VBox;
 import javafx.util.StringConverter;
 import com.jfoenix.controls.JFXButton;
 import com.jfoenix.controls.JFXComboBox;
@@ -182,18 +183,81 @@ public class ReturnsController extends HibernateUtil {
             return;
         }
 
+        JFXRadioButton returnIsBuyEdit = new JFXRadioButton("Beli");
+        JFXRadioButton returnIsSellEdit = new JFXRadioButton("Jual");
+        ToggleGroup returnTypeGroupEdit = new ToggleGroup();
+        returnIsBuyEdit.setToggleGroup(returnTypeGroupEdit);
+        returnIsSellEdit.setToggleGroup(returnTypeGroupEdit);
+
+        // Set initial radio button selection based on return type
+        if ("Beli".equals(selectedReturn.getReturnType())) {
+            returnIsBuyEdit.setSelected(true);
+        } else {
+            returnIsSellEdit.setSelected(true);
+        }
+
+        ComboBox<Object> invoiceComboBox = new ComboBox<>();
+        invoiceComboBox.setConverter(new StringConverter<Object>() {
+            @Override
+            public String toString(Object object) {
+                if (object instanceof Purchasing) {
+                    return ((Purchasing) object).getInvoiceNumber();
+                } else if (object instanceof Sales) {
+                    return ((Sales) object).getInvoiceNumber();
+                }
+                return "";
+            }
+
+            @Override
+            public Object fromString(String string) {
+                return null;
+            }
+        });
+
+        // Update invoice combo box when radio selection changes
+        returnTypeGroupEdit.selectedToggleProperty().addListener((_, _, _) -> {
+            if (returnIsBuyEdit.isSelected()) {
+                List<Purchasing> purchasings = purchasingService.findAll();
+                invoiceComboBox.setItems(FXCollections.observableArrayList(purchasings));
+            } else {
+                List<Sales> sales = salesService.findAll();
+                invoiceComboBox.setItems(FXCollections.observableArrayList(sales));
+            }
+        });
+
+        // Trigger initial load of invoice list
+        if (returnIsBuyEdit.isSelected()) {
+            List<Purchasing> purchasings = purchasingService.findAll();
+            invoiceComboBox.setItems(FXCollections.observableArrayList(purchasings));
+        } else {
+            List<Sales> sales = salesService.findAll();
+            invoiceComboBox.setItems(FXCollections.observableArrayList(sales));
+        }
+
+        // Set initial invoice selection
+        invoiceComboBox.getItems().forEach(item -> {
+            String invoiceNumber = item instanceof Purchasing ? 
+                ((Purchasing) item).getInvoiceNumber() : 
+                ((Sales) item).getInvoiceNumber();
+            if (invoiceNumber.equals(selectedReturn.getInvoiceNumber())) {
+                invoiceComboBox.setValue(item);
+            }
+        });
+
+        VBox returnTypeBox = new VBox(5, returnIsBuyEdit, returnIsSellEdit);
+
         GenericEditPopup.create(Returns.class)
                 .withTitle("Ubah Retur")
                 .forItem(selectedReturn)
                 .addField("Kode Retur", new TextField(selectedReturn.getReturnId()), true)
                 .addField("Tanggal", new DatePicker(selectedReturn.getReturnDate()))
-                .addField("Faktur", new ComboBox<>(returnInvoicePurchasing.getItems()))
-                .addField("Tipe", new TextField(selectedReturn.getReturnType()))
+                .addField("Tipe Retur", returnTypeBox)
+                .addField("Faktur", invoiceComboBox)
                 .addField("Alasan", new TextArea(selectedReturn.getReason()))
                 .onSave((returnItem, fields) -> {
                     returnItem.setReturnDate(((DatePicker) fields.get(1)).getValue());
 
-                    Object selectedInvoice = ((ComboBox<?>) fields.get(2)).getValue();
+                    Object selectedInvoice = ((ComboBox<?>) fields.get(3)).getValue();
                     if (selectedInvoice == null) {
                         ShowAlert.showValidationError("Silakan pilih faktur terlebih dahulu.");
                         return;
@@ -205,19 +269,16 @@ public class ReturnsController extends HibernateUtil {
                     } else if (selectedInvoice instanceof Sales) {
                         returnItem.setInvoiceNumber(((Sales) selectedInvoice).getInvoiceNumber());
                         returnItem.setReturnType("Jual");
-                    } else {
-                        ShowAlert.showWarning("Silakan pilih faktur terlebih dahulu.");
-                        return;
                     }
 
-                    returnItem.setReason(((TextField) fields.get(4)).getText());
+                    returnItem.setReason(((TextArea) fields.get(4)).getText());
                     returnService.update(returnItem);
                 })
                 .afterSave(() -> {
                     ShowAlert.showSuccess("Data retur berhasil diperbarui.");
                     loadReturns();
                     resetReturnButton();
-                    returnTable.refresh(); // Add this line
+                    returnTable.refresh();
                 })
                 .show();
     }

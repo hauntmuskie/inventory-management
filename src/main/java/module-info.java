@@ -1,5 +1,6 @@
 module com.lestarieragemilang.desktop {
     requires transitive javafx.graphics;
+    requires javafx.base;
     requires jasperreports;
     // requires mysql.connector.j;
     requires jsr305;

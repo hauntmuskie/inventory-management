@@ -102,14 +102,19 @@ public class Layout extends Redirect {
     void setSceneLogin(MouseEvent event) {
         if (ShowAlert.showConfirmation("Konfirmasi", "Login", "Apakah anda yakin ingin kembali ke halaman login?")) {
             try {
-                HibernateUtil.shutdown();
-
                 Stage currentStage = getStage();
                 App.sceneManager.invalidateScenes("login", "layout");
 
                 switchScene(setScene, "login", () -> {
                     try {
                         Stage loginStage = new Stage();
+
+                        // Close current connections before loading new scene
+                        HibernateUtil.shutdown();
+
+                        // Reinitialize database connection for login
+                        HibernateUtil.reinitialize();
+
                         Parent loginRoot = App.sceneManager.getScene("login");
                         Scene loginScene = new Scene(loginRoot);
                         loginStage.setScene(loginScene);
@@ -134,23 +139,23 @@ public class Layout extends Redirect {
 
     private void loadSceneWithTransition(String sceneName) {
         App.sceneManager.getSceneAsync(sceneName.toLowerCase())
-            .thenAcceptAsync(newScene -> {
-                if (setScene.getChildren().isEmpty()) {
-                    newScene.setOpacity(0);
-                    setScene.getChildren().setAll(newScene);
-                    new animatefx.animation.FadeIn(newScene).setSpeed(2.0).play();
-                } else {
-                    Parent currentScene = (Parent) setScene.getChildren().get(0);
-                    App.sceneManager.transitionTo(currentScene, newScene, () -> {
+                .thenAcceptAsync(newScene -> {
+                    if (setScene.getChildren().isEmpty()) {
+                        newScene.setOpacity(0);
                         setScene.getChildren().setAll(newScene);
-                    });
-                }
-            }, Platform::runLater)
-            .exceptionally(e -> {
-                ShowAlert.showError("Failed to load scene: " + sceneName);
-                e.printStackTrace();
-                return null;
-            });
+                        new animatefx.animation.FadeIn(newScene).setSpeed(2.0).play();
+                    } else {
+                        Parent currentScene = (Parent) setScene.getChildren().get(0);
+                        App.sceneManager.transitionTo(currentScene, newScene, () -> {
+                            setScene.getChildren().setAll(newScene);
+                        });
+                    }
+                }, Platform::runLater)
+                .exceptionally(e -> {
+                    ShowAlert.showError("Failed to load scene: " + sceneName);
+                    e.printStackTrace();
+                    return null;
+                });
     }
 
     @Override
