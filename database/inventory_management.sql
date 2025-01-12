@@ -276,7 +276,6 @@ ALTER TABLE `customers`
 --
 ALTER TABLE `purchasing`
   ADD PRIMARY KEY (`id`),
-  ADD UNIQUE KEY `invoice_number` (`invoice_number`),
   ADD KEY `stock_id` (`stock_id`),
   ADD KEY `supplier_id` (`supplier_id`);
 
@@ -293,7 +292,6 @@ ALTER TABLE `returns`
 --
 ALTER TABLE `sales`
   ADD PRIMARY KEY (`id`),
-  ADD UNIQUE KEY `invoice_number` (`invoice_number`),
   ADD KEY `stock_id` (`stock_id`),
   ADD KEY `customer_id` (`customer_id`);
 

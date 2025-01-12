@@ -303,9 +303,9 @@ public class TransactionController extends HibernateUtil {
             pendingPurchases.add(purchasing);
             updateBuyTotalPrice();
             resetBuyButton(event);
-            ShowAlert.showSuccess("Pembelian berhasil ditambahkan ke daftar menunggu");
         } catch (Exception e) {
             ShowAlert.showError("Gagal menambahkan pembelian: " + e.getMessage());
+            System.out.println(e.getMessage());
         }
     }
 
@@ -366,9 +366,9 @@ public class TransactionController extends HibernateUtil {
             pendingSales.add(sales);
             updateSellTotalPrice();
             resetSellButton(event);
-            ShowAlert.showSuccess("Penjualan berhasil ditambahkan ke daftar menunggu");
         } catch (Exception e) {
             ShowAlert.showError("Gagal menambahkan penjualan: " + e.getMessage());
+            System.out.println(e.getMessage());
         }
     }
 
