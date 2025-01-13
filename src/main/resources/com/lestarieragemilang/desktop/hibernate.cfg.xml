@@ -25,7 +25,7 @@
         <property name="hibernate.hikari.connectionTestQuery">SELECT 1</property>
 
         <!-- Hibernate Settings -->
-        <property name="hibernate.show_sql">true</property>
+        <property name="hibernate.show_sql">false</property>
         <property name="hibernate.format_sql">true</property>
         <property name="hibernate.hbm2ddl.auto">update</property>
         <property name="hibernate.validator.apply_to_ddl">true</property>
