@@ -1,5 +1,6 @@
 package com.lestarieragemilang.desktop.utils;
 
+import org.hibernate.Session;
 import org.hibernate.SessionFactory;
 import org.hibernate.cfg.Configuration;
 import org.hibernate.engine.jdbc.connections.spi.ConnectionProvider;
@@ -93,5 +94,15 @@ public class HibernateUtil {
             }
         }
         databaseAvailable = false;
+    }
+
+    public static Session getCurrentSession() {
+        Session session = null;
+        try {
+            session = getSessionFactory().getCurrentSession();
+        } catch (Exception e) {
+            session = getSessionFactory().openSession();
+        }
+        return session;
     }
 }

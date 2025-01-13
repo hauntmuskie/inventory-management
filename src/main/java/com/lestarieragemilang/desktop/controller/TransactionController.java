@@ -12,12 +12,16 @@ import com.lestarieragemilang.desktop.utils.JasperLoader;
 import com.lestarieragemilang.desktop.utils.NumberFormatter;
 import com.lestarieragemilang.desktop.utils.ShowAlert;
 import com.lestarieragemilang.desktop.utils.TableUtils;
+
+import javafx.application.Platform;
 import javafx.collections.FXCollections;
 import javafx.collections.ObservableList;
 import javafx.event.ActionEvent;
 import javafx.fxml.FXML;
 import javafx.scene.control.*;
 import javafx.util.StringConverter;
+import org.hibernate.Session;
+import org.hibernate.Transaction;
 
 import java.math.BigDecimal;
 import java.net.MalformedURLException;
@@ -314,6 +318,10 @@ public class TransactionController extends HibernateUtil {
             BigDecimal total = subTotal;
             purchasing.setPriceTotal(total);
 
+            // Add these lines to set brand and type
+            purchasing.setBrand(selectedStock.getCategory().getBrand());
+            purchasing.setType(selectedStock.getCategory().getProductType());
+
             pendingPurchases.add(purchasing);
             updateBuyTotalPrice();
             resetBuyButton(event);
@@ -431,28 +439,67 @@ public class TransactionController extends HibernateUtil {
                 // Generate a single final invoice number for this batch
                 String finalInvoiceNumber = generateFinalInvoiceNumber("BLI");
 
-                for (Purchasing purchasing : purchasingList) {
-                    purchasing.setInvoiceNumber(finalInvoiceNumber);
-                    try {
-                        purchasingService.save(purchasing);
-                        updateStockQuantity(purchasing.getStock(), purchasing.getQuantity(), true);
-                    } catch (Exception e) {
-                        success = false;
-                        ShowAlert.showError("Gagal mengkonfirmasi pembelian: " + e.getMessage());
-                        break;
+                // Get a new session for this transaction
+                Session session = HibernateUtil.getSessionFactory().openSession();
+                Transaction transaction = null;
+
+                try {
+                    transaction = session.beginTransaction();
+
+                    for (Purchasing purchasing : purchasingList) {
+                        purchasing.setInvoiceNumber(finalInvoiceNumber);
+                        
+                        // Reattach entities to the current session
+                        Stock stock = session.get(Stock.class, purchasing.getStock().getId());
+                        purchasing.setStock(stock);
+                        purchasing.setSupplier(session.get(Supplier.class, purchasing.getSupplier().getId()));
+                        
+                        // Add these lines to ensure brand and type are set
+                        purchasing.setBrand(stock.getCategory().getBrand());
+                        purchasing.setType(stock.getCategory().getProductType());
+                        
+                        // Save purchasing
+                        session.persist(purchasing);
+                        
+                        // Update stock quantity
+                        stock.setQuantity(stock.getQuantity() + purchasing.getQuantity());
+                        session.merge(stock);
                     }
+
+                    transaction.commit();
+                    
+                    // Clear table and update UI
+                    Platform.runLater(() -> {
+                        buyTable.getItems().clear();
+                        currentPendingBuyInvoice = generatePendingInvoiceNumber("BLI");
+                        buyIdValue = buyId++;
+                        buyInvoiceNumber.setText(String.format("TRX-%05d", buyIdValue));
+                        updateBuyTotalPrice();
+                        
+                        try {
+                            printJasperBuyList();
+                        } catch (Exception e) {
+                            e.printStackTrace();
+                        }
+                        
+                        ShowAlert.showSuccess("Pembelian berhasil dikonfirmasi");
+                    });
+
+                } catch (Exception e) {
+                    if (transaction != null) {
+                        transaction.rollback();
+                    }
+                    success = false;
+                    e.printStackTrace();
+                    Platform.runLater(() -> 
+                        ShowAlert.showError("Gagal mengkonfirmasi pembelian: " + e.getMessage())
+                    );
+                } finally {
+                    session.close();
                 }
 
-                if (success) {
-                    buyTable.getItems().clear();
-                    currentPendingBuyInvoice = generatePendingInvoiceNumber("BLI"); // Generate new pending invoice number
-                    buyIdValue = buyId++;
-                    buyInvoiceNumber.setText(String.format("TRX-%05d", buyIdValue));
-                    updateBuyTotalPrice();
-
-                    printJasperBuyList();
-
-                    ShowAlert.showSuccess("Pembelian berhasil dikonfirmasi");
+                if (!success) {
+                    return;
                 }
             } catch (Exception e) {
                 e.printStackTrace();
