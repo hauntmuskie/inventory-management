@@ -6,6 +6,7 @@
 <?import javafx.scene.control.Label?>
 <?import javafx.scene.control.TableColumn?>
 <?import javafx.scene.control.TableView?>
+<?import javafx.scene.control.TextArea?>
 <?import javafx.scene.control.TextField?>
 <?import javafx.scene.layout.AnchorPane?>
 <?import javafx.scene.layout.BorderPane?>
@@ -37,7 +38,7 @@
                                  </font>
                               </Label>
                               <TextField fx:id="supplierSearchField" prefHeight="32.0"
-                                 prefWidth="250.0" promptText="Cari Data Supplier"
+                                 prefWidth="250.0" promptText="Cari data pemasok..."
                                  style="-fx-background-radius: 7;" />
                            </children>
                         </HBox>
@@ -87,8 +88,10 @@
                                              promptText="Auto-Generated"
                                              style="-fx-background-radius: 7;" />
                                           <TextField fx:id="supplierNameField"
+                                             promptText="Masukkan nama pemasok"
                                              style="-fx-background-radius: 7;" />
                                           <TextField fx:id="supplierContactField"
+                                             promptText="Masukkan nomor kontak"
                                              style="-fx-background-radius: 7;" />
                                        </children>
                                     </VBox>
@@ -113,7 +116,8 @@
                                     </VBox>
                                     <VBox alignment="CENTER" prefHeight="57.0" prefWidth="116.0">
                                        <children>
-                                          <JFXTextArea fx:id="supplierAddressField"
+                                          <TextArea fx:id="supplierAddressField"
+                                             promptText="Masukkan alamat pemasok"
                                              prefHeight="119.0" prefWidth="116.0"
                                              style="-fx-background-radius: 7; -fx-border-radius: 7;"
                                              wrapText="true">
@@ -121,7 +125,7 @@
                                                 <Insets bottom="3.0" left="3.0" right="3.0"
                                                    top="3.0" />
                                              </padding>
-                                          </JFXTextArea>
+                                          </TextArea>
                                        </children>
                                     </VBox>
                                     <VBox fx:id="supplierAddressField1" alignment="BASELINE_CENTER"
@@ -139,6 +143,7 @@
                                        <children>
                                           <TextField fx:id="supplierEmailField"
                                              alignment="BASELINE_LEFT"
+                                             promptText="Masukkan alamat surel"
                                              style="-fx-background-radius: 7;" />
                                        </children>
                                     </VBox>

@@ -36,7 +36,7 @@
                                  </font>
                               </Label>
                               <TextField fx:id="searchField" prefHeight="30.0" prefWidth="250.0"
-                                 style="-fx-background-radius: 7;" />
+                                 promptText="Cari data kategori..." style="-fx-background-radius: 7;" />
                            </children>
                         </HBox>
                         <HBox alignment="CENTER" layoutX="20.0" layoutY="17.0" spacing="30.0"
@@ -131,7 +131,7 @@
                                           <JFXComboBox fx:id="sizeComboBox" prefHeight="25.0"
                                              prefWidth="200.0" style="-fx-background-radius: 7;" />
                                           <TextField fx:id="weightField" prefHeight="25.0"
-                                             prefWidth="200.0" style="-fx-background-radius: 7;" />
+                                             prefWidth="200.0" promptText="Masukkan berat" style="-fx-background-radius: 7;" />
                                           <JFXComboBox fx:id="weightUnitComboBox" prefHeight="25.0"
                                              prefWidth="200.0" style="-fx-background-radius: 7;" />
                                        </children>

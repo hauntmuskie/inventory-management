@@ -1,7 +1,7 @@
 package com.lestarieragemilang.desktop.controller;
 
 import com.jfoenix.controls.JFXButton;
-import com.jfoenix.controls.JFXTextArea;
+import javafx.scene.control.TextArea;
 import com.lestarieragemilang.desktop.model.Supplier;
 import com.lestarieragemilang.desktop.repository.GenericDao;
 import com.lestarieragemilang.desktop.service.GenericService;
@@ -29,7 +29,7 @@ public class SupplierController extends HibernateUtil {
     private TableColumn<Supplier, String> supplierAddressCol, supplierContactCol, supplierEmailCol, supplierIDCol,
             supplierNameCol;
     @FXML
-    private JFXTextArea supplierAddressField;
+    private TextArea supplierAddressField;
     @FXML
     private VBox supplierAddressField1, supplierAddressField11;
     @FXML

@@ -114,6 +114,7 @@
                                                 </Label>
                                                 <TextField fx:id="transactionBuySearchField"
                                                    prefHeight="32.0" prefWidth="250.0"
+                                                   promptText="Cari transaksi pembelian..."
                                                    style="-fx-background-radius: 5;" />
                                                 <JFXButton buttonType="RAISED"
                                                    onAction="#searchDataBuyAction" prefHeight="30.0"
@@ -322,6 +323,7 @@
                                                          <children>
                                                             <TextField fx:id="buyTotalField"
                                                                alignment="BASELINE_CENTER"
+                                                               promptText="Masukkan jumlah barang"
                                                                style="-fx-background-radius: 7;" />
                                                          </children>
                                                       </VBox>
@@ -465,6 +467,7 @@
                                                 </Label>
                                                 <TextField fx:id="transactionSellSearchField"
                                                    prefHeight="32.0" prefWidth="250.0"
+                                                   promptText="Cari transaksi penjualan..."
                                                    style="-fx-background-radius: 5;" />
                                                 <JFXButton buttonType="RAISED"
                                                    onAction="#searchDataSellAction"
@@ -673,6 +676,7 @@
                                                          <children>
                                                             <TextField fx:id="sellTotalField"
                                                                alignment="BASELINE_CENTER"
+                                                               promptText="Masukkan jumlah barang"
                                                                style="-fx-background-radius: 7;" />
                                                          </children>
                                                       </VBox>

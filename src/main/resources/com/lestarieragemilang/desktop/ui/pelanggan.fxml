@@ -35,7 +35,7 @@
                                  </font>
                               </Label>
                               <TextField fx:id="customerSearchField" prefHeight="32.0"
-                                 prefWidth="250.0" style="-fx-background-radius: 7;" />
+                                 prefWidth="250.0" style="-fx-background-radius: 7;" promptText="Cari data pelanggan..." />
                            </children>
                         </HBox>
                         <HBox layoutX="20.0" layoutY="17.0" spacing="100.0">
@@ -83,9 +83,9 @@
                                              promptText="Auto-Generated"
                                              style="-fx-background-radius: 7;" />
                                           <TextField fx:id="customerNameField"
-                                             style="-fx-background-radius: 7;" />
+                                             style="-fx-background-radius: 7;" promptText="Masukkan nama pelanggan" />
                                           <TextField fx:id="customerContactField"
-                                             style="-fx-background-radius: 7;" />
+                                             style="-fx-background-radius: 7;" promptText="Masukkan nomor kontak" />
                                        </children>
                                     </VBox>
                                  </children>
@@ -120,9 +120,9 @@
                                        prefWidth="300.0" spacing="20.0">
                                        <children>
                                           <TextField fx:id="customerAddressField"
-                                             style="-fx-background-radius: 7;" />
+                                             style="-fx-background-radius: 7;" promptText="Masukkan alamat" />
                                           <TextField fx:id="customerEmailField"
-                                             style="-fx-background-radius: 7;" />
+                                             style="-fx-background-radius: 7;" promptText="Masukkan alamat surel" />
                                        </children>
                                     </VBox>
                                  </children>

@@ -39,7 +39,7 @@
                                  </font>
                               </Label>
                               <TextField fx:id="searchTextField" prefHeight="32.0" prefWidth="250.0"
-                                 style="-fx-background-radius: 7;" />
+                                 promptText="Cari data pengembalian..." style="-fx-background-radius: 7;" />
                               <JFXButton buttonType="RAISED" onAction="#searchingData"
                                  prefHeight="30.0" prefWidth="60.0"
                                  style="-fx-background-color: #131313; -fx-background-radius: 10; -fx-cursor: HAND; -fx-font-weight: bold; -fx-text-fill: #E8E7DE; -fx-border-radius: 10;"
@@ -146,7 +146,7 @@
                                              prefHeight="25.0" prefWidth="122.0"
                                              style="-fx-background-radius: 10;" />
                                           <TextArea fx:id="returnReasonField" prefHeight="200.0"
-                                             prefWidth="200.0" style="-fx-background-radius: 10;" />
+                                             prefWidth="200.0" promptText="Masukkan alasan pengembalian" style="-fx-background-radius: 10;" />
                                        </children>
                                     </VBox>
                                  </children>
