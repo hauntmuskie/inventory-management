@@ -305,8 +305,14 @@ public class TransactionController extends HibernateUtil {
             purchasing.setSupplier(selectedSupplier);
             purchasing.setQuantity(quantity);
             purchasing.setPrice(price);
-            purchasing.setSubTotal(price.multiply(BigDecimal.valueOf(quantity)));
-            purchasing.setPriceTotal(purchasing.getSubTotal());
+            
+            // Calculate sub total (price * quantity)
+            BigDecimal subTotal = price.multiply(BigDecimal.valueOf(quantity));
+            purchasing.setSubTotal(subTotal);
+            
+            // For now, total is same as sub total (can be modified if additional charges needed)
+            BigDecimal total = subTotal;
+            purchasing.setPriceTotal(total);
 
             pendingPurchases.add(purchasing);
             updateBuyTotalPrice();
@@ -368,8 +374,14 @@ public class TransactionController extends HibernateUtil {
             sales.setCustomer(selectedCustomer);
             sales.setQuantity(quantity);
             sales.setPrice(price);
-            sales.setSubTotal(price.multiply(BigDecimal.valueOf(quantity)));
-            sales.setPriceTotal(sales.getSubTotal());
+            
+            // Calculate sub total (price * quantity)
+            BigDecimal subTotal = price.multiply(BigDecimal.valueOf(quantity));
+            sales.setSubTotal(subTotal);
+            
+            // For now, total is same as sub total (can be modified if additional charges needed)
+            BigDecimal total = subTotal;
+            sales.setPriceTotal(total);
 
             pendingSales.add(sales);
             updateSellTotalPrice();
@@ -525,8 +537,11 @@ public class TransactionController extends HibernateUtil {
                     }
 
                     item.setQuantity(newQuantity);
-                    item.setSubTotal(item.getPrice().multiply(BigDecimal.valueOf(newQuantity)));
-                    item.setPriceTotal(item.getSubTotal());
+                    // Recalculate sub total
+                    BigDecimal subTotal = item.getPrice().multiply(BigDecimal.valueOf(newQuantity));
+                    item.setSubTotal(subTotal);
+                    // Set total
+                    item.setPriceTotal(subTotal);
 
                     pendingPurchases.remove(selectedPurchase);
                     pendingPurchases.add(item);
@@ -574,8 +589,11 @@ public class TransactionController extends HibernateUtil {
                     }
 
                     item.setQuantity(newQuantity);
-                    item.setSubTotal(item.getPrice().multiply(BigDecimal.valueOf(newQuantity)));
-                    item.setPriceTotal(item.getSubTotal());
+                    // Recalculate sub total
+                    BigDecimal subTotal = item.getPrice().multiply(BigDecimal.valueOf(newQuantity));
+                    item.setSubTotal(subTotal);
+                    // Set total
+                    item.setPriceTotal(subTotal);
 
                     pendingSales.remove(selectedSale);
                     pendingSales.add(item);
