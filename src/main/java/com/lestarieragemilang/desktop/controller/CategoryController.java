@@ -50,9 +50,9 @@ public class CategoryController extends HibernateUtil {
     }
 
     private void setDefaultComboBoxValues() {
-        brandComboBox.setValue("Nike");
-        typeComboBox.setValue("Shoes");
-        sizeComboBox.setValue("M");
+        brandComboBox.setValue("Krakatau Steel");
+        typeComboBox.setValue("Pipe");
+        sizeComboBox.setValue("6 inch");
         weightUnitComboBox.setValue("kg");
     }
 
@@ -85,10 +85,45 @@ public class CategoryController extends HibernateUtil {
     }
 
     private void initializeComboBoxes() {
-        brandComboBox.setItems(FXCollections.observableArrayList("Nike", "Adidas", "Puma", "Reebok", "Under Armour"));
-        typeComboBox.setItems(FXCollections.observableArrayList("Shoes", "T-shirt", "Shorts", "Jacket", "Socks"));
-        sizeComboBox.setItems(FXCollections.observableArrayList("XS", "S", "M", "L", "XL", "XXL"));
-        weightUnitComboBox.setItems(FXCollections.observableArrayList("kg", "g", "lb", "oz"));
+        brandComboBox.setItems(FXCollections.observableArrayList(
+            "Krakatau Steel",
+            "Gunung Steel",
+            "Master Steel",
+            "Ispat Indo",
+            "Gunawan Dianjaya Steel",
+            "Steel Pipe Industry",
+            "Jayapari Steel",
+            "Jaya Steel",
+            "Indonusa Steel",
+            "Sarana Central Bajatama",
+            "Cilegon Steel",
+            "Hanil Jaya Steel"
+        ));
+        typeComboBox.setItems(FXCollections.observableArrayList(
+            "Sheet", 
+            "Rod", 
+            "Beam", 
+            "Tube", 
+            "Plate", 
+            "Coil",
+            "Pipe",
+            "Wire",
+            "Angle",
+            "Channel"
+        ));
+        sizeComboBox.setItems(FXCollections.observableArrayList(
+            "4x8 ft",
+            "5x10 ft",
+            "1 inch",
+            "2 inch",
+            "3 inch",
+            "4 inch",
+            "6 inch",
+            "8 inch",
+            "10 inch",
+            "12 inch"
+        ));
+        weightUnitComboBox.setItems(FXCollections.observableArrayList("kg", "ton", "g"));
     }
 
     private void initializeCategoryTable() {

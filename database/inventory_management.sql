@@ -2,8 +2,8 @@
 -- version 5.2.1
 -- https://www.phpmyadmin.net/
 --
--- Host: 127.0.0.1
--- Generation Time: Dec 19, 2024 at 08:12 PM
+-- Host: localhost
+-- Generation Time: Jan 13, 2025 at 12:21 PM
 -- Server version: 10.4.32-MariaDB
 -- PHP Version: 8.2.12
 
@@ -42,13 +42,16 @@ CREATE TABLE `categories` (
 --
 
 INSERT INTO `categories` (`id`, `category_id`, `brand`, `product_type`, `size`, `weight`, `weight_unit`) VALUES
-(1, 'CAT001', 'Adidas', 'Jacket', 'L', 5.00, 'kg'),
-(2, 'CAT002', 'Iron Works', 'Sheet', '4x8 ft', 80.00, 'kg'),
-(3, 'CAT003', 'Metal Masters', 'Rod', '1 inch', 2.50, 'kg'),
-(4, 'CAT004', 'Alloy Industries', 'Beam', 'I-beam 6 inch', 120.00, 'kg'),
-(5, 'CAT005', 'Steel Co', 'Tube', '3 inch', 7.50, 'kg'),
-(6, 'CAT-449', 'Adidas', 'Shoes', 'M', 750.00, 'g'),
-(7, 'CAT-094', 'Nike', 'Shoes', 'M', 12.00, 'kg');
+(1, 'CAT-001', 'Krakatau Steel', 'Sheet', '4x8 ft', 120.50, 'kg'),
+(2, 'CAT-002', 'Gunung Steel', 'Rod', '2 inch', 45.75, 'kg'),
+(3, 'CAT-003', 'Master Steel', 'Beam', '6 inch', 250.00, 'kg'),
+(4, 'CAT-004', 'Ispat Indo', 'Tube', '4 inch', 85.30, 'kg'),
+(5, 'CAT-005', 'Gunawan Dianjaya Steel', 'Plate', '5x10 ft', 180.00, 'kg'),
+(6, 'CAT-006', 'Steel Pipe Industry', 'Pipe', '8 inch', 95.40, 'kg'),
+(7, 'CAT-007', 'Jayapari Steel', 'Coil', '4x8 ft', 320.00, 'kg'),
+(8, 'CAT-008', 'Jaya Steel', 'Wire', '1 inch', 25.50, 'kg'),
+(9, 'CAT-009', 'Indonusa Steel', 'Angle', '3 inch', 42.75, 'kg'),
+(10, 'CAT-010', 'Cilegon Steel', 'Channel', '4 inch', 68.90, 'kg');
 
 -- --------------------------------------------------------
 
@@ -70,12 +73,16 @@ CREATE TABLE `customers` (
 --
 
 INSERT INTO `customers` (`id`, `customer_id`, `customer_name`, `contact`, `address`, `email`) VALUES
-(1, 'CUST001', 'John Doe Construction', '555-1234', '123 Build St, Construct City', 'john@doeconstruction.com'),
-(2, 'CUST002', 'Smith Fabrication', '555-5678', '456 Weld Ave, Metal Town', 'info@smithfab.com'),
-(3, 'CUST003', 'Johnson Industries', '555-9876', '789 Industry Rd, Factoryville', 'sales@johnsonindustries.com'),
-(4, 'CUST004', 'Brown & Sons Builders', '555-4321', '321 Frame Ln, Scaffold City', 'orders@brownbuilders.com'),
-(5, 'CUST005', 'Green Engineering', '555-8765', '654 Design Blvd, Blueprint City', 'projects@greeneng.com'),
-(7, 'CUST-593', 'a', 'a', 'a', 'a');
+(1, 'CUST-001', 'PT Pembangunan Jaya', '021-5551234', 'Jl. Industri Raya No. 1, Jakarta', 'contact@pembangunanjaya.com'),
+(2, 'CUST-002', 'CV Maju Bersama', '022-5555678', 'Jl. Sudirman No. 123, Bandung', 'info@majubersama.com'),
+(3, 'CUST-003', 'PT Konstruksi Andalan', '031-5559876', 'Jl. Pahlawan No. 45, Surabaya', 'sales@konstruksiandalan.com'),
+(4, 'CUST-004', 'CV Karya Mandiri', '024-5554321', 'Jl. Gajah Mada No. 67, Semarang', 'info@karyamandiri.com'),
+(5, 'CUST-005', 'PT Bangun Sejahtera', '061-5558765', 'Jl. Diponegoro No. 89, Medan', 'contact@bangunsejahtera.com'),
+(6, 'CUST-006', 'CV Cipta Karya', '0411-5552468', 'Jl. Veteran No. 12, Makassar', 'info@ciptakarya.com'),
+(7, 'CUST-007', 'PT Baja Makmur', '0721-5551357', 'Jl. Raya Kedaton No. 34, Lampung', 'sales@bajamakmur.com'),
+(8, 'CUST-008', 'CV Sukses Abadi', '0751-5553690', 'Jl. Bagindo Aziz No. 56, Padang', 'contact@suksesabadi.com'),
+(9, 'CUST-009', 'PT Proyek Nusantara', '0561-5551470', 'Jl. Tanjungpura No. 78, Pontianak', 'info@proyeknusantara.com'),
+(10, 'CUST-010', 'CV Mitra Utama', '0361-5552580', 'Jl. Bypass Ngurah Rai No. 90, Denpasar', 'sales@mitrautama.com');
 
 -- --------------------------------------------------------
 
@@ -92,28 +99,19 @@ CREATE TABLE `purchasing` (
   `quantity` int(11) NOT NULL,
   `price` decimal(10,2) NOT NULL,
   `sub_total` decimal(10,2) NOT NULL,
-  `price_total` decimal(10,2) NOT NULL
+  `price_total` decimal(10,2) NOT NULL,
+  `total_price` decimal(10,2) NOT NULL,
+  `brand` varchar(50) NOT NULL,
+  `type` varchar(50) NOT NULL
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_general_ci;
 
 --
 -- Dumping data for table `purchasing`
 --
 
-INSERT INTO `purchasing` (`id`, `purchase_date`, `invoice_number`, `stock_id`, `supplier_id`, `quantity`, `price`, `sub_total`, `price_total`) VALUES
-(1, '2024-09-01', 'PUR001', 1, 1, 50, 50.00, 2500.00, 2500.00),
-(2, '2024-09-02', 'PUR002', 2, 2, 25, 200.00, 5000.00, 5000.00),
-(3, '2024-09-03', 'PUR003', 3, 3, 100, 25.00, 2500.00, 2500.00),
-(4, '2024-09-04', 'PUR004', 4, 4, 10, 500.00, 5000.00, 5000.00),
-(5, '2024-09-05', 'PUR005', 5, 5, 40, 75.00, 3000.00, 3000.00),
-(6, '2024-09-01', 'PUR-STK001-2024-09-14-001', 1, 1, 50, 50.00, 2500.00, 2500.00),
-(7, '2024-09-14', 'PUR-STK002-2024-09-14-001', 2, 2, 3, 200.00, 600.00, 600.00),
-(8, '2024-09-14', 'PUR-STK002-2024-09-14-002', 2, 2, 2, 200.00, 400.00, 400.00),
-(9, '2024-09-14', 'PUR-STK001-2024-09-14-003', 1, 1, 2, 50.00, 100.00, 100.00),
-(10, '2024-12-13', 'PUR-STK002-2024-12-13-001', 2, 2, 1, 200.00, 200.00, 200.00),
-(11, '2024-12-17', 'PUR-STK-610-2024-12-17-001', 9, 7, 10, 212121.00, 2121210.00, 2121210.00),
-(12, '2024-12-17', 'PUR-STK002-2024-12-17-001', 2, 3, 9, 200.00, 1800.00, 1800.00),
-(13, '2024-12-17', 'PUR-STK003-2024-12-17-001', 3, 3, 1, 25.00, 25.00, 25.00),
-(15, '2024-12-17', 'PUR-STK003-2024-12-17-794', 3, 3, 7, 25.00, 175.00, 175.00);
+INSERT INTO `purchasing` (`id`, `purchase_date`, `invoice_number`, `stock_id`, `supplier_id`, `quantity`, `price`, `sub_total`, `price_total`, `total_price`, `brand`, `type`) VALUES
+(16, '2025-01-13', 'BLI-20250113-662277-5031', 1, 1, 2, 1500000.00, 3000000.00, 3000000.00, 3000000.00, '', ''),
+(17, '2025-01-13', 'BLI-20250113-662277-5031', 2, 8, 5, 850000.00, 4250000.00, 4250000.00, 4250000.00, '', '');
 
 -- --------------------------------------------------------
 
@@ -130,14 +128,6 @@ CREATE TABLE `returns` (
   `reason` text NOT NULL
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_general_ci;
 
---
--- Dumping data for table `returns`
---
-
-INSERT INTO `returns` (`id`, `return_date`, `return_id`, `return_type`, `invoice_number`, `reason`) VALUES
-(4, '2024-09-14', 'RET004', 'Purchase', 'PUR004', 'Quality issues'),
-(10, '2024-12-13', 'RTN-100', 'Buy', 'PUR-STK002-2024-09-14-002', 'barang rusak');
-
 -- --------------------------------------------------------
 
 --
@@ -153,23 +143,19 @@ CREATE TABLE `sales` (
   `quantity` int(11) NOT NULL,
   `price` decimal(10,2) NOT NULL,
   `sub_total` decimal(10,2) NOT NULL,
-  `price_total` decimal(10,2) NOT NULL
+  `price_total` decimal(10,2) NOT NULL,
+  `total_price` decimal(10,2) NOT NULL,
+  `brand` varchar(50) NOT NULL,
+  `type` varchar(50) NOT NULL
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_general_ci;
 
 --
 -- Dumping data for table `sales`
 --
 
-INSERT INTO `sales` (`id`, `sale_date`, `invoice_number`, `stock_id`, `customer_id`, `quantity`, `price`, `sub_total`, `price_total`) VALUES
-(1, '2024-09-06', 'SALE001', 1, 1, 10, 75.00, 750.00, 750.00),
-(2, '2024-09-07', 'SALE002', 2, 2, 5, 300.00, 1500.00, 1500.00),
-(3, '2024-09-08', 'SALE003', 3, 3, 20, 40.00, 800.00, 800.00),
-(4, '2024-09-09', 'SALE004', 4, 4, 2, 750.00, 1500.00, 1500.00),
-(5, '2024-09-10', 'SALE005', 5, 5, 8, 110.00, 880.00, 880.00),
-(6, '2024-12-12', 'SAL-STK001-2024-12-12-001', 1, 1, 3, 75000.00, 225000.00, 225000.00),
-(7, '2024-12-12', 'SAL-STK002-2024-12-12-001', 2, 1, 21, 300.00, 6300.00, 6300.00),
-(8, '2024-12-13', 'SAL-STK003-2024-12-13-001', 3, 2, 1, 40.00, 40.00, 40.00),
-(9, '2024-12-17', 'SAL-STK004-2024-12-17-155', 4, 3, 9, 750.00, 6750.00, 6750.00);
+INSERT INTO `sales` (`id`, `sale_date`, `invoice_number`, `stock_id`, `customer_id`, `quantity`, `price`, `sub_total`, `price_total`, `total_price`, `brand`, `type`) VALUES
+(10, '2025-01-13', 'JUL-20250113-782533-3507', 6, 4, 10, 1150000.00, 11500000.00, 11500000.00, 11500000.00, '', ''),
+(11, '2025-01-13', 'JUL-20250113-782533-3507', 8, 9, 20, 550000.00, 11000000.00, 11000000.00, 11000000.00, '', '');
 
 -- --------------------------------------------------------
 
@@ -191,16 +177,16 @@ CREATE TABLE `stocks` (
 --
 
 INSERT INTO `stocks` (`id`, `stock_id`, `category_id`, `quantity`, `purchase_price`, `selling_price`) VALUES
-(1, 'STK001', 1, 152, 50000.00, 75000.00),
-(2, 'STK002', 5, 59, 200.00, 300.00),
-(3, 'STK003', 3, 207, 25.00, 40.00),
-(4, 'STK004', 4, 21, 500.00, 750.00),
-(5, 'STK005', 5, 80, 75000.00, 110000.00),
-(7, 'STK-167', 1, 9, 900000.00, 1200000.00),
-(9, 'STK-610', 1, 131, 212121.00, 21212.00),
-(10, 'STK-300', 1, 222, 150000.00, 170000.00),
-(11, 'STK-059', 1, 4, 1200000.00, 1500000.00),
-(12, 'STK-334', 5, 5, 9000000.00, 10000000.00);
+(1, 'STK-001', 1, 102, 1500000.00, 1800000.00),
+(2, 'STK-002', 2, 155, 850000.00, 1000000.00),
+(3, 'STK-003', 3, 80, 2500000.00, 3000000.00),
+(4, 'STK-004', 4, 120, 750000.00, 900000.00),
+(5, 'STK-005', 5, 90, 1800000.00, 2200000.00),
+(6, 'STK-006', 6, 100, 950000.00, 1150000.00),
+(7, 'STK-007', 7, 70, 3200000.00, 3800000.00),
+(8, 'STK-008', 8, 180, 450000.00, 550000.00),
+(9, 'STK-009', 9, 95, 680000.00, 820000.00),
+(10, 'STK-010', 10, 130, 890000.00, 1050000.00);
 
 -- --------------------------------------------------------
 
@@ -222,12 +208,16 @@ CREATE TABLE `suppliers` (
 --
 
 INSERT INTO `suppliers` (`id`, `supplier_id`, `supplier_name`, `contact`, `address`, `email`) VALUES
-(1, 'SUPP001', 'Global Steel Supply', '555-2468', '246 Forge St, Steel City', 'sales@globalsteel.com'),
-(2, 'SUPP002', 'MetalCorp', '555-1357', '135 Alloy Rd, Ingot Town', 'orders@metalcorp.com'),
-(3, 'SUPP003', 'Iron Mountain', '555-3690', '369 Mine Dr, Ore City', 'supply@ironmountain.com'),
-(4, 'SUPP004', 'Alloy Alliance', '555-1470', '147 Smelt Ave, Foundry City', 'info@alloyalliance.com'),
-(5, 'SUPP005', 'Steel Solutions', '555-2580', '258 Rolling Mill Rd, Billet Town', 'contact@steelsolutions.com'),
-(7, 'SUP-142', 'b', 'b', 'b', 'b');
+(1, 'SUP-001', 'PT Baja Prima', '021-5562468', 'Jl. Industri 5 No. 10, Cikarang', 'purchasing@bajaprima.com'),
+(2, 'SUP-002', 'CV Logam Jaya', '031-5561357', 'Jl. Rungkut Industri No. 15, Surabaya', 'order@logamjaya.com1'),
+(3, 'SUP-003', 'PT Material Sukses', '022-5563690', 'Jl. Soekarno-Hatta No. 88, Bandung', 'sales@materialsukses.com'),
+(4, 'SUP-004', 'CV Makmur Steel', '024-5561470', 'Jl. Siliwangi No. 45, Semarang', 'purchase@makmursteel.com'),
+(5, 'SUP-005', 'PT Surya Logam', '061-5562580', 'Jl. Gatot Subroto No. 123, Medan', 'order@suryalogam.com'),
+(6, 'SUP-006', 'CV Mitra Baja', '0411-5564680', 'Jl. Perintis No. 67, Makassar', 'sales@mitrabaja.com'),
+(7, 'SUP-007', 'PT Mega Steel', '0721-5563579', 'Jl. Sudirman No. 89, Lampung', 'purchasing@megasteel.com'),
+(8, 'SUP-008', 'CV Sentosa Logam', '0751-5562468', 'Jl. Rasuna Said No. 34, Padang', 'order@sentosalogam.com'),
+(9, 'SUP-009', 'PT Abadi Metal', '0561-5561357', 'Jl. Ahmad Yani No. 56, Pontianak', 'sales@abadimetal.com'),
+(10, 'SUP-010', 'CV Baja Mandiri', '0361-5563690', 'Jl. Sunset Road No. 78, Denpasar', 'purchase@bajamandiri.com');
 
 -- --------------------------------------------------------
 
@@ -326,19 +316,19 @@ ALTER TABLE `users`
 -- AUTO_INCREMENT for table `categories`
 --
 ALTER TABLE `categories`
-  MODIFY `id` bigint(20) UNSIGNED NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=8;
+  MODIFY `id` bigint(20) UNSIGNED NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=12;
 
 --
 -- AUTO_INCREMENT for table `customers`
 --
 ALTER TABLE `customers`
-  MODIFY `id` bigint(20) UNSIGNED NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=8;
+  MODIFY `id` bigint(20) UNSIGNED NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=12;
 
 --
 -- AUTO_INCREMENT for table `purchasing`
 --
 ALTER TABLE `purchasing`
-  MODIFY `id` bigint(20) UNSIGNED NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=16;
+  MODIFY `id` bigint(20) UNSIGNED NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=18;
 
 --
 -- AUTO_INCREMENT for table `returns`
@@ -350,19 +340,19 @@ ALTER TABLE `returns`
 -- AUTO_INCREMENT for table `sales`
 --
 ALTER TABLE `sales`
-  MODIFY `id` bigint(20) UNSIGNED NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=10;
+  MODIFY `id` bigint(20) UNSIGNED NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=12;
 
 --
 -- AUTO_INCREMENT for table `stocks`
 --
 ALTER TABLE `stocks`
-  MODIFY `id` bigint(20) UNSIGNED NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=13;
+  MODIFY `id` bigint(20) UNSIGNED NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=14;
 
 --
 -- AUTO_INCREMENT for table `suppliers`
 --
 ALTER TABLE `suppliers`
-  MODIFY `id` bigint(20) UNSIGNED NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=8;
+  MODIFY `id` bigint(20) UNSIGNED NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=12;
 
 --
 -- AUTO_INCREMENT for table `users`

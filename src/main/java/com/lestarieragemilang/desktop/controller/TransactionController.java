@@ -683,14 +683,14 @@ public class TransactionController extends HibernateUtil {
     @FXML
     private void resetBuyButton(ActionEvent event) {
         ClearFields.clearFields(
-                buyDate, buyInvoiceNumber, buyStockIDDropdown, supplierIDDropDown, buyTotalField, buyPriceField,
+                buyInvoiceNumber, buyStockIDDropdown, supplierIDDropDown, buyTotalField, buyPriceField,
                 buyBrandField, buyTypeField, supplierNameField);
     }
 
     @FXML
     private void resetSellButton(ActionEvent event) {
         ClearFields.clearFields(
-                sellDate, sellInvoiceNumber, sellStockIDDropdown, customerIDDropDown, sellTotalField, sellPriceField,
+                sellInvoiceNumber, sellStockIDDropdown, customerIDDropDown, sellTotalField, sellPriceField,
                 sellBrandField, sellTypeField, customerNameField);
     }
 

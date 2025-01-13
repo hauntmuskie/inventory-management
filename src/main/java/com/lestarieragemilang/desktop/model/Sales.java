@@ -40,6 +40,12 @@ public class Sales {
     @Column(name = "total_price", nullable = false, precision = 10, scale = 2)
     private BigDecimal totalPrice;
 
+    @Column(nullable = false, length = 50)
+    private String brand;
+
+    @Column(nullable = false, length = 50)
+    private String type;
+
     // toString invoice
     @Override
     public String toString() {
@@ -125,6 +131,22 @@ public class Sales {
 
     public void setTotalPrice(BigDecimal totalPrice) {
         this.totalPrice = totalPrice;
+    }
+
+    public String getBrand() {
+        return brand;
+    }
+
+    public void setBrand(String brand) {
+        this.brand = brand;
+    }
+
+    public String getType() {
+        return type;
+    }
+
+    public void setType(String type) {
+        this.type = type;
     }
 
     public void calculateTotalPrice() {

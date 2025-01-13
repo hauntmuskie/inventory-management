@@ -76,9 +76,11 @@ public class ReturnsController extends HibernateUtil {
             @Override
             public String toString(Object object) {
                 if (object instanceof Purchasing) {
-                    return ((Purchasing) object).getInvoiceNumber();
+                    String fullInvoice = ((Purchasing) object).getInvoiceNumber();
+                    return formatInvoiceNumber(fullInvoice);
                 } else if (object instanceof Sales) {
-                    return ((Sales) object).getInvoiceNumber();
+                    String fullInvoice = ((Sales) object).getInvoiceNumber();
+                    return formatInvoiceNumber(fullInvoice);
                 }
                 return "";
             }
@@ -88,6 +90,17 @@ public class ReturnsController extends HibernateUtil {
                 return null;
             }
         });
+    }
+
+    // Add this helper method to format invoice numbers
+    private String formatInvoiceNumber(String fullInvoice) {
+        String[] parts = fullInvoice.split("-");
+        if (parts.length > 0) {
+            String prefix = parts[0];
+            String lastPart = parts[parts.length - 1];
+            return prefix + "-" + lastPart;
+        }
+        return fullInvoice;
     }
 
     private void updateInvoiceComboBox() {
@@ -209,9 +222,11 @@ public class ReturnsController extends HibernateUtil {
             @Override
             public String toString(Object object) {
                 if (object instanceof Purchasing) {
-                    return ((Purchasing) object).getInvoiceNumber();
+                    String fullInvoice = ((Purchasing) object).getInvoiceNumber();
+                    return formatInvoiceNumber(fullInvoice);
                 } else if (object instanceof Sales) {
-                    return ((Sales) object).getInvoiceNumber();
+                    String fullInvoice = ((Sales) object).getInvoiceNumber();
+                    return formatInvoiceNumber(fullInvoice);
                 }
                 return "";
             }

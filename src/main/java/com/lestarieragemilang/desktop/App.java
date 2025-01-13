@@ -29,6 +29,9 @@ public class App extends Application {
     private static Scene scene;
     @SuppressWarnings("exports")
     public static SceneManager sceneManager;
+    
+    // Add theme configuration
+    private static final boolean USE_JMETRO = false;
 
     private static final ImmutableSet<String> REPORT_SCENES = ImmutableSet.of(
         SceneManager.REPORT_STOCK,
@@ -55,8 +58,11 @@ public class App extends Application {
         var root = sceneManager.getScene(INITIAL_SCENE);
         scene = new Scene(root, WIDTH, HEIGHT);
         
-        var jMetro = new JMetro(Style.LIGHT);
-        jMetro.setScene(scene);
+        // Apply JMetro conditionally
+        if (USE_JMETRO) {
+            var jMetro = new JMetro(Style.LIGHT);
+            jMetro.setScene(scene);
+        }
 
         stage.initStyle(StageStyle.UNDECORATED);
         stage.setScene(scene);
