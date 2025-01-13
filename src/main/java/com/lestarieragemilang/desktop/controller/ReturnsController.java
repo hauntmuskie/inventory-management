@@ -76,11 +76,19 @@ public class ReturnsController extends HibernateUtil {
             @Override
             public String toString(Object object) {
                 if (object instanceof Purchasing) {
-                    String fullInvoice = ((Purchasing) object).getInvoiceNumber();
-                    return formatInvoiceNumber(fullInvoice);
+                    Purchasing purchase = (Purchasing) object;
+                    return formatInvoiceNumber(
+                        purchase.getInvoiceNumber(),
+                        purchase.getStock().getCategory().getBrand(),
+                        purchase.getStock().getCategory().getProductType()
+                    );
                 } else if (object instanceof Sales) {
-                    String fullInvoice = ((Sales) object).getInvoiceNumber();
-                    return formatInvoiceNumber(fullInvoice);
+                    Sales sale = (Sales) object;
+                    return formatInvoiceNumber(
+                        sale.getInvoiceNumber(),
+                        sale.getStock().getCategory().getBrand(),
+                        sale.getStock().getCategory().getProductType()
+                    );
                 }
                 return "";
             }
@@ -92,13 +100,26 @@ public class ReturnsController extends HibernateUtil {
         });
     }
 
-    // Add this helper method to format invoice numbers
-    private String formatInvoiceNumber(String fullInvoice) {
+    private String formatInvoiceNumber(String fullInvoice, String brand, String type) {
         String[] parts = fullInvoice.split("-");
-        if (parts.length > 0) {
-            String prefix = parts[0];
+        if (parts.length > 1) {
+            String prefix = parts[0]; // BLI or JUL
+            String stockId = parts[1]; // STK-xxx
             String lastPart = parts[parts.length - 1];
-            return prefix + "-" + lastPart;
+            
+            // Build display string with available information
+            StringBuilder display = new StringBuilder();
+            display.append(prefix).append("-").append(lastPart);
+            
+            if (brand != null && !brand.trim().isEmpty()) {
+                display.append(" | ").append(stockId);
+                display.append(" | ").append(brand);
+                if (type != null && !type.trim().isEmpty()) {
+                    display.append(" - ").append(type);
+                }
+            }
+            
+            return display.toString();
         }
         return fullInvoice;
     }
@@ -142,9 +163,28 @@ public class ReturnsController extends HibernateUtil {
                 .anyMatch(returnItem -> returnItem.getReturnId().equals(returnId));
     }
 
+    private boolean isDateValid(LocalDate date) {
+        if (date == null) {
+            ShowAlert.showValidationError("Tanggal tidak boleh kosong.");
+            return false;
+        }
+        
+        LocalDate today = LocalDate.now();
+        if (date.isAfter(today)) {
+            ShowAlert.showValidationError("Tanggal tidak boleh lebih dari hari ini.");
+            return false;
+        }
+        return true;
+    }
+
     @FXML
     private void addReturnButton() {
         if (!ShowAlert.showYesNo("Konfirmasi Tambah", "Apakah Anda yakin ingin menambah data retur ini?")) {
+            return;
+        }
+
+        LocalDate selectedDate = returnDate.getValue();
+        if (!isDateValid(selectedDate)) {
             return;
         }
 
@@ -163,7 +203,7 @@ public class ReturnsController extends HibernateUtil {
         try {
             Returns returnItem = new Returns();
             returnItem.setReturnId(returnId);
-            returnItem.setReturnDate(returnDate.getValue());
+            returnItem.setReturnDate(selectedDate);
 
             Object selectedInvoice = returnInvoicePurchasing.getValue();
             if (selectedInvoice instanceof Purchasing) {
@@ -210,23 +250,33 @@ public class ReturnsController extends HibernateUtil {
         returnIsBuyEdit.setToggleGroup(returnTypeGroupEdit);
         returnIsSellEdit.setToggleGroup(returnTypeGroupEdit);
 
-        // Set initial radio button selection based on return type
+        // Set initial radio button selection and disable both buttons
         if ("Beli".equals(selectedReturn.getReturnType())) {
             returnIsBuyEdit.setSelected(true);
         } else {
             returnIsSellEdit.setSelected(true);
         }
+        returnIsBuyEdit.setDisable(true);
+        returnIsSellEdit.setDisable(true);
 
         ComboBox<Object> invoiceComboBox = new ComboBox<>();
         invoiceComboBox.setConverter(new StringConverter<Object>() {
             @Override
             public String toString(Object object) {
                 if (object instanceof Purchasing) {
-                    String fullInvoice = ((Purchasing) object).getInvoiceNumber();
-                    return formatInvoiceNumber(fullInvoice);
+                    Purchasing purchase = (Purchasing) object;
+                    return formatInvoiceNumber(
+                        purchase.getInvoiceNumber(),
+                        purchase.getStock().getCategory().getBrand(),
+                        purchase.getStock().getCategory().getProductType()
+                    );
                 } else if (object instanceof Sales) {
-                    String fullInvoice = ((Sales) object).getInvoiceNumber();
-                    return formatInvoiceNumber(fullInvoice);
+                    Sales sale = (Sales) object;
+                    return formatInvoiceNumber(
+                        sale.getInvoiceNumber(),
+                        sale.getStock().getCategory().getBrand(),
+                        sale.getStock().getCategory().getProductType()
+                    );
                 }
                 return "";
             }
@@ -237,19 +287,9 @@ public class ReturnsController extends HibernateUtil {
             }
         });
 
-        // Update invoice combo box when radio selection changes
-        returnTypeGroupEdit.selectedToggleProperty().addListener((_, _, _) -> {
-            if (returnIsBuyEdit.isSelected()) {
-                List<Purchasing> purchasings = purchasingService.findAll();
-                invoiceComboBox.setItems(FXCollections.observableArrayList(purchasings));
-            } else {
-                List<Sales> sales = salesService.findAll();
-                invoiceComboBox.setItems(FXCollections.observableArrayList(sales));
-            }
-        });
-
-        // Trigger initial load of invoice list
-        if (returnIsBuyEdit.isSelected()) {
+        // Remove the radio button listener since they're now disabled
+        // Set invoice items based on the original return type
+        if ("Beli".equals(selectedReturn.getReturnType())) {
             List<Purchasing> purchasings = purchasingService.findAll();
             invoiceComboBox.setItems(FXCollections.observableArrayList(purchasings));
         } else {
@@ -283,7 +323,12 @@ public class ReturnsController extends HibernateUtil {
                     }
 
                     try {
-                        returnItem.setReturnDate(((DatePicker) fields.get(1)).getValue());
+                        LocalDate selectedDate = ((DatePicker) fields.get(1)).getValue();
+                        if (!isDateValid(selectedDate)) {
+                            return;
+                        }
+                        
+                        returnItem.setReturnDate(selectedDate);
 
                         Object selectedInvoice = ((ComboBox<?>) fields.get(3)).getValue();
                         if (selectedInvoice == null) {
