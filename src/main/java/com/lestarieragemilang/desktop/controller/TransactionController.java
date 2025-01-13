@@ -383,6 +383,10 @@ public class TransactionController extends HibernateUtil {
             sales.setQuantity(quantity);
             sales.setPrice(price);
             
+            // Add these lines to set brand and type
+            sales.setBrand(selectedStock.getCategory().getBrand());
+            sales.setType(selectedStock.getCategory().getProductType());
+            
             // Calculate sub total (price * quantity)
             BigDecimal subTotal = price.multiply(BigDecimal.valueOf(quantity));
             sales.setSubTotal(subTotal);
@@ -390,6 +394,7 @@ public class TransactionController extends HibernateUtil {
             // For now, total is same as sub total (can be modified if additional charges needed)
             BigDecimal total = subTotal;
             sales.setPriceTotal(total);
+            sales.setTotalPrice(subTotal);
 
             pendingSales.add(sales);
             updateSellTotalPrice();
@@ -518,32 +523,77 @@ public class TransactionController extends HibernateUtil {
             try {
                 List<Sales> salesList = new ArrayList<>(sellTable.getItems());
                 boolean success = true;
-
+                
                 // Generate a single final invoice number for this batch
                 String finalInvoiceNumber = generateFinalInvoiceNumber("JUL");
 
-                for (Sales sale : salesList) {
-                    sale.setInvoiceNumber(finalInvoiceNumber);
-                    try {
-                        salesService.save(sale);
-                        updateStockQuantity(sale.getStock(), sale.getQuantity(), false);
-                    } catch (Exception e) {
-                        success = false;
-                        ShowAlert.showError("Gagal mengkonfirmasi penjualan: " + e.getMessage());
-                        break;
+                // Get a new session for this transaction
+                Session session = HibernateUtil.getSessionFactory().openSession();
+                Transaction transaction = null;
+
+                try {
+                    transaction = session.beginTransaction();
+
+                    for (Sales sale : salesList) {
+                        sale.setInvoiceNumber(finalInvoiceNumber);
+                        
+                        // Reattach entities to the current session
+                        Stock stock = session.get(Stock.class, sale.getStock().getId());
+                        sale.setStock(stock);
+                        sale.setCustomer(session.get(Customer.class, sale.getCustomer().getId()));
+                        
+                        // Ensure brand and type are set
+                        sale.setBrand(stock.getCategory().getBrand());
+                        sale.setType(stock.getCategory().getProductType());
+                        
+                        // Verify stock quantity
+                        if (stock.getQuantity() < sale.getQuantity()) {
+                            throw new Exception("Stok tidak mencukupi untuk " + stock.getCategory().getBrand() 
+                                + " " + stock.getCategory().getProductType());
+                        }
+                        
+                        // Save sale
+                        session.persist(sale);
+                        
+                        // Update stock quantity
+                        stock.setQuantity(stock.getQuantity() - sale.getQuantity());
+                        session.merge(stock);
                     }
+
+                    transaction.commit();
+                    
+                    // Clear table and update UI
+                    Platform.runLater(() -> {
+                        sellTable.getItems().clear();
+                        currentPendingSellInvoice = generatePendingInvoiceNumber("JUL");
+                        sellIdValue = sellId++;
+                        sellInvoiceNumber.setText(String.format("TRX-%05d", sellIdValue));
+                        updateSellTotalPrice();
+                        
+                        try {
+                            printJasperSellList();
+                        } catch (Exception e) {
+                            e.printStackTrace();
+                        }
+                        
+                        ShowAlert.showSuccess("Penjualan berhasil dikonfirmasi");
+                    });
+
+                } catch (Exception e) {
+                    if (transaction != null) {
+                        transaction.rollback();
+                    }
+                    success = false;
+                    e.printStackTrace();
+                    Platform.runLater(() -> 
+                        ShowAlert.showError("Gagal mengkonfirmasi penjualan: " + e.getMessage())
+                    );
+                } finally {
+                    session.close();
                 }
 
-                if (success) {
-                    sellTable.getItems().clear();
-                    currentPendingSellInvoice = generatePendingInvoiceNumber("JUL"); // Generate new pending invoice number
-                    sellIdValue = sellId++;
-                    sellInvoiceNumber.setText(String.format("TRX-%05d", sellIdValue));
-                    updateSellTotalPrice();
-
-                    printJasperSellList();
-
-                    ShowAlert.showSuccess("Penjualan berhasil dikonfirmasi");
+                if (!success) {
+                    return;
                 }
             } catch (Exception e) {
                 e.printStackTrace();
