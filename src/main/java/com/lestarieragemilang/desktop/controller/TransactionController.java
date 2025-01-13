@@ -6,6 +6,7 @@ import com.lestarieragemilang.desktop.model.*;
 import com.lestarieragemilang.desktop.repository.GenericDao;
 import com.lestarieragemilang.desktop.service.GenericService;
 import com.lestarieragemilang.desktop.utils.ClearFields;
+import com.lestarieragemilang.desktop.utils.GenericEditPopup;
 import com.lestarieragemilang.desktop.utils.HibernateUtil;
 import com.lestarieragemilang.desktop.utils.JasperLoader;
 import com.lestarieragemilang.desktop.utils.NumberFormatter;
@@ -84,6 +85,9 @@ public class TransactionController extends HibernateUtil {
     private static int buyId = 1;
     private static int sellId = 1;
 
+    private String currentPendingBuyInvoice;
+    private String currentPendingSellInvoice;
+
     public void initialize() {
         purchasingService = new GenericService<>(new GenericDao<>(Purchasing.class), "PUR", 3);
         salesService = new GenericService<>(new GenericDao<>(Sales.class), "SAL", 3);
@@ -102,6 +106,10 @@ public class TransactionController extends HibernateUtil {
 
         buyDate.setValue(LocalDate.now());
         sellDate.setValue(LocalDate.now());
+
+        // Generate initial pending invoice numbers
+        currentPendingBuyInvoice = generatePendingInvoiceNumber("BLI");
+        currentPendingSellInvoice = generatePendingInvoiceNumber("JUL");
     }
 
     private void initializeComboBoxes() {
@@ -292,7 +300,7 @@ public class TransactionController extends HibernateUtil {
 
             Purchasing purchasing = new Purchasing();
             purchasing.setPurchaseDate(buyDate.getValue());
-            purchasing.setInvoiceNumber(generateInvoiceNumber("PUR", selectedStock));
+            purchasing.setInvoiceNumber(currentPendingBuyInvoice); // Use current pending invoice
             purchasing.setStock(selectedStock);
             purchasing.setSupplier(selectedSupplier);
             purchasing.setQuantity(quantity);
@@ -355,7 +363,7 @@ public class TransactionController extends HibernateUtil {
 
             Sales sales = new Sales();
             sales.setSaleDate(sellDate.getValue());
-            sales.setInvoiceNumber(generateInvoiceNumber("SAL", selectedStock));
+            sales.setInvoiceNumber(currentPendingSellInvoice); // Use current pending invoice
             sales.setStock(selectedStock);
             sales.setCustomer(selectedCustomer);
             sales.setQuantity(quantity);
@@ -407,10 +415,12 @@ public class TransactionController extends HibernateUtil {
             try {
                 List<Purchasing> purchasingList = new ArrayList<>(buyTable.getItems());
                 boolean success = true;
+                
+                // Generate a single final invoice number for this batch
+                String finalInvoiceNumber = generateFinalInvoiceNumber("BLI");
 
                 for (Purchasing purchasing : purchasingList) {
-                    purchasing.setInvoiceNumber(generateUniqueInvoiceNumber("PUR", purchasing.getStock()));
-
+                    purchasing.setInvoiceNumber(finalInvoiceNumber);
                     try {
                         purchasingService.save(purchasing);
                         updateStockQuantity(purchasing.getStock(), purchasing.getQuantity(), true);
@@ -423,6 +433,7 @@ public class TransactionController extends HibernateUtil {
 
                 if (success) {
                     buyTable.getItems().clear();
+                    currentPendingBuyInvoice = generatePendingInvoiceNumber("BLI"); // Generate new pending invoice number
                     buyIdValue = buyId++;
                     buyInvoiceNumber.setText(String.format("TRX-%05d", buyIdValue));
                     updateBuyTotalPrice();
@@ -449,10 +460,11 @@ public class TransactionController extends HibernateUtil {
                 List<Sales> salesList = new ArrayList<>(sellTable.getItems());
                 boolean success = true;
 
-                for (Sales sale : salesList) {
-                    // Generate unique invoice number for each sale
-                    sale.setInvoiceNumber(generateUniqueInvoiceNumber("SAL", sale.getStock()));
+                // Generate a single final invoice number for this batch
+                String finalInvoiceNumber = generateFinalInvoiceNumber("JUL");
 
+                for (Sales sale : salesList) {
+                    sale.setInvoiceNumber(finalInvoiceNumber);
                     try {
                         salesService.save(sale);
                         updateStockQuantity(sale.getStock(), sale.getQuantity(), false);
@@ -465,6 +477,7 @@ public class TransactionController extends HibernateUtil {
 
                 if (success) {
                     sellTable.getItems().clear();
+                    currentPendingSellInvoice = generatePendingInvoiceNumber("JUL"); // Generate new pending invoice number
                     sellIdValue = sellId++;
                     sellInvoiceNumber.setText(String.format("TRX-%05d", sellIdValue));
                     updateSellTotalPrice();
@@ -490,40 +503,119 @@ public class TransactionController extends HibernateUtil {
     private void editBuyButton(ActionEvent event) {
         Purchasing selectedPurchase = buyTable.getSelectionModel().getSelectedItem();
         if (selectedPurchase == null) {
-            ShowAlert.showWarning("Silahkan pilih pembelian yang akan diubah");
+            ShowAlert.showWarning("Silakan pilih pembelian yang akan diubah");
             return;
         }
 
-        buyDate.setValue(selectedPurchase.getPurchaseDate());
-        buyInvoiceNumber.setText(selectedPurchase.getInvoiceNumber());
-        buyStockIDDropdown.setValue(selectedPurchase.getStock());
-        supplierIDDropDown.setValue(selectedPurchase.getSupplier());
-        buyTotalField.setText(String.valueOf(selectedPurchase.getQuantity()));
-        buyPriceField.setText(NumberFormatter.formatValue(selectedPurchase.getPrice()));
+        GenericEditPopup.create(Purchasing.class)
+            .withTitle("Ubah Pembelian")
+            .forItem(selectedPurchase)
+            .addField("Tanggal", new DatePicker(selectedPurchase.getPurchaseDate()), true)
+            .addField("No Faktur", new TextField(selectedPurchase.getInvoiceNumber()), true)
+            .addField("Barang", createStockComboBox(selectedPurchase.getStock()), true)
+            .addField("Pemasok", createSupplierComboBox(selectedPurchase.getSupplier()), true)
+            .addField("Jumlah", new TextField(String.valueOf(selectedPurchase.getQuantity())), false)
+            .addField("Harga", createFormattedTextField(selectedPurchase.getPrice()), true)
+            .onSave((item, fields) -> {
+                try {
+                    int newQuantity = Integer.parseInt(((TextField) fields.get(4)).getText());
+                    if (newQuantity <= 0) {
+                        ShowAlert.showValidationError("Jumlah harus lebih besar dari 0");
+                        return;
+                    }
 
-        pendingPurchases.remove(selectedPurchase);
-        updateBuyTotalPrice();
-        buyTable.refresh(); // Add this line
+                    item.setQuantity(newQuantity);
+                    item.setSubTotal(item.getPrice().multiply(BigDecimal.valueOf(newQuantity)));
+                    item.setPriceTotal(item.getSubTotal());
+
+                    pendingPurchases.remove(selectedPurchase);
+                    pendingPurchases.add(item);
+                    updateBuyTotalPrice();
+                    buyTable.refresh();
+                    
+                    ShowAlert.showSuccess("Pembelian berhasil diubah");
+                } catch (NumberFormatException e) {
+                    ShowAlert.showValidationError("Format jumlah tidak valid");
+                }
+            })
+            .show();
     }
 
     @FXML
     private void editSellButton(ActionEvent event) {
         Sales selectedSale = sellTable.getSelectionModel().getSelectedItem();
         if (selectedSale == null) {
-            ShowAlert.showWarning("Silahkan pilih penjualan yang akan diubah");
+            ShowAlert.showWarning("Silakan pilih penjualan yang akan diubah");
             return;
         }
 
-        sellDate.setValue(selectedSale.getSaleDate());
-        sellInvoiceNumber.setText(selectedSale.getInvoiceNumber());
-        sellStockIDDropdown.setValue(selectedSale.getStock());
-        customerIDDropDown.setValue(selectedSale.getCustomer());
-        sellTotalField.setText(String.valueOf(selectedSale.getQuantity()));
-        sellPriceField.setText(NumberFormatter.formatValue(selectedSale.getPrice()));
+        GenericEditPopup.create(Sales.class)
+            .withTitle("Ubah Penjualan")
+            .forItem(selectedSale)
+            .addField("Tanggal", new DatePicker(selectedSale.getSaleDate()), true)
+            .addField("No Faktur", new TextField(selectedSale.getInvoiceNumber()), true)
+            .addField("Barang", createStockComboBox(selectedSale.getStock()), true)
+            .addField("Pelanggan", createCustomerComboBox(selectedSale.getCustomer()), true)
+            .addField("Jumlah", new TextField(String.valueOf(selectedSale.getQuantity())), false)
+            .addField("Harga", createFormattedTextField(selectedSale.getPrice()), true)
+            .onSave((item, fields) -> {
+                try {
+                    int newQuantity = Integer.parseInt(((TextField) fields.get(4)).getText());
+                    if (newQuantity <= 0) {
+                        ShowAlert.showValidationError("Jumlah harus lebih besar dari 0");
+                        return;
+                    }
+                    
+                    Stock stock = selectedSale.getStock();
+                    if (newQuantity > stock.getQuantity() + selectedSale.getQuantity()) {
+                        ShowAlert.showValidationError("Stok tidak mencukupi. Stok tersedia: " + 
+                            (stock.getQuantity() + selectedSale.getQuantity()));
+                        return;
+                    }
 
-        pendingSales.remove(selectedSale);
-        updateSellTotalPrice();
-        sellTable.refresh(); // Add this line
+                    item.setQuantity(newQuantity);
+                    item.setSubTotal(item.getPrice().multiply(BigDecimal.valueOf(newQuantity)));
+                    item.setPriceTotal(item.getSubTotal());
+
+                    pendingSales.remove(selectedSale);
+                    pendingSales.add(item);
+                    updateSellTotalPrice();
+                    sellTable.refresh();
+                    
+                    ShowAlert.showSuccess("Penjualan berhasil diubah");
+                } catch (NumberFormatException e) {
+                    ShowAlert.showValidationError("Format jumlah tidak valid");
+                }
+            })
+            .show();
+    }
+
+    // Add these helper methods for creating disabled comboboxes
+    private JFXComboBox<Stock> createStockComboBox(Stock selectedStock) {
+        JFXComboBox<Stock> comboBox = new JFXComboBox<>(buyStockIDDropdown.getItems());
+        comboBox.setValue(selectedStock);
+        comboBox.setConverter(buyStockIDDropdown.getConverter());
+        return comboBox;
+    }
+
+    private JFXComboBox<Supplier> createSupplierComboBox(Supplier selectedSupplier) {
+        JFXComboBox<Supplier> comboBox = new JFXComboBox<>(supplierIDDropDown.getItems());
+        comboBox.setValue(selectedSupplier);
+        comboBox.setConverter(supplierIDDropDown.getConverter());
+        return comboBox;
+    }
+
+    private JFXComboBox<Customer> createCustomerComboBox(Customer selectedCustomer) {
+        JFXComboBox<Customer> comboBox = new JFXComboBox<>(customerIDDropDown.getItems());
+        comboBox.setValue(selectedCustomer);
+        comboBox.setConverter(customerIDDropDown.getConverter());
+        return comboBox;
+    }
+
+    private TextField createFormattedTextField(BigDecimal value) {
+        TextField field = new TextField(NumberFormatter.formatValue(value));
+        NumberFormatter.applyNumberFormat(field);
+        return field;
     }
 
     @FXML
@@ -680,5 +772,24 @@ public class TransactionController extends HibernateUtil {
         } catch (Exception e) {
             e.printStackTrace();
         }
+    }
+
+    private String generatePendingInvoiceNumber(String prefix) {
+        LocalDate currentDate = LocalDate.now();
+        return String.format("%s-%s-%08d", 
+            prefix,
+            currentDate.format(java.time.format.DateTimeFormatter.BASIC_ISO_DATE),
+            System.nanoTime() % 100000000);
+    }
+
+    private String generateFinalInvoiceNumber(String prefix) {
+        LocalDate currentDate = LocalDate.now();
+        long timestamp = System.currentTimeMillis();
+        String randomSuffix = String.format("%04d", (int)(Math.random() * 10000));
+        return String.format("%s-%s-%d-%s", 
+            prefix,
+            currentDate.format(java.time.format.DateTimeFormatter.BASIC_ISO_DATE),
+            timestamp % 1000000,
+            randomSuffix);
     }
 }
