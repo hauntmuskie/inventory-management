@@ -103,10 +103,10 @@ public class ReportSales {
         );
       } else if (firstLocalDate != null && secondLocalDate != null) {
         Date firstDate = convertToDate(firstLocalDate);
-        Date secondDate = convertToDate(secondLocalDate.plusDays(1));
+        Date secondDate = convertToDate(secondLocalDate);
         loader.showJasperReportSellList(
             url,
-            "%",
+            null, // Changed from "%" to null
             firstDate,
             secondDate,
             event
@@ -114,7 +114,7 @@ public class ReportSales {
       } else {
         loader.showJasperReportSellList(
             url,
-            "%",
+            "%", // Changed from "%" to null
             null,
             null,
             event

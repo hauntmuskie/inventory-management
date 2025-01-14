@@ -179,11 +179,17 @@ public class JasperLoader {
     public void showJasperReportBuyList(URL location, String invoicePurchasing, Date firstDate, Date secondDate,
             MouseEvent event) {
         Map<String, Object> parameters = Maps.newHashMap();
-        parameters.put("invoicePurchasing", invoicePurchasing);
+        
+        if (invoicePurchasing != null && !invoicePurchasing.equals("%")) {
+            parameters.put("invoicePurchasing", invoicePurchasing);
+        }
         if (firstDate != null && secondDate != null) {
             parameters.put("firstDate", firstDate);
             parameters.put("secondDate", secondDate);
         }
+
+        parameters.put("invoicePurchasing", invoicePurchasing);
+
         showReport(location, parameters);
     }
 
@@ -202,11 +208,17 @@ public class JasperLoader {
     public void showJasperReportSellList(URL location, String invoiceSales, Date firstDate, Date secondDate,
             MouseEvent event) {
         Map<String, Object> parameters = Maps.newHashMap();
-        parameters.put("invoiceSales", invoiceSales);
+
+        if (invoiceSales != null && !invoiceSales.equals("%")) {
+            parameters.put("invoiceSales", invoiceSales);
+        }
         if (firstDate != null && secondDate != null) {
             parameters.put("firstDate", firstDate);
             parameters.put("secondDate", secondDate);
         }
+
+        parameters.put("invoiceSales", invoiceSales);
+
         showReport(location, parameters);
     }
 
