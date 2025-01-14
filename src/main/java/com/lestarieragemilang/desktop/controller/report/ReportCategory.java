@@ -55,8 +55,7 @@ public class ReportCategory {
             "%" + searchText + "%",
             "%" + searchText + "%",
             "%" + searchText + "%",
-            event
-        );
+            event);
       } else {
         Category selectedCategory = categoryTable.getSelectionModel().getSelectedItem();
         if (selectedCategory != null) {
@@ -67,13 +66,11 @@ public class ReportCategory {
               selectedCategory.getSize(),
               selectedCategory.getWeight().toString(),
               selectedCategory.getWeightUnit(),
-              event
-          );
+              event);
         } else {
           loader.showJasperReportCategory(
               url,
-              "%", "%", "%", "%", "%", event
-          );
+              "%", "%", "%", "%", "%", event);
         }
       }
     } catch (Exception e) {
@@ -92,8 +89,8 @@ public class ReportCategory {
           category.getBrand().toLowerCase().contains(searchText) ||
           category.getProductType().toLowerCase().contains(searchText) ||
           category.getSize().toLowerCase().contains(searchText) ||
-          (category.getWeightUnit() != null && 
-           category.getWeightUnit().toLowerCase().contains(searchText));
+          (category.getWeightUnit() != null &&
+              category.getWeightUnit().toLowerCase().contains(searchText));
     });
   }
 
@@ -121,15 +118,14 @@ public class ReportCategory {
         TableUtils.createColumn("Tipe Produk", "productType"),
         TableUtils.createColumn("Ukuran", "size"),
         TableUtils.createColumn("Berat", "weight"),
-        TableUtils.createColumn("Satuan Berat", "weightUnit")
-    );
+        TableUtils.createColumn("Satuan Berat", "weightUnit"));
 
     TableUtils.populateTable(categoryTable, columns, categories);
   }
 
   private void setupSearch() {
-    filteredData = new FilteredList<>(categoryTable.getItems(), p -> true);
+    filteredData = new FilteredList<>(categoryTable.getItems(), _ -> true);
     categoryTable.setItems(filteredData);
-    categorySearchField.textProperty().addListener((observable, oldValue, newValue) -> categorySearch());
+    categorySearchField.textProperty().addListener((_, _, _) -> categorySearch());
   }
 }

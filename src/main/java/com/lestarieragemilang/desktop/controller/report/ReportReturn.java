@@ -28,10 +28,6 @@ public class ReportReturn {
 
     private FilteredList<Returns> filteredData;
 
-    private void showError(String message) {
-        ShowAlert.showError(message);
-    }
-
     @FXML
     void printJasperReturn(MouseEvent event) {
         String path = "/jasper/returns-list.jasper";
@@ -52,31 +48,28 @@ public class ReportReturn {
 
             if (searchText != null && !searchText.isEmpty()) {
                 loader.showJasperReportReturn(
-                    url,
-                    "%" + searchText + "%",
-                    "%",
-                    "%",
-                    "%",
-                    "%",
-                    event
-                );
+                        url,
+                        "%" + searchText + "%",
+                        "%",
+                        "%",
+                        "%",
+                        "%",
+                        event);
             } else {
                 Returns selectedReturn = returnTable.getSelectionModel().getSelectedItem();
                 if (selectedReturn != null) {
                     loader.showJasperReportReturn(
-                        url,
-                        "%" + selectedReturn.getReturnId() + "%",
-                        selectedReturn.getReturnDate().toString(),
-                        selectedReturn.getReturnType(),
-                        selectedReturn.getInvoiceNumber(),
-                        selectedReturn.getReason(),
-                        event
-                    );
+                            url,
+                            "%" + selectedReturn.getReturnId() + "%",
+                            selectedReturn.getReturnDate().toString(),
+                            selectedReturn.getReturnType(),
+                            selectedReturn.getInvoiceNumber(),
+                            selectedReturn.getReason(),
+                            event);
                 } else {
                     loader.showJasperReportReturn(
-                        url,
-                        "%", "%", "%", "%", "%", event
-                    );
+                            url,
+                            "%", "%", "%", "%", "%", event);
                 }
             }
         } catch (Exception e) {
@@ -92,9 +85,9 @@ public class ReportReturn {
                 return true;
             }
             return returns.getReturnId().toLowerCase().contains(searchText) ||
-                returns.getReturnType().toLowerCase().contains(searchText) ||
-                returns.getInvoiceNumber().toLowerCase().contains(searchText) ||
-                returns.getReason().toLowerCase().contains(searchText);
+                    returns.getReturnType().toLowerCase().contains(searchText) ||
+                    returns.getInvoiceNumber().toLowerCase().contains(searchText) ||
+                    returns.getReason().toLowerCase().contains(searchText);
         });
     }
 
@@ -117,19 +110,18 @@ public class ReportReturn {
 
     private void setupTable(List<Returns> returns) {
         List<TableColumn<Returns, ?>> columns = List.of(
-            TableUtils.createColumn("Kode Retur", "returnId"),
-            TableUtils.createColumn("Tanggal Retur", "returnDate"),
-            TableUtils.createColumn("Tipe Retur", "returnType"),
-            TableUtils.createColumn("Nomor Faktur", "invoiceNumber"),
-            TableUtils.createColumn("Alasan", "reason")
-        );
+                TableUtils.createColumn("Kode Retur", "returnId"),
+                TableUtils.createColumn("Tanggal Retur", "returnDate"),
+                TableUtils.createColumn("Tipe Retur", "returnType"),
+                TableUtils.createColumn("Nomor Faktur", "invoiceNumber"),
+                TableUtils.createColumn("Alasan", "reason"));
 
         TableUtils.populateTable(returnTable, columns, returns);
     }
 
     private void setupSearch() {
-        filteredData = new FilteredList<>(returnTable.getItems(), p -> true);
+        filteredData = new FilteredList<>(returnTable.getItems(), _ -> true);
         returnTable.setItems(filteredData);
-        returnSearchField.textProperty().addListener((observable, oldValue, newValue) -> returnSearch());
+        returnSearchField.textProperty().addListener((_, _, _) -> returnSearch());
     }
 }

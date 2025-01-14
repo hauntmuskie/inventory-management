@@ -44,9 +44,9 @@ public class ReportSupplier {
     }
 
     if (url == null) {
-      ShowAlert.showAlert(AlertType.ERROR, 
-          "Error", 
-          "Kesalahan Template", 
+      ShowAlert.showAlert(AlertType.ERROR,
+          "Error",
+          "Kesalahan Template",
           "Template laporan tidak ditemukan");
       return;
     }
@@ -54,7 +54,7 @@ public class ReportSupplier {
     try {
       JasperLoader loader = new JasperLoader();
       String searchText = supplierSearchField.getText();
-      
+
       // If there's a search term, use it to filter the report
       if (searchText != null && !searchText.isEmpty()) {
         loader.showJasperReportSupplier(
@@ -63,8 +63,7 @@ public class ReportSupplier {
             searchText,
             searchText,
             searchText,
-            searchText
-        );
+            searchText);
       } else {
         // If no search term, print selected item or all data
         Supplier supplier = supplierTable.getSelectionModel().getSelectedItem();
@@ -74,21 +73,19 @@ public class ReportSupplier {
               supplier.getSupplierId(),
               supplier.getSupplierName(),
               supplier.getContact(),
-              supplier.getAddress(), 
-              supplier.getEmail()
-          );
+              supplier.getAddress(),
+              supplier.getEmail());
         } else {
           loader.showJasperReportSupplier(
               url,
-              "%", "%", "%", "%", "%"
-          );
+              "%", "%", "%", "%", "%");
         }
       }
     } catch (Exception e) {
-      ShowAlert.showAlert(AlertType.ERROR, 
-          "Error", 
-          "Kesalahan Laporan", 
-          "Terjadi kesalahan saat membuat laporan:", 
+      ShowAlert.showAlert(AlertType.ERROR,
+          "Error",
+          "Kesalahan Laporan",
+          "Terjadi kesalahan saat membuat laporan:",
           e.getMessage());
       LOGGER.log(Level.SEVERE, "Error generating report", e);
     }
@@ -132,15 +129,14 @@ public class ReportSupplier {
         TableUtils.createColumn("Nama", "supplierName"),
         TableUtils.createColumn("Kontak", "contact"),
         TableUtils.createColumn("Alamat", "address"),
-        TableUtils.createColumn("Surel", "email")
-    );
+        TableUtils.createColumn("Surel", "email"));
 
     TableUtils.populateTable(supplierTable, columns, suppliers);
   }
 
   private void setupSearch() {
-    filteredData = new FilteredList<>(supplierTable.getItems(), p -> true);
+    filteredData = new FilteredList<>(supplierTable.getItems(), _ -> true);
     supplierTable.setItems(filteredData);
-    supplierSearchField.textProperty().addListener((observable, oldValue, newValue) -> supplierSearch());
+    supplierSearchField.textProperty().addListener((_, _, _) -> supplierSearch());
   }
 }

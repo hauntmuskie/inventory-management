@@ -36,7 +36,7 @@ public class ReportStock {
       path = "/com/lestarieragemilang/desktop/jasper/stock-list.jasper";
       url = getClass().getResource(path);
     }
-    
+
     if (url == null) {
       ShowAlert.showError("Template laporan tidak ditemukan");
       return;
@@ -57,8 +57,7 @@ public class ReportStock {
             "%" + searchText + "%",
             "%" + searchText + "%",
             "%" + searchText + "%",
-            event
-        );
+            event);
       } else {
         Stock stock = stockTable.getSelectionModel().getSelectedItem();
         if (stock != null) {
@@ -72,13 +71,11 @@ public class ReportStock {
               stock.getQuantity().toString(),
               stock.getPurchasePrice().toString(),
               stock.getSellingPrice().toString(),
-              event
-          );
+              event);
         } else {
           loader.showJasperReportStock(
               url,
-              "%", "%", "%", "%", "%", "%", "%", "%", event
-          );
+              "%", "%", "%", "%", "%", "%", "%", "%", event);
         }
       }
     } catch (Exception e) {
@@ -97,8 +94,9 @@ public class ReportStock {
           stock.getCategory().getBrand().toLowerCase().contains(searchText) ||
           stock.getCategory().getProductType().toLowerCase().contains(searchText) ||
           stock.getCategory().getSize().toLowerCase().contains(searchText) ||
-          (stock.getCategory().getWeightUnit() != null && 
-           stock.getCategory().getWeightUnit().toLowerCase().contains(searchText)) ||
+          (stock.getCategory().getWeightUnit() != null &&
+              stock.getCategory().getWeightUnit().toLowerCase().contains(searchText))
+          ||
           stock.getQuantity().toString().toLowerCase().contains(searchText) ||
           stock.getPurchasePrice().toString().toLowerCase().contains(searchText) ||
           stock.getSellingPrice().toString().toLowerCase().contains(searchText);
@@ -132,15 +130,14 @@ public class ReportStock {
         TableUtils.createColumn("Satuan Berat", "category.weightUnit"),
         TableUtils.createColumn("Jumlah", "quantity"),
         TableUtils.createFormattedColumn("Harga Beli", "purchasePrice"),
-        TableUtils.createFormattedColumn("Harga Jual", "sellingPrice")
-    );
+        TableUtils.createFormattedColumn("Harga Jual", "sellingPrice"));
 
     TableUtils.populateTable(stockTable, columns, stocks);
   }
 
   private void setupSearch() {
-    filteredData = new FilteredList<>(stockTable.getItems(), p -> true);
+    filteredData = new FilteredList<>(stockTable.getItems(), _ -> true);
     stockTable.setItems(filteredData);
-    stockSearchField.textProperty().addListener((observable, oldValue, newValue) -> stockSearch());
+    stockSearchField.textProperty().addListener((_, _, _) -> stockSearch());
   }
 }

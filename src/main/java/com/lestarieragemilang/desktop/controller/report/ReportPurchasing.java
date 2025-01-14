@@ -160,27 +160,27 @@ public class ReportPurchasing {
   }
 
   private void setupSearch() {
-    filteredData = new FilteredList<>(buyTable.getItems(), p -> true);
+    filteredData = new FilteredList<>(buyTable.getItems(), _ -> true);
     buyTable.setItems(filteredData);
-    BuyListSearchField.textProperty().addListener((observable, oldValue, newValue) -> purchaseSearch());
+    BuyListSearchField.textProperty().addListener((_, _, _) -> purchaseSearch());
   }
 
   private void setupDateSearchMutualExclusion() {
-    BuyListDateFirstField.valueProperty().addListener((obs, old, newValue) -> {
+    BuyListDateFirstField.valueProperty().addListener((_, _, newValue) -> {
         BuyListSearchField.setDisable(newValue != null);
         if (newValue != null) {
             BuyListSearchField.clear();
         }
     });
 
-    BuyListDateSecondField.valueProperty().addListener((obs, old, newValue) -> {
+    BuyListDateSecondField.valueProperty().addListener((_, _, newValue) -> {
         BuyListSearchField.setDisable(newValue != null);
         if (newValue != null) {
             BuyListSearchField.clear();
         }
     });
 
-    BuyListSearchField.textProperty().addListener((obs, old, newValue) -> {
+    BuyListSearchField.textProperty().addListener((_, _, newValue) -> {
         boolean hasText = !newValue.isEmpty();
         BuyListDateFirstField.setDisable(hasText);
         BuyListDateSecondField.setDisable(hasText);

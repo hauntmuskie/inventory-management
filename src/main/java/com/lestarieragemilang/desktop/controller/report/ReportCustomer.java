@@ -59,8 +59,7 @@ public class ReportCustomer {
             "%" + searchText + "%",
             "%" + searchText + "%",
             "%" + searchText + "%",
-            event
-        );
+            event);
       } else {
         Customer selectedCustomer = customerTable.getSelectionModel().getSelectedItem();
         if (selectedCustomer != null) {
@@ -70,13 +69,11 @@ public class ReportCustomer {
               selectedCustomer.getContact(),
               selectedCustomer.getAddress(),
               selectedCustomer.getEmail(),
-              event
-          );
+              event);
         } else {
           loader.showJasperReportCustomer(
               url,
-              "%", "%", "%", "%", event
-          );
+              "%", "%", "%", "%", event);
         }
       }
     } catch (Exception e) {
@@ -126,15 +123,14 @@ public class ReportCustomer {
         TableUtils.createColumn("Nama", "customerName"),
         TableUtils.createColumn("Kontak", "contact"),
         TableUtils.createColumn("Alamat", "address"),
-        TableUtils.createColumn("Surel", "email")
-    );
+        TableUtils.createColumn("Surel", "email"));
 
     TableUtils.populateTable(customerTable, columns, customers);
   }
 
   private void setupSearch() {
-    filteredData = new FilteredList<>(customerTable.getItems(), p -> true);
+    filteredData = new FilteredList<>(customerTable.getItems(), _ -> true);
     customerTable.setItems(filteredData);
-    customerSearchField.textProperty().addListener((observable, oldValue, newValue) -> customerSearch());
+    customerSearchField.textProperty().addListener((_, _, _) -> customerSearch());
   }
 }

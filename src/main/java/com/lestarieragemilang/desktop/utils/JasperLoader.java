@@ -21,7 +21,6 @@ import java.net.URL;
 import java.sql.Connection;
 import java.util.Date;
 import java.util.Map;
-import java.util.Optional;
 import java.util.concurrent.ExecutionException;
 import java.util.concurrent.TimeUnit;
 import java.io.File;
@@ -193,15 +192,15 @@ public class JasperLoader {
         showReport(location, parameters);
     }
 
-    public void showJasperReportBuy(URL location, Integer buyIdValue) {
+    public void showJasperReportBuy(URL location, String currentPendingBuyInvoice) {
         Map<String, Object> parameters = Maps.newHashMap();
-        parameters.put("invoicePurchasing", "%" + buyIdValue.toString() + "%");
+        parameters.put("invoicePurchasing", "%" + currentPendingBuyInvoice.toString() + "%");
         showReport(location, parameters);
     }
 
-    public void showJasperReportSell(URL location, Integer sellIdValue) {
+    public void showJasperReportSell(URL location, String currentPendingSellInvoice) {
         Map<String, Object> parameters = Maps.newHashMap();
-        parameters.put("invoiceSales", "%" + sellIdValue.toString() + "%");
+        parameters.put("invoiceSales", "%" + currentPendingSellInvoice.toString() + "%");
         showReport(location, parameters);
     }
 

@@ -77,8 +77,12 @@ public class TransactionController extends HibernateUtil {
     private Integer buyIdValue;
     private Integer sellIdValue;
 
+    @SuppressWarnings("unused")
     private GenericService<Purchasing> purchasingService;
+
+    @SuppressWarnings("unused")
     private GenericService<Sales> salesService;
+    
     private GenericService<Stock> stockService;
     private GenericService<Supplier> supplierService;
     private GenericService<Customer> customerService;
@@ -91,6 +95,8 @@ public class TransactionController extends HibernateUtil {
 
     private String currentPendingBuyInvoice;
     private String currentPendingSellInvoice;
+
+    String finalInvoiceNumber;
 
     public void initialize() {
         purchasingService = new GenericService<>(new GenericDao<>(Purchasing.class), "PUR", 3);
@@ -275,7 +281,7 @@ public class TransactionController extends HibernateUtil {
         try {
             Stock selectedStock = buyStockIDDropdown.getValue();
             Supplier selectedSupplier = supplierIDDropDown.getValue();
-            
+
             // Validate quantity
             int quantity;
             try {
@@ -309,12 +315,13 @@ public class TransactionController extends HibernateUtil {
             purchasing.setSupplier(selectedSupplier);
             purchasing.setQuantity(quantity);
             purchasing.setPrice(price);
-            
+
             // Calculate sub total (price * quantity)
             BigDecimal subTotal = price.multiply(BigDecimal.valueOf(quantity));
             purchasing.setSubTotal(subTotal);
-            
-            // For now, total is same as sub total (can be modified if additional charges needed)
+
+            // For now, total is same as sub total (can be modified if additional charges
+            // needed)
             BigDecimal total = subTotal;
             purchasing.setPriceTotal(total);
 
@@ -344,7 +351,7 @@ public class TransactionController extends HibernateUtil {
         try {
             Stock selectedStock = sellStockIDDropdown.getValue();
             Customer selectedCustomer = customerIDDropDown.getValue();
-            
+
             // Validate quantity
             int quantity;
             try {
@@ -354,7 +361,8 @@ public class TransactionController extends HibernateUtil {
                     return;
                 }
                 if (quantity > selectedStock.getQuantity()) {
-                    ShowAlert.showValidationError("Stok tidak mencukupi. Stok tersedia: " + selectedStock.getQuantity());
+                    ShowAlert
+                            .showValidationError("Stok tidak mencukupi. Stok tersedia: " + selectedStock.getQuantity());
                     return;
                 }
             } catch (NumberFormatException e) {
@@ -382,16 +390,17 @@ public class TransactionController extends HibernateUtil {
             sales.setCustomer(selectedCustomer);
             sales.setQuantity(quantity);
             sales.setPrice(price);
-            
+
             // Add these lines to set brand and type
             sales.setBrand(selectedStock.getCategory().getBrand());
             sales.setType(selectedStock.getCategory().getProductType());
-            
+
             // Calculate sub total (price * quantity)
             BigDecimal subTotal = price.multiply(BigDecimal.valueOf(quantity));
             sales.setSubTotal(subTotal);
-            
-            // For now, total is same as sub total (can be modified if additional charges needed)
+
+            // For now, total is same as sub total (can be modified if additional charges
+            // needed)
             BigDecimal total = subTotal;
             sales.setPriceTotal(total);
             sales.setTotalPrice(subTotal);
@@ -405,31 +414,6 @@ public class TransactionController extends HibernateUtil {
         }
     }
 
-    private String generateInvoiceNumber(String prefix, Stock stock) {
-        LocalDate currentDate = LocalDate.now();
-        return String.format("%s-%s-%s-%03d", 
-            prefix.equals("PUR") ? "BLI" : "JUL", 
-            stock.getStockId(), 
-            currentDate, 
-            getNextInvoiceSequence(prefix));
-    }
-
-    private int getNextInvoiceSequence(String prefix) {
-        List<?> transactions = prefix.equals("PUR") ? pendingPurchases : pendingSales;
-        return transactions.size() + 1;
-    }
-
-    // Add this method to generate a unique timestamp-based invoice number
-    private String generateUniqueInvoiceNumber(String prefix, Stock stock) {
-        LocalDate currentDate = LocalDate.now();
-        long timestamp = System.currentTimeMillis();
-        return String.format("%s-%s-%s-%d", 
-            prefix.equals("PUR") ? "BLI" : "JUL",
-            stock.getStockId(), 
-            currentDate, 
-            timestamp % 1000);
-    }
-
     @FXML
     private void confirmBuyButton(ActionEvent event) throws MalformedURLException, URISyntaxException {
         if (!ShowAlert.showYesNo("Konfirmasi Pembelian", "Apakah Anda yakin ingin mengkonfirmasi semua pembelian?")) {
@@ -440,9 +424,9 @@ public class TransactionController extends HibernateUtil {
             try {
                 List<Purchasing> purchasingList = new ArrayList<>(buyTable.getItems());
                 boolean success = true;
-                
+
                 // Generate a single final invoice number for this batch
-                String finalInvoiceNumber = generateFinalInvoiceNumber("BLI");
+                this.finalInvoiceNumber = generateFinalInvoiceNumber("BLI");
 
                 // Get a new session for this transaction
                 Session session = HibernateUtil.getSessionFactory().openSession();
@@ -453,26 +437,26 @@ public class TransactionController extends HibernateUtil {
 
                     for (Purchasing purchasing : purchasingList) {
                         purchasing.setInvoiceNumber(finalInvoiceNumber);
-                        
+
                         // Reattach entities to the current session
                         Stock stock = session.get(Stock.class, purchasing.getStock().getId());
                         purchasing.setStock(stock);
                         purchasing.setSupplier(session.get(Supplier.class, purchasing.getSupplier().getId()));
-                        
+
                         // Add these lines to ensure brand and type are set
                         purchasing.setBrand(stock.getCategory().getBrand());
                         purchasing.setType(stock.getCategory().getProductType());
-                        
+
                         // Save purchasing
                         session.persist(purchasing);
-                        
+
                         // Update stock quantity
                         stock.setQuantity(stock.getQuantity() + purchasing.getQuantity());
                         session.merge(stock);
                     }
 
                     transaction.commit();
-                    
+
                     // Clear table and update UI
                     Platform.runLater(() -> {
                         buyTable.getItems().clear();
@@ -480,13 +464,13 @@ public class TransactionController extends HibernateUtil {
                         buyIdValue = buyId++;
                         buyInvoiceNumber.setText(String.format("TRX-%05d", buyIdValue));
                         updateBuyTotalPrice();
-                        
+
                         try {
                             printJasperBuyList();
                         } catch (Exception e) {
                             e.printStackTrace();
                         }
-                        
+
                         ShowAlert.showSuccess("Pembelian berhasil dikonfirmasi");
                     });
 
@@ -496,9 +480,7 @@ public class TransactionController extends HibernateUtil {
                     }
                     success = false;
                     e.printStackTrace();
-                    Platform.runLater(() -> 
-                        ShowAlert.showError("Gagal mengkonfirmasi pembelian: " + e.getMessage())
-                    );
+                    Platform.runLater(() -> ShowAlert.showError("Gagal mengkonfirmasi pembelian: " + e.getMessage()));
                 } finally {
                     session.close();
                 }
@@ -523,9 +505,9 @@ public class TransactionController extends HibernateUtil {
             try {
                 List<Sales> salesList = new ArrayList<>(sellTable.getItems());
                 boolean success = true;
-                
+
                 // Generate a single final invoice number for this batch
-                String finalInvoiceNumber = generateFinalInvoiceNumber("JUL");
+                this.finalInvoiceNumber = generateFinalInvoiceNumber("JUL");
 
                 // Get a new session for this transaction
                 Session session = HibernateUtil.getSessionFactory().openSession();
@@ -536,32 +518,32 @@ public class TransactionController extends HibernateUtil {
 
                     for (Sales sale : salesList) {
                         sale.setInvoiceNumber(finalInvoiceNumber);
-                        
+
                         // Reattach entities to the current session
                         Stock stock = session.get(Stock.class, sale.getStock().getId());
                         sale.setStock(stock);
                         sale.setCustomer(session.get(Customer.class, sale.getCustomer().getId()));
-                        
+
                         // Ensure brand and type are set
                         sale.setBrand(stock.getCategory().getBrand());
                         sale.setType(stock.getCategory().getProductType());
-                        
+
                         // Verify stock quantity
                         if (stock.getQuantity() < sale.getQuantity()) {
-                            throw new Exception("Stok tidak mencukupi untuk " + stock.getCategory().getBrand() 
-                                + " " + stock.getCategory().getProductType());
+                            throw new Exception("Stok tidak mencukupi untuk " + stock.getCategory().getBrand()
+                                    + " " + stock.getCategory().getProductType());
                         }
-                        
+
                         // Save sale
                         session.persist(sale);
-                        
+
                         // Update stock quantity
                         stock.setQuantity(stock.getQuantity() - sale.getQuantity());
                         session.merge(stock);
                     }
 
                     transaction.commit();
-                    
+
                     // Clear table and update UI
                     Platform.runLater(() -> {
                         sellTable.getItems().clear();
@@ -569,13 +551,13 @@ public class TransactionController extends HibernateUtil {
                         sellIdValue = sellId++;
                         sellInvoiceNumber.setText(String.format("TRX-%05d", sellIdValue));
                         updateSellTotalPrice();
-                        
+
                         try {
                             printJasperSellList();
                         } catch (Exception e) {
                             e.printStackTrace();
                         }
-                        
+
                         ShowAlert.showSuccess("Penjualan berhasil dikonfirmasi");
                     });
 
@@ -585,9 +567,7 @@ public class TransactionController extends HibernateUtil {
                     }
                     success = false;
                     e.printStackTrace();
-                    Platform.runLater(() -> 
-                        ShowAlert.showError("Gagal mengkonfirmasi penjualan: " + e.getMessage())
-                    );
+                    Platform.runLater(() -> ShowAlert.showError("Gagal mengkonfirmasi penjualan: " + e.getMessage()));
                 } finally {
                     session.close();
                 }
@@ -602,12 +582,6 @@ public class TransactionController extends HibernateUtil {
         }
     }
 
-    private void updateStockQuantity(Stock stock, int quantity, boolean isIncrease) {
-        int currentQuantity = stock.getQuantity();
-        stock.setQuantity(isIncrease ? currentQuantity + quantity : currentQuantity - quantity);
-        stockService.update(stock);
-    }
-
     @FXML
     private void editBuyButton(ActionEvent event) {
         Purchasing selectedPurchase = buyTable.getSelectionModel().getSelectedItem();
@@ -617,40 +591,40 @@ public class TransactionController extends HibernateUtil {
         }
 
         GenericEditPopup.create(Purchasing.class)
-            .withTitle("Ubah Pembelian")
-            .forItem(selectedPurchase)
-            .addField("Tanggal", new DatePicker(selectedPurchase.getPurchaseDate()), true)
-            .addField("No Faktur", new TextField(selectedPurchase.getInvoiceNumber()), true)
-            .addField("Barang", createStockComboBox(selectedPurchase.getStock()), true)
-            .addField("Pemasok", createSupplierComboBox(selectedPurchase.getSupplier()), true)
-            .addField("Jumlah", new TextField(String.valueOf(selectedPurchase.getQuantity())), false)
-            .addField("Harga", createFormattedTextField(selectedPurchase.getPrice()), true)
-            .onSave((item, fields) -> {
-                try {
-                    int newQuantity = Integer.parseInt(((TextField) fields.get(4)).getText());
-                    if (newQuantity <= 0) {
-                        ShowAlert.showValidationError("Jumlah harus lebih besar dari 0");
-                        return;
+                .withTitle("Ubah Pembelian")
+                .forItem(selectedPurchase)
+                .addField("Tanggal", new DatePicker(selectedPurchase.getPurchaseDate()), true)
+                .addField("No Faktur", new TextField(selectedPurchase.getInvoiceNumber()), true)
+                .addField("Barang", createStockComboBox(selectedPurchase.getStock()), true)
+                .addField("Pemasok", createSupplierComboBox(selectedPurchase.getSupplier()), true)
+                .addField("Jumlah", new TextField(String.valueOf(selectedPurchase.getQuantity())), false)
+                .addField("Harga", createFormattedTextField(selectedPurchase.getPrice()), true)
+                .onSave((item, fields) -> {
+                    try {
+                        int newQuantity = Integer.parseInt(((TextField) fields.get(4)).getText());
+                        if (newQuantity <= 0) {
+                            ShowAlert.showValidationError("Jumlah harus lebih besar dari 0");
+                            return;
+                        }
+
+                        item.setQuantity(newQuantity);
+                        // Recalculate sub total
+                        BigDecimal subTotal = item.getPrice().multiply(BigDecimal.valueOf(newQuantity));
+                        item.setSubTotal(subTotal);
+                        // Set total
+                        item.setPriceTotal(subTotal);
+
+                        pendingPurchases.remove(selectedPurchase);
+                        pendingPurchases.add(item);
+                        updateBuyTotalPrice();
+                        buyTable.refresh();
+
+                        ShowAlert.showSuccess("Pembelian berhasil diubah");
+                    } catch (NumberFormatException e) {
+                        ShowAlert.showValidationError("Format jumlah tidak valid");
                     }
-
-                    item.setQuantity(newQuantity);
-                    // Recalculate sub total
-                    BigDecimal subTotal = item.getPrice().multiply(BigDecimal.valueOf(newQuantity));
-                    item.setSubTotal(subTotal);
-                    // Set total
-                    item.setPriceTotal(subTotal);
-
-                    pendingPurchases.remove(selectedPurchase);
-                    pendingPurchases.add(item);
-                    updateBuyTotalPrice();
-                    buyTable.refresh();
-                    
-                    ShowAlert.showSuccess("Pembelian berhasil diubah");
-                } catch (NumberFormatException e) {
-                    ShowAlert.showValidationError("Format jumlah tidak valid");
-                }
-            })
-            .show();
+                })
+                .show();
     }
 
     @FXML
@@ -662,47 +636,47 @@ public class TransactionController extends HibernateUtil {
         }
 
         GenericEditPopup.create(Sales.class)
-            .withTitle("Ubah Penjualan")
-            .forItem(selectedSale)
-            .addField("Tanggal", new DatePicker(selectedSale.getSaleDate()), true)
-            .addField("No Faktur", new TextField(selectedSale.getInvoiceNumber()), true)
-            .addField("Barang", createStockComboBox(selectedSale.getStock()), true)
-            .addField("Pelanggan", createCustomerComboBox(selectedSale.getCustomer()), true)
-            .addField("Jumlah", new TextField(String.valueOf(selectedSale.getQuantity())), false)
-            .addField("Harga", createFormattedTextField(selectedSale.getPrice()), true)
-            .onSave((item, fields) -> {
-                try {
-                    int newQuantity = Integer.parseInt(((TextField) fields.get(4)).getText());
-                    if (newQuantity <= 0) {
-                        ShowAlert.showValidationError("Jumlah harus lebih besar dari 0");
-                        return;
-                    }
-                    
-                    Stock stock = selectedSale.getStock();
-                    if (newQuantity > stock.getQuantity() + selectedSale.getQuantity()) {
-                        ShowAlert.showValidationError("Stok tidak mencukupi. Stok tersedia: " + 
-                            (stock.getQuantity() + selectedSale.getQuantity()));
-                        return;
-                    }
+                .withTitle("Ubah Penjualan")
+                .forItem(selectedSale)
+                .addField("Tanggal", new DatePicker(selectedSale.getSaleDate()), true)
+                .addField("No Faktur", new TextField(selectedSale.getInvoiceNumber()), true)
+                .addField("Barang", createStockComboBox(selectedSale.getStock()), true)
+                .addField("Pelanggan", createCustomerComboBox(selectedSale.getCustomer()), true)
+                .addField("Jumlah", new TextField(String.valueOf(selectedSale.getQuantity())), false)
+                .addField("Harga", createFormattedTextField(selectedSale.getPrice()), true)
+                .onSave((item, fields) -> {
+                    try {
+                        int newQuantity = Integer.parseInt(((TextField) fields.get(4)).getText());
+                        if (newQuantity <= 0) {
+                            ShowAlert.showValidationError("Jumlah harus lebih besar dari 0");
+                            return;
+                        }
 
-                    item.setQuantity(newQuantity);
-                    // Recalculate sub total
-                    BigDecimal subTotal = item.getPrice().multiply(BigDecimal.valueOf(newQuantity));
-                    item.setSubTotal(subTotal);
-                    // Set total
-                    item.setPriceTotal(subTotal);
+                        Stock stock = selectedSale.getStock();
+                        if (newQuantity > stock.getQuantity() + selectedSale.getQuantity()) {
+                            ShowAlert.showValidationError("Stok tidak mencukupi. Stok tersedia: " +
+                                    (stock.getQuantity() + selectedSale.getQuantity()));
+                            return;
+                        }
 
-                    pendingSales.remove(selectedSale);
-                    pendingSales.add(item);
-                    updateSellTotalPrice();
-                    sellTable.refresh();
-                    
-                    ShowAlert.showSuccess("Penjualan berhasil diubah");
-                } catch (NumberFormatException e) {
-                    ShowAlert.showValidationError("Format jumlah tidak valid");
-                }
-            })
-            .show();
+                        item.setQuantity(newQuantity);
+                        // Recalculate sub total
+                        BigDecimal subTotal = item.getPrice().multiply(BigDecimal.valueOf(newQuantity));
+                        item.setSubTotal(subTotal);
+                        // Set total
+                        item.setPriceTotal(subTotal);
+
+                        pendingSales.remove(selectedSale);
+                        pendingSales.add(item);
+                        updateSellTotalPrice();
+                        sellTable.refresh();
+
+                        ShowAlert.showSuccess("Penjualan berhasil diubah");
+                    } catch (NumberFormatException e) {
+                        ShowAlert.showValidationError("Format jumlah tidak valid");
+                    }
+                })
+                .show();
     }
 
     // Add these helper methods for creating disabled comboboxes
@@ -869,7 +843,8 @@ public class TransactionController extends HibernateUtil {
 
             loader.showJasperReportBuy(
                     url,
-                    buyIdValue);
+                    finalInvoiceNumber);
+
         } catch (Exception e) {
             e.printStackTrace();
         }
@@ -883,7 +858,8 @@ public class TransactionController extends HibernateUtil {
 
             loader.showJasperReportSell(
                     url,
-                    sellIdValue);
+                    finalInvoiceNumber);
+
         } catch (Exception e) {
             e.printStackTrace();
         }
@@ -891,20 +867,20 @@ public class TransactionController extends HibernateUtil {
 
     private String generatePendingInvoiceNumber(String prefix) {
         LocalDate currentDate = LocalDate.now();
-        return String.format("%s-%s-%08d", 
-            prefix,
-            currentDate.format(java.time.format.DateTimeFormatter.BASIC_ISO_DATE),
-            System.nanoTime() % 100000000);
+        return String.format("%s-%s-%08d",
+                prefix,
+                currentDate.format(java.time.format.DateTimeFormatter.BASIC_ISO_DATE),
+                System.nanoTime() % 100000000);
     }
 
     private String generateFinalInvoiceNumber(String prefix) {
         LocalDate currentDate = LocalDate.now();
         long timestamp = System.currentTimeMillis();
-        String randomSuffix = String.format("%04d", (int)(Math.random() * 10000));
-        return String.format("%s-%s-%d-%s", 
-            prefix,
-            currentDate.format(java.time.format.DateTimeFormatter.BASIC_ISO_DATE),
-            timestamp % 1000000,
-            randomSuffix);
+        String randomSuffix = String.format("%04d", (int) (Math.random() * 10000));
+        return String.format("%s-%s-%d-%s",
+                prefix,
+                currentDate.format(java.time.format.DateTimeFormatter.BASIC_ISO_DATE),
+                timestamp % 1000000,
+                randomSuffix);
     }
 }

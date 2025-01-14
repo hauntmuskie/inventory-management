@@ -134,10 +134,6 @@ public class ReportSales {
         Date.from(localDate.atStartOfDay(ZoneId.systemDefault()).toInstant()) : null;
   }
 
-  private void showError(String message) {
-    ShowAlert.showError(message);
-  }
-
   @FXML
   void sellSearch() {
     String searchText = SellListSearchField.getText().toLowerCase();
@@ -181,21 +177,21 @@ public class ReportSales {
   }
 
   private void setupSearch() {
-    filteredData = new FilteredList<>(sellTable.getItems(), p -> true);
+    filteredData = new FilteredList<>(sellTable.getItems(), _ -> true);
     sellTable.setItems(filteredData);
-    SellListSearchField.textProperty().addListener((observable, oldValue, newValue) -> sellSearch());
+    SellListSearchField.textProperty().addListener((_, _, _) -> sellSearch());
   }
 
   private void setupDateSearchMutualExclusion() {
     // Disable search when dates are selected
-    SellListDateFirstField.valueProperty().addListener((obs, old, newValue) -> {
+    SellListDateFirstField.valueProperty().addListener((_, _, newValue) -> {
         SellListSearchField.setDisable(newValue != null);
         if (newValue != null) {
             SellListSearchField.clear();
         }
     });
 
-    SellListDateSecondField.valueProperty().addListener((obs, old, newValue) -> {
+    SellListDateSecondField.valueProperty().addListener((_, _, newValue) -> {
         SellListSearchField.setDisable(newValue != null);
         if (newValue != null) {
             SellListSearchField.clear();
@@ -203,7 +199,7 @@ public class ReportSales {
     });
 
     // Disable dates when search is used
-    SellListSearchField.textProperty().addListener((obs, old, newValue) -> {
+    SellListSearchField.textProperty().addListener((_, _, newValue) -> {
         boolean hasText = !newValue.isEmpty();
         SellListDateFirstField.setDisable(hasText);
         SellListDateSecondField.setDisable(hasText);
