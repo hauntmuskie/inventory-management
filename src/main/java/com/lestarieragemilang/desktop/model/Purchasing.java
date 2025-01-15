@@ -46,13 +46,11 @@ public class Purchasing {
     @Column(nullable = false, length = 50)
     private String type;
 
-    // toString invoice
     @Override
     public String toString() {
         return invoiceNumber;
     }
 
-    // Getters and Setters
     public Long getId() {
         return id;
     }
@@ -149,9 +147,8 @@ public class Purchasing {
         this.type = type;
     }
 
-    // Add this to your constructor or initialization method
     public void calculateTotalPrice() {
-        this.totalPrice = this.subTotal; // or your calculation logic
+        this.totalPrice = this.subTotal;
     }
 
     @PrePersist

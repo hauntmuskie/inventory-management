@@ -4,12 +4,11 @@ import com.lestarieragemilang.desktop.model.Customer;
 import com.lestarieragemilang.desktop.utils.TableUtils;
 import com.lestarieragemilang.desktop.utils.HibernateUtil;
 import com.lestarieragemilang.desktop.utils.JasperLoader;
+import com.lestarieragemilang.desktop.utils.ShowAlert;
 
 import javafx.collections.FXCollections;
 import javafx.collections.transformation.FilteredList;
 import javafx.fxml.FXML;
-import javafx.scene.control.Alert;
-import javafx.scene.control.Alert.AlertType;
 import javafx.scene.control.TableColumn;
 import javafx.scene.control.TableView;
 import javafx.scene.control.TextField;
@@ -40,11 +39,7 @@ public class ReportCustomer {
     }
 
     if (url == null) {
-      Alert alert = new Alert(AlertType.ERROR);
-      alert.setTitle("Error");
-      alert.setHeaderText(null);
-      alert.setContentText("Could not find report template");
-      alert.showAndWait();
+      ShowAlert.showError("Template laporan tidak ditemukan");
       return;
     }
 
@@ -77,11 +72,7 @@ public class ReportCustomer {
         }
       }
     } catch (Exception e) {
-      Alert alert = new Alert(AlertType.ERROR);
-      alert.setTitle("Error");
-      alert.setHeaderText(null);
-      alert.setContentText("Error generating report: " + e.getMessage());
-      alert.showAndWait();
+      ShowAlert.showError("Terjadi kesalahan saat membuat laporan: " + e.getMessage());
     }
   }
 

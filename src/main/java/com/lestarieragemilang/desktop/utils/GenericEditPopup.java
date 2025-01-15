@@ -36,52 +36,21 @@ public final class GenericEditPopup<T> {
         this.postSaveAction = Optional.empty();
     }
 
-    /**
-     * Creates a new instance of GenericEditPopup for the specified class type.
-     *
-     * @param <T> the type of item being edited
-     * @param clazz the class of the item being edited
-     * @return a new GenericEditPopup instance
-     * @throws NullPointerException if clazz is null
-     */
     public static <T> GenericEditPopup<T> create(Class<T> clazz) {
         Preconditions.checkNotNull(clazz, ERROR_CLASS_NULL);
         return new GenericEditPopup<>();
     }
 
-    /**
-     * Sets the title for the edit dialog.
-     *
-     * @param title the dialog title
-     * @return this GenericEditPopup instance for method chaining
-     * @throws NullPointerException if title is null
-     */
     public GenericEditPopup<T> withTitle(String title) {
         this.title = Optional.of(Preconditions.checkNotNull(title, ERROR_TITLE_NULL));
         return this;
     }
 
-    /**
-     * Sets the item to be edited in the dialog.
-     *
-     * @param item the item to edit
-     * @return this GenericEditPopup instance for method chaining
-     * @throws NullPointerException if item is null
-     */
     public GenericEditPopup<T> forItem(T item) {
         this.item = Optional.of(Preconditions.checkNotNull(item, ERROR_ITEM_NULL));
         return this;
     }
 
-    /**
-     * Adds a field to the edit dialog with a label and optional disabled state.
-     *
-     * @param label the label for the field
-     * @param field the input field node
-     * @param isDisabled whether the field should be disabled
-     * @return this GenericEditPopup instance for method chaining
-     * @throws NullPointerException if label or field is null
-     */
     public GenericEditPopup<T> addField(String label, Node field, boolean isDisabled) {
         Preconditions.checkNotNull(label, ERROR_LABEL_NULL);
         Preconditions.checkNotNull(field, ERROR_FIELD_NULL);
@@ -98,37 +67,15 @@ public final class GenericEditPopup<T> {
         return this;
     }
 
-    /**
-     * Adds an enabled field to the edit dialog with a label.
-     *
-     * @param label the label for the field
-     * @param field the input field node
-     * @return this GenericEditPopup instance for method chaining
-     * @throws NullPointerException if label or field is null
-     */
     public GenericEditPopup<T> addField(String label, Node field) {
         return addField(label, field, false);
     }
 
-    /**
-     * Sets the action to be performed when saving the edited item.
-     *
-     * @param saveAction the action to perform, accepting the edited item and list of controls
-     * @return this GenericEditPopup instance for method chaining
-     * @throws NullPointerException if saveAction is null
-     */
     public GenericEditPopup<T> onSave(BiConsumer<T, ImmutableList<Control>> saveAction) {
         this.saveAction = Optional.of(Preconditions.checkNotNull(saveAction, ERROR_SAVE_ACTION_NULL));
         return this;
     }
 
-    /**
-     * Sets the action to be performed after successful save completion.
-     *
-     * @param postSaveAction the action to perform after saving
-     * @return this GenericEditPopup instance for method chaining
-     * @throws NullPointerException if postSaveAction is null
-     */
     public GenericEditPopup<T> afterSave(Runnable postSaveAction) {
         this.postSaveAction = Optional.of(Preconditions.checkNotNull(postSaveAction, "Post save action cannot be null"));
         return this;
@@ -157,12 +104,6 @@ public final class GenericEditPopup<T> {
             .forEach(this::initializeTextField);
     }
 
-    /**
-     * Shows the edit dialog and handles user interaction.
-     * Must be called after setting title and item.
-     *
-     * @throws IllegalStateException if title or item is not set
-     */
     public void show() {
         Verify.verify(title.isPresent(), ERROR_TITLE_REQUIRED);
         Verify.verify(item.isPresent(), ERROR_ITEM_REQUIRED);

@@ -26,10 +26,6 @@ import java.util.concurrent.TimeUnit;
 import java.io.File;
 import java.net.URISyntaxException;
 
-/**
- * Utility class for loading and displaying Jasper Reports.
- * Handles report caching, parameter management, and report display logic.
- */
 public class JasperLoader {
     private static final Logger logger = LoggerFactory.getLogger(JasperLoader.class);
     private static final float DEFAULT_ZOOM_RATIO = 0.7752f;
@@ -45,11 +41,6 @@ public class JasperLoader {
                 }
             });
 
-    /**
-     * Gets the absolute path for a resource file.
-     * @param resourceName The name/path of the resource to locate
-     * @return The absolute path to the resource, or empty string if not found
-     */
     private static String getResourcePath(String resourceName) {
         try {
             URL resource = JasperLoader.class.getResource(resourceName);
@@ -79,11 +70,6 @@ public class JasperLoader {
         context.setProperty("net.sf.jasperreports.default.pdf.embedded", "true");
     }
 
-    /**
-     * Shows a report with the given parameters.
-     * @param location The URL location of the report template
-     * @param parameters The parameters to pass to the report
-     */
     private void showReport(URL location, Map<String, Object> parameters) {
         Session session = null;
         Connection connection = null;
@@ -129,11 +115,6 @@ public class JasperLoader {
         }
     }
 
-    /**
-     * Retrieves a cached report template or loads it if not cached.
-     * @param location The URL location of the report template
-     * @return The compiled JasperReport
-     */
     private JasperReport getReport(URL location) {
         try {
             return reportCache.get(Preconditions.checkNotNull(location, "Report location cannot be null"));
@@ -142,11 +123,6 @@ public class JasperLoader {
         }
     }
 
-    /**
-     * Wraps a parameter value with SQL LIKE wildcards.
-     * @param param The parameter value to wrap
-     * @return The parameter wrapped with % wildcards
-     */
     private String wrapLikeParam(String param) {
         return "%" + Strings.nullToEmpty(param) + "%";
     }

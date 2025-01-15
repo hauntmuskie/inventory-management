@@ -32,13 +32,11 @@ public class Category {
     @OneToMany(mappedBy = "category", fetch = FetchType.LAZY)
     private List<Stock> stocks;
 
-    // category to string
     @Override
     public String toString() {
         return categoryId + " - " + brand;
     }
 
-    // Getters and setters
     public Long getId() {
         return id;
     }

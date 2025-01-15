@@ -25,7 +25,6 @@ public class Returns {
     @Column(nullable = false, columnDefinition = "TEXT")
     private String reason;
 
-    // Getters and setters
     public Long getId() {
         return id;
     }

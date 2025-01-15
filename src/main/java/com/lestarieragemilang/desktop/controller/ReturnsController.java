@@ -5,20 +5,11 @@ import javafx.fxml.FXML;
 import javafx.scene.control.*;
 import javafx.scene.layout.VBox;
 import javafx.util.StringConverter;
-import com.jfoenix.controls.JFXButton;
-import com.jfoenix.controls.JFXComboBox;
-import com.jfoenix.controls.JFXRadioButton;
-import com.lestarieragemilang.desktop.model.Purchasing;
-import com.lestarieragemilang.desktop.model.Returns;
-import com.lestarieragemilang.desktop.model.Sales;
+import com.jfoenix.controls.*;
+import com.lestarieragemilang.desktop.model.*;
 import com.lestarieragemilang.desktop.repository.GenericDao;
 import com.lestarieragemilang.desktop.service.GenericService;
-import com.lestarieragemilang.desktop.utils.ClearFields;
-import com.lestarieragemilang.desktop.utils.GenericEditPopup;
-import com.lestarieragemilang.desktop.utils.HibernateUtil;
-import com.lestarieragemilang.desktop.utils.IdGenerator;
-import com.lestarieragemilang.desktop.utils.ShowAlert;
-import com.lestarieragemilang.desktop.utils.TableUtils;
+import com.lestarieragemilang.desktop.utils.*;
 
 import java.time.LocalDate;
 import java.util.List;
@@ -103,11 +94,10 @@ public class ReturnsController extends HibernateUtil {
     private String formatInvoiceNumber(String fullInvoice, String brand, String type) {
         String[] parts = fullInvoice.split("-");
         if (parts.length > 1) {
-            String prefix = parts[0]; // BLI or JUL
-            String stockId = parts[1]; // STK-xxx
+            String prefix = parts[0];
+            String stockId = parts[1];
             String lastPart = parts[parts.length - 1];
             
-            // Build display string with available information
             StringBuilder display = new StringBuilder();
             display.append(prefix).append("-").append(lastPart);
             
@@ -250,7 +240,6 @@ public class ReturnsController extends HibernateUtil {
         returnIsBuyEdit.setToggleGroup(returnTypeGroupEdit);
         returnIsSellEdit.setToggleGroup(returnTypeGroupEdit);
 
-        // Set initial radio button selection and disable both buttons
         if ("Beli".equals(selectedReturn.getReturnType())) {
             returnIsBuyEdit.setSelected(true);
         } else {
@@ -287,8 +276,6 @@ public class ReturnsController extends HibernateUtil {
             }
         });
 
-        // Remove the radio button listener since they're now disabled
-        // Set invoice items based on the original return type
         if ("Beli".equals(selectedReturn.getReturnType())) {
             List<Purchasing> purchasings = purchasingService.findAll();
             invoiceComboBox.setItems(FXCollections.observableArrayList(purchasings));
@@ -297,7 +284,6 @@ public class ReturnsController extends HibernateUtil {
             invoiceComboBox.setItems(FXCollections.observableArrayList(sales));
         }
 
-        // Set initial invoice selection
         invoiceComboBox.getItems().forEach(item -> {
             String invoiceNumber = item instanceof Purchasing ? 
                 ((Purchasing) item).getInvoiceNumber() : 

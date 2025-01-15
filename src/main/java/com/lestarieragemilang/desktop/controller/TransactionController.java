@@ -82,7 +82,7 @@ public class TransactionController extends HibernateUtil {
 
     @SuppressWarnings("unused")
     private GenericService<Sales> salesService;
-    
+
     private GenericService<Stock> stockService;
     private GenericService<Supplier> supplierService;
     private GenericService<Customer> customerService;
@@ -117,7 +117,6 @@ public class TransactionController extends HibernateUtil {
         buyDate.setValue(LocalDate.now());
         sellDate.setValue(LocalDate.now());
 
-        // Generate initial pending invoice numbers
         currentPendingBuyInvoice = generatePendingInvoiceNumber("BLI");
         currentPendingSellInvoice = generatePendingInvoiceNumber("JUL");
     }
@@ -133,7 +132,6 @@ public class TransactionController extends HibernateUtil {
         List<Customer> customers = customerService.findAll();
         customerIDDropDown.setItems(FXCollections.observableArrayList(customers));
 
-        // Set default values if lists are not empty
         if (!stocks.isEmpty()) {
             buyStockIDDropdown.setValue(stocks.get(0));
             sellStockIDDropdown.setValue(stocks.get(0));
@@ -227,9 +225,9 @@ public class TransactionController extends HibernateUtil {
                 TableUtils.createColumn("No Faktur", "invoiceNumber"),
                 TableUtils.createColumn("Pelanggan", "customer.customerId"),
                 TableUtils.createColumn("Jumlah", "quantity"),
-                TableUtils.createFormattedColumn("Harga", "price"), // Changed to formatted
-                TableUtils.createFormattedColumn("Sub Total", "subTotal"), // Changed to formatted
-                TableUtils.createFormattedColumn("Total", "priceTotal")); // Changed to formatted
+                TableUtils.createFormattedColumn("Harga", "price"),
+                TableUtils.createFormattedColumn("Sub Total", "subTotal"),
+                TableUtils.createFormattedColumn("Total", "priceTotal"));
         sellTable.getColumns().setAll(sellColumns);
         sellTable.setItems(pendingSales);
     }
@@ -282,7 +280,6 @@ public class TransactionController extends HibernateUtil {
             Stock selectedStock = buyStockIDDropdown.getValue();
             Supplier selectedSupplier = supplierIDDropDown.getValue();
 
-            // Validate quantity
             int quantity;
             try {
                 quantity = Integer.parseInt(buyTotalField.getText());
@@ -295,7 +292,6 @@ public class TransactionController extends HibernateUtil {
                 return;
             }
 
-            // Validate price
             BigDecimal price;
             try {
                 price = new BigDecimal(NumberFormatter.getNumericValue(buyPriceField.getText()));
@@ -310,22 +306,18 @@ public class TransactionController extends HibernateUtil {
 
             Purchasing purchasing = new Purchasing();
             purchasing.setPurchaseDate(buyDate.getValue());
-            purchasing.setInvoiceNumber(currentPendingBuyInvoice); // Use current pending invoice
+            purchasing.setInvoiceNumber(currentPendingBuyInvoice);
             purchasing.setStock(selectedStock);
             purchasing.setSupplier(selectedSupplier);
             purchasing.setQuantity(quantity);
             purchasing.setPrice(price);
 
-            // Calculate sub total (price * quantity)
             BigDecimal subTotal = price.multiply(BigDecimal.valueOf(quantity));
             purchasing.setSubTotal(subTotal);
 
-            // For now, total is same as sub total (can be modified if additional charges
-            // needed)
             BigDecimal total = subTotal;
             purchasing.setPriceTotal(total);
 
-            // Add these lines to set brand and type
             purchasing.setBrand(selectedStock.getCategory().getBrand());
             purchasing.setType(selectedStock.getCategory().getProductType());
 
@@ -352,7 +344,6 @@ public class TransactionController extends HibernateUtil {
             Stock selectedStock = sellStockIDDropdown.getValue();
             Customer selectedCustomer = customerIDDropDown.getValue();
 
-            // Validate quantity
             int quantity;
             try {
                 quantity = Integer.parseInt(sellTotalField.getText());
@@ -370,7 +361,6 @@ public class TransactionController extends HibernateUtil {
                 return;
             }
 
-            // Validate price
             BigDecimal price;
             try {
                 price = new BigDecimal(NumberFormatter.getNumericValue(sellPriceField.getText()));
@@ -385,22 +375,18 @@ public class TransactionController extends HibernateUtil {
 
             Sales sales = new Sales();
             sales.setSaleDate(sellDate.getValue());
-            sales.setInvoiceNumber(currentPendingSellInvoice); // Use current pending invoice
+            sales.setInvoiceNumber(currentPendingSellInvoice);
             sales.setStock(selectedStock);
             sales.setCustomer(selectedCustomer);
             sales.setQuantity(quantity);
             sales.setPrice(price);
 
-            // Add these lines to set brand and type
             sales.setBrand(selectedStock.getCategory().getBrand());
             sales.setType(selectedStock.getCategory().getProductType());
 
-            // Calculate sub total (price * quantity)
             BigDecimal subTotal = price.multiply(BigDecimal.valueOf(quantity));
             sales.setSubTotal(subTotal);
 
-            // For now, total is same as sub total (can be modified if additional charges
-            // needed)
             BigDecimal total = subTotal;
             sales.setPriceTotal(total);
             sales.setTotalPrice(subTotal);
@@ -425,10 +411,8 @@ public class TransactionController extends HibernateUtil {
                 List<Purchasing> purchasingList = new ArrayList<>(buyTable.getItems());
                 boolean success = true;
 
-                // Generate a single final invoice number for this batch
                 this.finalInvoiceNumber = generateFinalInvoiceNumber("BLI");
 
-                // Get a new session for this transaction
                 Session session = HibernateUtil.getSessionFactory().openSession();
                 Transaction transaction = null;
 
@@ -438,26 +422,21 @@ public class TransactionController extends HibernateUtil {
                     for (Purchasing purchasing : purchasingList) {
                         purchasing.setInvoiceNumber(finalInvoiceNumber);
 
-                        // Reattach entities to the current session
                         Stock stock = session.get(Stock.class, purchasing.getStock().getId());
                         purchasing.setStock(stock);
                         purchasing.setSupplier(session.get(Supplier.class, purchasing.getSupplier().getId()));
 
-                        // Add these lines to ensure brand and type are set
                         purchasing.setBrand(stock.getCategory().getBrand());
                         purchasing.setType(stock.getCategory().getProductType());
 
-                        // Save purchasing
                         session.persist(purchasing);
 
-                        // Update stock quantity
                         stock.setQuantity(stock.getQuantity() + purchasing.getQuantity());
                         session.merge(stock);
                     }
 
                     transaction.commit();
 
-                    // Clear table and update UI
                     Platform.runLater(() -> {
                         buyTable.getItems().clear();
                         currentPendingBuyInvoice = generatePendingInvoiceNumber("BLI");
@@ -506,10 +485,8 @@ public class TransactionController extends HibernateUtil {
                 List<Sales> salesList = new ArrayList<>(sellTable.getItems());
                 boolean success = true;
 
-                // Generate a single final invoice number for this batch
                 this.finalInvoiceNumber = generateFinalInvoiceNumber("JUL");
 
-                // Get a new session for this transaction
                 Session session = HibernateUtil.getSessionFactory().openSession();
                 Transaction transaction = null;
 
@@ -519,32 +496,26 @@ public class TransactionController extends HibernateUtil {
                     for (Sales sale : salesList) {
                         sale.setInvoiceNumber(finalInvoiceNumber);
 
-                        // Reattach entities to the current session
                         Stock stock = session.get(Stock.class, sale.getStock().getId());
                         sale.setStock(stock);
                         sale.setCustomer(session.get(Customer.class, sale.getCustomer().getId()));
 
-                        // Ensure brand and type are set
                         sale.setBrand(stock.getCategory().getBrand());
                         sale.setType(stock.getCategory().getProductType());
 
-                        // Verify stock quantity
                         if (stock.getQuantity() < sale.getQuantity()) {
                             throw new Exception("Stok tidak mencukupi untuk " + stock.getCategory().getBrand()
                                     + " " + stock.getCategory().getProductType());
                         }
 
-                        // Save sale
                         session.persist(sale);
 
-                        // Update stock quantity
                         stock.setQuantity(stock.getQuantity() - sale.getQuantity());
                         session.merge(stock);
                     }
 
                     transaction.commit();
 
-                    // Clear table and update UI
                     Platform.runLater(() -> {
                         sellTable.getItems().clear();
                         currentPendingSellInvoice = generatePendingInvoiceNumber("JUL");
@@ -608,10 +579,8 @@ public class TransactionController extends HibernateUtil {
                         }
 
                         item.setQuantity(newQuantity);
-                        // Recalculate sub total
                         BigDecimal subTotal = item.getPrice().multiply(BigDecimal.valueOf(newQuantity));
                         item.setSubTotal(subTotal);
-                        // Set total
                         item.setPriceTotal(subTotal);
 
                         pendingPurchases.remove(selectedPurchase);
@@ -660,10 +629,8 @@ public class TransactionController extends HibernateUtil {
                         }
 
                         item.setQuantity(newQuantity);
-                        // Recalculate sub total
                         BigDecimal subTotal = item.getPrice().multiply(BigDecimal.valueOf(newQuantity));
                         item.setSubTotal(subTotal);
-                        // Set total
                         item.setPriceTotal(subTotal);
 
                         pendingSales.remove(selectedSale);
@@ -679,7 +646,6 @@ public class TransactionController extends HibernateUtil {
                 .show();
     }
 
-    // Add these helper methods for creating disabled comboboxes
     private JFXComboBox<Stock> createStockComboBox(Stock selectedStock) {
         JFXComboBox<Stock> comboBox = new JFXComboBox<>(buyStockIDDropdown.getItems());
         comboBox.setValue(selectedStock);

@@ -46,13 +46,11 @@ public class Sales {
     @Column(nullable = false, length = 50)
     private String type;
 
-    // toString invoice
     @Override
     public String toString() {
         return invoiceNumber;
     }
 
-    // Getters and Setters
     public Long getId() {
         return id;
     }

@@ -10,12 +10,6 @@ import com.lestarieragemilang.desktop.repository.GenericDao;
 import com.lestarieragemilang.desktop.utils.HibernateUtil;
 import org.hibernate.SessionFactory;
 
-/**
- * Generic service class providing common CRUD operations for entities.
- * Handles database operations and scene cache invalidation.
- *
- * @param <T> The entity type this service manages
- */
 public class GenericService<T> {
     private final GenericDao<T> dao;
     private final String idPrefix;
@@ -23,14 +17,6 @@ public class GenericService<T> {
     private final SessionFactory sessionFactory;
     private final String[] affectedScenes;
 
-    /**
-     * Creates a new GenericService instance.
-     *
-     * @param dao The data access object for the entity type
-     * @param idPrefix Prefix used for ID generation
-     * @param bound Upper bound for random ID generation
-     * @param affectedScenes Array of scene names that should be invalidated on data changes
-     */
     public GenericService(GenericDao<T> dao, String idPrefix, int bound, String... affectedScenes) {
         this.dao = dao;
         this.idPrefix = idPrefix;
@@ -39,11 +25,7 @@ public class GenericService<T> {
         this.affectedScenes = affectedScenes;
     }
 
-    /**
-     * Invalidates all cache for known scenes to ensure data consistency.
-     */
     private void invalidateAllCaches() {
-        // Invalidate all known scenes to ensure data consistency across the application
         App.sceneManager.invalidateScenes(
             "stokbesi", 
             "kategori", 
@@ -54,11 +36,6 @@ public class GenericService<T> {
         );
     }
 
-    /**
-     * Saves a new entity to the database and invalidates affected caches.
-     *
-     * @param entity The entity to save
-     */
     public void save(T entity) {
         if (!HibernateUtil.isDatabaseAvailable())
             return;

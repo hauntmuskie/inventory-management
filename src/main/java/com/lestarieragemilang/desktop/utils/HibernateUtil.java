@@ -11,10 +11,6 @@ import org.slf4j.LoggerFactory;
 import com.lestarieragemilang.desktop.App;
 import com.zaxxer.hikari.HikariDataSource;
 
-/**
- * Utility class managing Hibernate session factory and database connections.
- * Provides centralized database connection management with HikariCP connection pooling.
- */
 public class HibernateUtil {
     private static final Logger logger = LoggerFactory.getLogger(HibernateUtil.class);
     private static SessionFactory sessionFactory;
@@ -41,29 +37,14 @@ public class HibernateUtil {
         }
     }
 
-    /**
-     * Returns the Hibernate SessionFactory instance.
-     *
-     * @return the SessionFactory or null if database connection failed
-     */
     public static SessionFactory getSessionFactory() {
         return sessionFactory;
     }
 
-    /**
-     * Checks if the database connection is available.
-     *
-     * @return true if database is connected and operational, false otherwise
-     */
     public static boolean isDatabaseAvailable() {
         return databaseAvailable;
     }
 
-    /**
-     * Reinitializes the database connection.
-     * Closes existing connections and attempts to establish a new connection.
-     * Updates the database availability status based on the result.
-     */
     public static void reinitialize() {
         if (sessionFactory != null && !sessionFactory.isClosed()) {
             shutdown();
@@ -90,10 +71,6 @@ public class HibernateUtil {
         }
     }
 
-    /**
-     * Safely shuts down all database connections.
-     * Closes the HikariCP connection pool and Hibernate SessionFactory.
-     */
     public static synchronized void shutdown() {
         if (hikariDataSource != null && !hikariDataSource.isClosed()) {
             try {
@@ -119,11 +96,6 @@ public class HibernateUtil {
         databaseAvailable = false;
     }
 
-    /**
-     * Gets the current Hibernate Session or opens a new one if none exists.
-     *
-     * @return an active Hibernate Session
-     */
     public static Session getCurrentSession() {
         Session session = null;
         try {

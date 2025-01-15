@@ -10,7 +10,6 @@ import com.lestarieragemilang.desktop.service.UserService;
 import com.lestarieragemilang.desktop.utils.ShowAlert;
 import com.lestarieragemilang.desktop.utils.HibernateUtil;
 import com.lestarieragemilang.desktop.utils.Redirect;
-
 import javafx.application.Platform;
 import javafx.collections.FXCollections;
 import javafx.event.ActionEvent;
@@ -20,57 +19,28 @@ import javafx.scene.Scene;
 import javafx.scene.control.*;
 import javafx.scene.layout.*;
 import javafx.stage.Stage;
-
 import java.io.IOException;
 import java.util.Optional;
 
 public class AuthController extends Redirect {
-
-    @FXML
-    private AnchorPane anchorPane;
-    @FXML
-    private StackPane authStackPane;
-    @FXML
-    private PasswordField confirmPassword;
-    @FXML
-    private Label greetingText;
-    @FXML
-    private PasswordField loginPassword;
-    @FXML
-    private TextField loginUsername;
-    @FXML
-    private VBox loginView;
-    @FXML
-    private ListView<String> profileListView;
-    @FXML
-    private TextField registerEmail;
-    @FXML
-    private PasswordField registerPassword;
-    @FXML
-    private TextField registerUsername;
-    @FXML
-    private VBox registerView;
-
+    @FXML private AnchorPane anchorPane;
+    @FXML private StackPane authStackPane;
+    @FXML private VBox loginView, registerView;
+    @FXML private TextField loginUsername, registerUsername, registerEmail;
+    @FXML private PasswordField loginPassword, registerPassword, confirmPassword;
+    @FXML private Label greetingText;
+    @FXML private ListView<String> profileListView;
     private final UserService userService;
     private final EventBus eventBus;
 
-    public AuthController() {
-        this.userService = new UserService();
-        this.eventBus = new EventBus();
-    }
+    public AuthController() { this.userService = new UserService(); this.eventBus = new EventBus(); }
 
     @FXML
-    public void initialize() {
-        loadUsers();
-        eventBus.register(this);
-    }
+    public void initialize() { loadUsers(); eventBus.register(this); }
 
     private void loadUsers() {
         try {
-            ImmutableList<String> usernames = userService.findAll().stream()
-                    .map(User::getUsername)
-                    .collect(ImmutableList.toImmutableList());
-
+            ImmutableList<String> usernames = userService.findAll().stream().map(User::getUsername).collect(ImmutableList.toImmutableList());
             profileListView.setItems(FXCollections.observableArrayList(usernames));
         } catch (Exception e) {
             ShowAlert.showDatabaseError("Gagal memuat daftar pengguna: " + e.getMessage());
@@ -82,18 +52,9 @@ public class AuthController extends Redirect {
     void loginToApp(ActionEvent event) {
         try {
             validateLoginInput();
-            
-            if (!ShowAlert.showConfirmation("Konfirmasi Login", "Konfirmasi Masuk", 
-                "Apakah Anda yakin ingin masuk dengan akun ini?")) {
-                return;
-            }
-
+            if (!ShowAlert.showConfirmation("Konfirmasi Login", "Konfirmasi Masuk", "Apakah Anda yakin ingin masuk dengan akun ini?")) return;
             Optional<User> user = authenticateUser();
-            user.ifPresentOrElse(
-                    u -> {
-                        handleSuccessfulLogin(u);
-                        ShowAlert.showSuccess("Berhasil masuk ke sistem");
-                    },
+            user.ifPresentOrElse(u -> { handleSuccessfulLogin(u); ShowAlert.showSuccess("Berhasil masuk ke sistem"); },
                     () -> ShowAlert.showError("Nama pengguna atau kata sandi tidak valid"));
         } catch (IllegalArgumentException e) {
             ShowAlert.showValidationError(e.getMessage());
@@ -109,15 +70,13 @@ public class AuthController extends Redirect {
     }
 
     private Optional<User> authenticateUser() {
-        return Optional.ofNullable(
-                userService.authenticate(loginUsername.getText(), loginPassword.getText()));
+        return Optional.ofNullable(userService.authenticate(loginUsername.getText(), loginPassword.getText()));
     }
 
     private void handleSuccessfulLogin(User user) {
         try {
             Stage currentStage = (Stage) loginView.getScene().getWindow();
             App.sceneManager.invalidateScene("layout");
-
             switchScene(anchorPane, "layout", () -> {
                 try {
                     Parent layoutRoot = App.sceneManager.getScene("layout");
@@ -142,9 +101,7 @@ public class AuthController extends Redirect {
             loginView.setVisible(true);
             registerView.setVisible(false);
             animateFadeIn(loginView);
-        } catch (IOException e) {
-            ShowAlert.showError("Gagal memuat tampilan masuk");
-        }
+        } catch (IOException e) { ShowAlert.showError("Gagal memuat tampilan masuk"); }
     }
 
     @Override
@@ -158,7 +115,6 @@ public class AuthController extends Redirect {
     protected void animateFadeOut(Parent node, Runnable onFinished) {
         Preconditions.checkNotNull(node, "Node cannot be null");
         Preconditions.checkNotNull(onFinished, "Callback cannot be null");
-
         animatefx.animation.FadeOut fadeOut = new animatefx.animation.FadeOut(node);
         fadeOut.setOnFinished(_ -> onFinished.run());
         fadeOut.play();
@@ -166,8 +122,7 @@ public class AuthController extends Redirect {
 
     @FXML
     void exitApp(ActionEvent event) {
-        if (ShowAlert.showYesNo("Konfirmasi Keluar", 
-            "Apakah Anda yakin ingin keluar dari aplikasi?")) {
+        if (ShowAlert.showYesNo("Konfirmasi Keluar", "Apakah Anda yakin ingin keluar dari aplikasi?")) {
             HibernateUtil.shutdown();
             Platform.exit();
         }

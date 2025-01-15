@@ -39,7 +39,7 @@ public class CategoryController extends HibernateUtil {
         categoryService = new GenericService<>(new GenericDao<>(Category.class), "CAT", 3);
 
         initializeComboBoxes();
-        setDefaultComboBoxValues(); // Add this line
+        setDefaultComboBoxValues();
         initializeCategoryTable();
         loadCategories();
         generateAndSetCategoryId();
@@ -307,7 +307,6 @@ public class CategoryController extends HibernateUtil {
         ComboBox<String> sizeComboBox = new ComboBox<>(this.sizeComboBox.getItems());
         ComboBox<String> weightUnitComboBox = new ComboBox<>(this.weightUnitComboBox.getItems());
 
-        // Set default values based on the selected category
         brandComboBox.setValue(selectedCategory.getBrand());
         typeComboBox.setValue(selectedCategory.getProductType());
         sizeComboBox.setValue(selectedCategory.getSize());
@@ -317,11 +316,11 @@ public class CategoryController extends HibernateUtil {
                 .withTitle("Ubah Kategori")
                 .forItem(selectedCategory)
                 .addField("Kode Kategori", new TextField(selectedCategory.getCategoryId()), true)
-                .addField("Merek", brandComboBox) // Use the pre-set brandComboBox
-                .addField("Tipe", typeComboBox) // Use the pre-set typeComboBox
-                .addField("Ukuran", sizeComboBox) // Use the pre-set sizeComboBox
+                .addField("Merek", brandComboBox)
+                .addField("Tipe", typeComboBox)
+                .addField("Ukuran", sizeComboBox)
                 .addField("Berat", new TextField(selectedCategory.getWeight().toString()))
-                .addField("Satuan Berat", weightUnitComboBox) // Use the pre-set weightUnitComboBox
+                .addField("Satuan Berat", weightUnitComboBox)
                 .onSave((category, fields) -> {
                     category.setBrand(((ComboBox<String>) fields.get(1)).getValue());
                     category.setProductType(((ComboBox<String>) fields.get(2)).getValue());
@@ -334,7 +333,7 @@ public class CategoryController extends HibernateUtil {
                     ShowAlert.showSuccess("Data kategori berhasil diubah");
                     loadCategories();
                     clearFields();
-                    categoryTable.refresh(); // Add this line
+                    categoryTable.refresh();
                 })
                 .show();
     }

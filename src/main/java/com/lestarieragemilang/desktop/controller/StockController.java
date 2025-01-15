@@ -137,7 +137,8 @@ public class StockController extends HibernateUtil {
                         resetStockButton();
                     }))
                     .exceptionally(e -> {
-                        Platform.runLater(() -> ShowAlert.showError("Gagal menambahkan data barang: " + e.getMessage()));
+                        Platform.runLater(
+                                () -> ShowAlert.showError("Gagal menambahkan data barang: " + e.getMessage()));
                         return null;
                     });
         } catch (NumberFormatException e) {
@@ -167,10 +168,9 @@ public class StockController extends HibernateUtil {
 
         JFXComboBox<Category> categoryComboBox = new JFXComboBox<>(categoryIDDropDown.getItems());
 
-        // Find the category in the list that matches the selectedStock's category by ID
         for (Category category : categoryIDDropDown.getItems()) {
             if (category.getId().equals(selectedStock.getCategory().getId())) {
-                categoryComboBox.setValue(category); // Set the matching category
+                categoryComboBox.setValue(category);
                 break;
             }
         }
@@ -201,7 +201,8 @@ public class StockController extends HibernateUtil {
                                 loadStocks();
                             });
                         }).exceptionally(e -> {
-                            Platform.runLater(() -> ShowAlert.showError("Gagal mengubah data barang: " + e.getMessage()));
+                            Platform.runLater(
+                                    () -> ShowAlert.showError("Gagal mengubah data barang: " + e.getMessage()));
                             return null;
                         });
                     } catch (NumberFormatException e) {

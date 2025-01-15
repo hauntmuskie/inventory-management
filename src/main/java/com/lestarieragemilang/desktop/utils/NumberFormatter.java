@@ -10,10 +10,6 @@ import java.text.DecimalFormatSymbols;
 import java.text.ParseException;
 import java.util.Locale;
 
-/**
- * Utility class for formatting numbers in the Indonesian locale format.
- * Provides methods to format numbers with thousands separators and handle text field input validation.
- */
 public final class NumberFormatter {
     private static final DecimalFormat formatter;
 
@@ -23,21 +19,10 @@ public final class NumberFormatter {
         formatter.setGroupingSize(3);
     }
 
-    /**
-     * Private constructor to prevent instantiation of utility class.
-     * @throws AssertionError if instantiation is attempted
-     */
     private NumberFormatter() {
         throw new AssertionError("No instances");
     }
 
-    /**
-     * Applies number formatting to a TextField with automatic thousand separators.
-     * Only allows numeric input and automatically formats the number as it's typed.
-     *
-     * @param textField the TextField to apply formatting to
-     * @throws NullPointerException if textField is null
-     */
     public static void applyNumberFormat(TextField textField) {
         Preconditions.checkNotNull(textField, "TextField must not be null");
 
@@ -68,13 +53,6 @@ public final class NumberFormatter {
         });
     }
 
-    /**
-     * Updates the TextField value with proper formatting and maintains cursor position.
-     *
-     * @param textField the TextField to update
-     * @param number the numeric value to format
-     * @param oldValue the previous value for cursor position calculation
-     */
     private static void updateTextFieldValue(TextField textField, long number, String oldValue) {
         int caretPosition = textField.getCaretPosition();
         int oldLength = textField.getText().length();
@@ -89,12 +67,6 @@ public final class NumberFormatter {
         textField.positionCaret(newPosition);
     }
 
-    /**
-     * Extracts the numeric value from a formatted string.
-     *
-     * @param formattedText the formatted text to parse
-     * @return the numeric value as a string, returns "0" if parsing fails
-     */
     public static String getNumericValue(String formattedText) {
         if (Strings.isNullOrEmpty(formattedText)) {
             return "0";
@@ -107,13 +79,6 @@ public final class NumberFormatter {
         }
     }
 
-    /**
-     * Formats a BigDecimal value using the Indonesian number format.
-     *
-     * @param value the BigDecimal to format
-     * @return the formatted string with thousand separators
-     * @throws NullPointerException if value is null
-     */
     public static String formatValue(BigDecimal value) {
         Preconditions.checkNotNull(value, "Value must not be null");
         return formatter.format(value);

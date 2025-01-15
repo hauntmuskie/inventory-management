@@ -5,12 +5,7 @@ import javafx.scene.control.TextArea;
 import com.lestarieragemilang.desktop.model.Supplier;
 import com.lestarieragemilang.desktop.repository.GenericDao;
 import com.lestarieragemilang.desktop.service.GenericService;
-import com.lestarieragemilang.desktop.utils.ClearFields;
-import com.lestarieragemilang.desktop.utils.GenericEditPopup;
-import com.lestarieragemilang.desktop.utils.HibernateUtil;
-import com.lestarieragemilang.desktop.utils.IdGenerator;
-import com.lestarieragemilang.desktop.utils.ShowAlert;
-import com.lestarieragemilang.desktop.utils.TableUtils;
+import com.lestarieragemilang.desktop.utils.*;
 import javafx.collections.FXCollections;
 import javafx.event.ActionEvent;
 import javafx.fxml.FXML;
@@ -26,28 +21,23 @@ public class SupplierController extends HibernateUtil {
     @FXML
     private JFXButton editSupplierButtonText;
     @FXML
-    private TableColumn<Supplier, String> supplierAddressCol, supplierContactCol, supplierEmailCol, supplierIDCol,
-            supplierNameCol;
+    private TableColumn<Supplier, String> supplierAddressCol, supplierContactCol, supplierEmailCol, supplierIDCol, supplierNameCol;
     @FXML
     private TextArea supplierAddressField;
     @FXML
     private VBox supplierAddressField1, supplierAddressField11;
     @FXML
-    private TextField supplierContactField, supplierEmailField, supplierIDIncrement, supplierNameField,
-            supplierSearchField;
+    private TextField supplierContactField, supplierEmailField, supplierIDIncrement, supplierNameField, supplierSearchField;
     @FXML
     private TableView<Supplier> supplierTable;
 
     private GenericService<Supplier> supplierService;
 
     public void initialize() {
-        supplierService = new GenericService<>(new GenericDao<>(Supplier.class), "PMS", 3);  // Changed from SUP to PMS
-
+        supplierService = new GenericService<>(new GenericDao<>(Supplier.class), "PMS", 3);
         initializeSupplierTable();
         loadSuppliers();
         generateAndSetSupplierId();
-
-        // Disable the supplier ID field
         supplierIDIncrement.setDisable(true);
     }
 
@@ -69,9 +59,8 @@ public class SupplierController extends HibernateUtil {
     private void generateAndSetSupplierId() {
         String newSupplierId;
         do {
-            newSupplierId = IdGenerator.generateRandomId("PMS", 1000);  // Changed from SUP to PMS
+            newSupplierId = IdGenerator.generateRandomId("PMS", 1000);
         } while (supplierIdExists(newSupplierId));
-
         supplierIDIncrement.setText(newSupplierId);
     }
 
@@ -94,7 +83,6 @@ public class SupplierController extends HibernateUtil {
         }
 
         try {
-            // Validate required fields
             if (supplierNameField.getText().trim().isEmpty()) {
                 ShowAlert.showValidationError("Nama pemasok tidak boleh kosong");
                 return;
@@ -142,7 +130,6 @@ public class SupplierController extends HibernateUtil {
                     }
 
                     try {
-                        // Validate required fields
                         String name = ((TextField) fields.get(1)).getText().trim();
                         String contact = ((TextField) fields.get(2)).getText().trim();
                         

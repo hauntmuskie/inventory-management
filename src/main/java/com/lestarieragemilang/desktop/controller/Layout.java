@@ -75,7 +75,6 @@ public class Layout extends Redirect {
     @FXML
     void isExitApp(MouseEvent event) {
         if (ShowAlert.showConfirmation("Exit", "Konfirmasi", "Apakah Anda yakin ingin keluar?")) {
-            // Cleanup before exit
             HibernateUtil.shutdown();
             System.exit(0);
         }
@@ -109,12 +108,10 @@ public class Layout extends Redirect {
                 switchScene(setScene, "login", () -> {
                     try {
                         Stage loginStage = new Stage();
-                        loginStage.initStyle(StageStyle.UNDECORATED); // Add this line
+                        loginStage.initStyle(StageStyle.UNDECORATED);
 
-                        // Close current connections before loading new scene
                         HibernateUtil.shutdown();
 
-                        // Reinitialize database connection for login
                         HibernateUtil.reinitialize();
 
                         Parent loginRoot = App.sceneManager.getScene("login");

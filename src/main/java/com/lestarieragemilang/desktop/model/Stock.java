@@ -26,7 +26,6 @@ public class Stock {
     @Column(name = "selling_price", nullable = false, precision = 10, scale = 2)
     private BigDecimal sellingPrice;
 
-    // Getters and setters
     public Long getId() {
         return id;
     }

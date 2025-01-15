@@ -15,51 +15,24 @@ import com.lestarieragemilang.desktop.utils.HibernateUtil;
 
 import java.util.List;
 
-/**
- * Generic Data Access Object providing basic CRUD operations for entities.
- * Handles database transactions and entity management.
- *
- * @param <T> The entity type this DAO manages
- */
 public class GenericDao<T> {
     private static final Logger logger = LoggerFactory.getLogger(GenericDao.class);
     private final Class<T> entityClass;
     private final SessionFactory sessionFactory;
 
-    /**
-     * Creates a new GenericDao instance for the specified entity class.
-     *
-     * @param entityClass The Class object representing the entity type
-     */
     public GenericDao(Class<T> entityClass) {
         this.entityClass = entityClass;
         this.sessionFactory = HibernateUtil.getSessionFactory();
     }
 
-    /**
-     * Saves a new entity to the database.
-     *
-     * @param entity The entity to save
-     */
     public void save(T entity) {
         executeInsideTransaction(session -> session.persist(entity));
     }
 
-    /**
-     * Updates an existing entity in the database.
-     *
-     * @param entity The entity to update
-     */
     public void update(T entity) {
         executeInsideTransaction(session -> session.merge(entity));
     }
 
-    /**
-     * Checks if an entity can be safely deleted without violating constraints.
-     *
-     * @param entity The entity to check
-     * @throws ConstraintViolationException if deletion would violate constraints
-     */
     public void checkDeleteConstraints(T entity) throws ConstraintViolationException {
         try (Session session = sessionFactory.openSession()) {
             Transaction transaction = session.beginTransaction();
@@ -142,9 +115,6 @@ public class GenericDao<T> {
         }
     }
 
-    /**
-     * Functional interface for executing database operations within a transaction.
-     */
     @FunctionalInterface
     private interface SessionAction {
         void execute(Session session);

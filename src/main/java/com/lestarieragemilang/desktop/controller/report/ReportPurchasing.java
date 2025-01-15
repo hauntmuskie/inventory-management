@@ -17,8 +17,6 @@ import javafx.scene.control.TableView;
 import javafx.scene.control.TextField;
 import javafx.scene.input.MouseEvent;
 import org.hibernate.Session;
-import org.hibernate.query.Query;
-
 import com.lestarieragemilang.desktop.model.Purchasing;
 import com.lestarieragemilang.desktop.utils.TableUtils;
 import com.lestarieragemilang.desktop.utils.HibernateUtil;
@@ -26,194 +24,108 @@ import com.lestarieragemilang.desktop.utils.JasperLoader;
 import com.lestarieragemilang.desktop.utils.ShowAlert;
 
 public class ReportPurchasing {
+    @FXML private DatePicker BuyListDateFirstField, BuyListDateSecondField;
+    @FXML private TextField BuyListSearchField;
+    @FXML private TableView<Purchasing> buyTable;
+    @FXML private TableColumn<Purchasing, LocalDate> buyDateCol;
+    @FXML private TableColumn<Purchasing, String> buyInvoiceCol, buySupplierCol;
+    @FXML private TableColumn<Purchasing, Integer> buyQuantityCol;
+    @FXML private TableColumn<Purchasing, BigDecimal> buyPriceCol, buySubTotalCol, buyTotalCol;
 
-  @FXML
-  private DatePicker BuyListDateFirstField;
+    private FilteredList<Purchasing> filteredData;
 
-  @FXML
-  private DatePicker BuyListDateSecondField;
-
-  @FXML
-  private TextField BuyListSearchField;
-
-  @FXML
-  private TableColumn<Purchasing, LocalDate> buyDateCol;
-
-  @FXML
-  private TableColumn<Purchasing, String> buyInvoiceCol;
-
-  @FXML
-  private TableColumn<Purchasing, String> buySupplierCol;
-
-  @FXML
-  private TableColumn<Purchasing, Integer> buyQuantityCol;
-
-  @FXML
-  private TableColumn<Purchasing, BigDecimal> buyPriceCol;
-
-  @FXML
-  private TableColumn<Purchasing, BigDecimal> buySubTotalCol;
-
-  @FXML
-  private TableColumn<Purchasing, BigDecimal> buyTotalCol;
-
-  @FXML
-  private TableView<Purchasing> buyTable;
-
-  private FilteredList<Purchasing> filteredData;
-
-  @FXML
-  void purchaseSearch() {
-    String searchText = BuyListSearchField.getText().toLowerCase();
-    filteredData.setPredicate(purchase -> searchText.isEmpty() ||
-        String.valueOf(purchase.getInvoiceNumber()).toLowerCase().contains(searchText));
-  }
-
-  @FXML
-  void printJasperBuyList(MouseEvent event) {
-    String path = "/jasper/purchasing-list.jasper";
-    URL url = getClass().getResource(path);
-    if (url == null) {
-      path = "/com/lestarieragemilang/desktop/jasper/purchasing-list.jasper";
-      url = getClass().getResource(path);
+    @FXML
+    void purchaseSearch() {
+        String searchText = BuyListSearchField.getText().toLowerCase();
+        filteredData.setPredicate(purchase -> searchText.isEmpty() || 
+            String.valueOf(purchase.getInvoiceNumber()).toLowerCase().contains(searchText));
     }
 
-    if (url == null) {
-      ShowAlert.showError("Template laporan tidak ditemukan");
-      return;
-    }
-
-    try {
-      JasperLoader loader = new JasperLoader();
-      String searchText = BuyListSearchField.getText();
-      LocalDate firstLocalDate = BuyListDateFirstField.getValue();
-      LocalDate secondLocalDate = BuyListDateSecondField.getValue();
-
-      if (searchText != null && !searchText.isEmpty()) {
-        loader.showJasperReportBuyList(
-            url,
-            "%" + searchText + "%",
-            null,
-            null,
-            event
-        );
-      } else if (firstLocalDate != null && secondLocalDate != null) {
-        Date firstDate = convertToDate(firstLocalDate);
-        Date secondDate = convertToDate(secondLocalDate);
-        loader.showJasperReportBuyList(
-            url,
-            null, // Changed from "%" to null
-            firstDate,
-            secondDate,
-            event
-        );
-      } else {
-        loader.showJasperReportBuyList(
-            url,
-            "%", // Changed from "%" to null
-            null,
-            null,
-            event
-        );
-      }
-    } catch (Exception e) {
-      ShowAlert.showError("Terjadi kesalahan saat membuat laporan: " + e.getMessage());
-    }
-  }
-
-  private Date convertToDate(LocalDate localDate) {
-    return localDate != null ? 
-        Date.from(localDate.atStartOfDay(ZoneId.systemDefault()).toInstant()) : null;
-  }
-
-  @FXML
-  void initialize() throws SQLException {
-    List<Purchasing> purchases = fetchPurchasesFromDatabase();
-    setupTable(purchases);
-    setupSearch();
-    setupDateSearchMutualExclusion();
-  }
-
-  private List<Purchasing> fetchPurchasesFromDatabase() {
-    try (Session session = HibernateUtil.getSessionFactory().openSession()) {
-      Query<Purchasing> query = session.createQuery("FROM Purchasing", Purchasing.class);
-      return query.list();
-    } catch (Exception e) {
-      e.printStackTrace();
-      return FXCollections.emptyObservableList();
-    }
-  }
-
-  private void setupTable(List<Purchasing> purchases) {
-    List<TableColumn<Purchasing, ?>> columns = List.of(
-        TableUtils.createColumn("Tanggal", "purchaseDate"),
-        TableUtils.createColumn("Nomor Faktur", "invoiceNumber"),
-        TableUtils.createColumn("Pemasok", "supplier.supplierName"),
-        TableUtils.createColumn("Stok", "stock.category.brand"),
-        TableUtils.createColumn("Jumlah", "quantity"),
-        TableUtils.createFormattedColumn("Harga", "price"),
-        TableUtils.createFormattedColumn("Sub Total", "subTotal"),
-        TableUtils.createFormattedColumn("Total", "priceTotal")
-    );
-
-    TableUtils.populateTable(buyTable, columns, purchases);
-  }
-
-  private void setupSearch() {
-    filteredData = new FilteredList<>(buyTable.getItems(), _ -> true);
-    buyTable.setItems(filteredData);
-    BuyListSearchField.textProperty().addListener((_, _, _) -> purchaseSearch());
-  }
-
-  private void setupDateSearchMutualExclusion() {
-    BuyListDateFirstField.valueProperty().addListener((_, _, newValue) -> {
-        BuyListSearchField.setDisable(newValue != null);
-        if (newValue != null) {
-            BuyListSearchField.clear();
+    @FXML
+    void printJasperBuyList(MouseEvent event) {
+        String path = "/jasper/purchasing-list.jasper";
+        URL url = getClass().getResource(path);
+        if (url == null) url = getClass().getResource("/com/lestarieragemilang/desktop/jasper/purchasing-list.jasper");
+        if (url == null) {
+            ShowAlert.showError("Template laporan tidak ditemukan");
+            return;
         }
-    });
 
-    BuyListDateSecondField.valueProperty().addListener((_, _, newValue) -> {
-        BuyListSearchField.setDisable(newValue != null);
-        if (newValue != null) {
-            BuyListSearchField.clear();
+        try {
+            JasperLoader loader = new JasperLoader();
+            String searchText = BuyListSearchField.getText();
+            LocalDate firstLocalDate = BuyListDateFirstField.getValue(), secondLocalDate = BuyListDateSecondField.getValue();
+
+            if (searchText != null && !searchText.isEmpty()) 
+                loader.showJasperReportBuyList(url, "%" + searchText + "%", null, null, event);
+            else if (firstLocalDate != null && secondLocalDate != null)
+                loader.showJasperReportBuyList(url, null, convertToDate(firstLocalDate), convertToDate(secondLocalDate), event);
+            else 
+                loader.showJasperReportBuyList(url, "%", null, null, event);
+        } catch (Exception e) {
+            ShowAlert.showError("Terjadi kesalahan saat membuat laporan: " + e.getMessage());
         }
-    });
+    }
 
-    BuyListSearchField.textProperty().addListener((_, _, newValue) -> {
-        boolean hasText = !newValue.isEmpty();
-        BuyListDateFirstField.setDisable(hasText);
-        BuyListDateSecondField.setDisable(hasText);
-        if (hasText) {
-            BuyListDateFirstField.setValue(null);
-            BuyListDateSecondField.setValue(null);
+    private Date convertToDate(LocalDate localDate) {
+        return localDate != null ? Date.from(localDate.atStartOfDay(ZoneId.systemDefault()).toInstant()) : null;
+    }
+
+    @FXML
+    void initialize() throws SQLException {
+        List<Purchasing> purchases = fetchPurchasesFromDatabase();
+        setupTable(purchases);
+        setupSearch();
+        setupDateSearchMutualExclusion();
+    }
+
+    private List<Purchasing> fetchPurchasesFromDatabase() {
+        try (Session session = HibernateUtil.getSessionFactory().openSession()) {
+            return session.createQuery("FROM Purchasing", Purchasing.class).list();
+        } catch (Exception e) {
+            e.printStackTrace();
+            return FXCollections.emptyObservableList();
         }
-    });
-  }
+    }
 
-  @SuppressWarnings("unused")
-  private void addListeners() {
-    BuyListSearchField.textProperty().addListener((observable, oldValue, newValue) -> {
-      if (!newValue.isEmpty()) {
-        clearDateFields();
-      }
-    });
+    private void setupTable(List<Purchasing> purchases) {
+        List<TableColumn<Purchasing, ?>> columns = List.of(
+            TableUtils.createColumn("Tanggal", "purchaseDate"),
+            TableUtils.createColumn("Nomor Faktur", "invoiceNumber"),
+            TableUtils.createColumn("Pemasok", "supplier.supplierName"),
+            TableUtils.createColumn("Stok", "stock.category.brand"),
+            TableUtils.createColumn("Jumlah", "quantity"),
+            TableUtils.createFormattedColumn("Harga", "price"),
+            TableUtils.createFormattedColumn("Sub Total", "subTotal"),
+            TableUtils.createFormattedColumn("Total", "priceTotal"));
+        TableUtils.populateTable(buyTable, columns, purchases);
+    }
 
-    BuyListDateFirstField.valueProperty().addListener((observable, oldValue, newValue) -> {
-      if (newValue != null) {
-        BuyListSearchField.clear();
-      }
-    });
+    private void setupSearch() {
+        filteredData = new FilteredList<>(buyTable.getItems(), _ -> true);
+        buyTable.setItems(filteredData);
+        BuyListSearchField.textProperty().addListener((_, _, _) -> purchaseSearch());
+    }
 
-    BuyListDateSecondField.valueProperty().addListener((observable, oldValue, newValue) -> {
-      if (newValue != null) {
-        BuyListSearchField.clear();
-      }
-    });
-  }
+    private void setupDateSearchMutualExclusion() {
+        BuyListDateFirstField.valueProperty().addListener((_, _, newValue) -> {
+            BuyListSearchField.setDisable(newValue != null);
+            if (newValue != null) BuyListSearchField.clear();
+        });
 
-  private void clearDateFields() {
-    BuyListDateFirstField.setValue(null);
-    BuyListDateSecondField.setValue(null);
-  }
+        BuyListDateSecondField.valueProperty().addListener((_, _, newValue) -> {
+            BuyListSearchField.setDisable(newValue != null);
+            if (newValue != null) BuyListSearchField.clear();
+        });
+
+        BuyListSearchField.textProperty().addListener((_, _, newValue) -> {
+            boolean hasText = !newValue.isEmpty();
+            BuyListDateFirstField.setDisable(hasText);
+            BuyListDateSecondField.setDisable(hasText);
+            if (hasText) {
+                BuyListDateFirstField.setValue(null);
+                BuyListDateSecondField.setValue(null);
+            }
+        });
+    }
 }
