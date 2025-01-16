@@ -2,8 +2,8 @@
 -- version 5.2.1
 -- https://www.phpmyadmin.net/
 --
--- Host: localhost
--- Generation Time: Jan 13, 2025 at 12:21 PM
+-- Host: 127.0.0.1
+-- Generation Time: Jan 16, 2025 at 06:37 PM
 -- Server version: 10.4.32-MariaDB
 -- PHP Version: 8.2.12
 
@@ -110,8 +110,14 @@ CREATE TABLE `purchasing` (
 --
 
 INSERT INTO `purchasing` (`id`, `purchase_date`, `invoice_number`, `stock_id`, `supplier_id`, `quantity`, `price`, `sub_total`, `price_total`, `total_price`, `brand`, `type`) VALUES
-(16, '2025-01-13', 'BLI-20250113-662277-5031', 1, 1, 2, 1500000.00, 3000000.00, 3000000.00, 3000000.00, '', ''),
-(17, '2025-01-13', 'BLI-20250113-662277-5031', 2, 8, 5, 850000.00, 4250000.00, 4250000.00, 4250000.00, '', '');
+(21, '2025-01-16', 'BLI-20250116-674339-5630', 4, 2, 2, 750000.00, 1500000.00, 1500000.00, 1500000.00, 'Ispat Indo', 'Tube'),
+(22, '2025-01-16', 'BLI-20250116-674339-5630', 6, 5, 6, 950000.00, 5700000.00, 5700000.00, 5700000.00, 'Steel Pipe Industry', 'Pipe'),
+(23, '2025-01-16', 'BLI-20250116-674339-5630', 8, 4, 8, 450000.00, 3600000.00, 3600000.00, 3600000.00, 'Jaya Steel', 'Wire'),
+(24, '2025-01-16', 'BLI-20250116-674339-5630', 6, 4, 7, 950000.00, 6650000.00, 6650000.00, 6650000.00, 'Steel Pipe Industry', 'Pipe'),
+(25, '2025-01-16', 'BLI-20250116-674339-5630', 10, 2, 8, 890000.00, 7120000.00, 7120000.00, 7120000.00, 'Cilegon Steel', 'Channel'),
+(26, '2025-01-16', 'BLI-20250116-674339-5630', 3, 2, 3, 2500000.00, 7500000.00, 7500000.00, 7500000.00, 'Master Steel', 'Beam'),
+(27, '2025-01-16', 'BLI-20250116-674339-5630', 2, 3, 5, 850000.00, 4250000.00, 4250000.00, 4250000.00, 'Gunung Steel', 'Rod'),
+(28, '2025-01-16', 'BLI-20250116-674339-5630', 5, 4, 12, 1800000.00, 21600000.00, 21600000.00, 21600000.00, 'Gunawan Dianjaya Steel', 'Plate');
 
 -- --------------------------------------------------------
 
@@ -127,6 +133,20 @@ CREATE TABLE `returns` (
   `invoice_number` varchar(255) NOT NULL,
   `reason` text NOT NULL
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_general_ci;
+
+--
+-- Dumping data for table `returns`
+--
+
+INSERT INTO `returns` (`id`, `return_date`, `return_id`, `return_type`, `invoice_number`, `reason`) VALUES
+(11, '2025-01-16', 'RET-441', 'Beli', 'BLI-20250116-674339-5630', 'Barang Tidak Sesuai'),
+(12, '2025-01-16', 'RET-773', 'Beli', 'BLI-20250116-490572-9554', 'Salah Pengiriman'),
+(13, '2025-01-16', 'RET-824', 'Jual', 'JUL-20250116-752076-5992', 'Salah Pengiriman'),
+(14, '2025-01-08', 'RET-018', 'Jual', 'JUL-20250116-752076-5992', 'Barang Rusak'),
+(15, '2025-01-03', 'RET-542', 'Beli', 'BLI-20250116-674339-5630', 'Tidak Sesuai'),
+(16, '2025-01-07', 'RET-148', 'Jual', 'JUL-20250116-752076-5992', 'Salah Pengiriman'),
+(17, '2025-01-10', 'RET-715', 'Beli', 'BLI-20250113-662277-5031', 'Tidak Sesuai'),
+(18, '2025-01-14', 'RET-523', 'Jual', 'JUL-20250113-782533-3507', 'Barang Rusak');
 
 -- --------------------------------------------------------
 
@@ -154,8 +174,14 @@ CREATE TABLE `sales` (
 --
 
 INSERT INTO `sales` (`id`, `sale_date`, `invoice_number`, `stock_id`, `customer_id`, `quantity`, `price`, `sub_total`, `price_total`, `total_price`, `brand`, `type`) VALUES
-(10, '2025-01-13', 'JUL-20250113-782533-3507', 6, 4, 10, 1150000.00, 11500000.00, 11500000.00, 11500000.00, '', ''),
-(11, '2025-01-13', 'JUL-20250113-782533-3507', 8, 9, 20, 550000.00, 11000000.00, 11000000.00, 11000000.00, '', '');
+(12, '2025-01-16', 'JUL-20250116-752076-5992', 3, 3, 7, 3000000.00, 21000000.00, 21000000.00, 21000000.00, 'Master Steel', 'Beam'),
+(13, '2025-01-16', 'JUL-20250116-752076-5992', 2, 7, 9, 1000000.00, 9000000.00, 9000000.00, 9000000.00, 'Gunung Steel', 'Rod'),
+(14, '2025-01-16', 'JUL-20250116-752076-5992', 7, 5, 8, 3800000.00, 30400000.00, 30400000.00, 30400000.00, 'Jayapari Steel', 'Coil'),
+(15, '2025-01-16', 'JUL-20250116-752076-5992', 2, 4, 5, 1000000.00, 5000000.00, 5000000.00, 5000000.00, 'Gunung Steel', 'Rod'),
+(16, '2025-01-16', 'JUL-20250116-752076-5992', 6, 5, 8, 1150000.00, 9200000.00, 9200000.00, 9200000.00, 'Steel Pipe Industry', 'Pipe'),
+(17, '2025-01-16', 'JUL-20250116-752076-5992', 8, 2, 3, 550000.00, 1650000.00, 1650000.00, 1650000.00, 'Jaya Steel', 'Wire'),
+(18, '2025-01-16', 'JUL-20250116-752076-5992', 8, 2, 7, 550000.00, 3850000.00, 3850000.00, 3850000.00, 'Jaya Steel', 'Wire'),
+(19, '2025-01-16', 'JUL-20250116-752076-5992', 6, 3, 3, 1150000.00, 3450000.00, 3450000.00, 3450000.00, 'Steel Pipe Industry', 'Pipe');
 
 -- --------------------------------------------------------
 
@@ -178,15 +204,15 @@ CREATE TABLE `stocks` (
 
 INSERT INTO `stocks` (`id`, `stock_id`, `category_id`, `quantity`, `purchase_price`, `selling_price`) VALUES
 (1, 'STK-001', 1, 102, 1500000.00, 1800000.00),
-(2, 'STK-002', 2, 155, 850000.00, 1000000.00),
-(3, 'STK-003', 3, 80, 2500000.00, 3000000.00),
-(4, 'STK-004', 4, 120, 750000.00, 900000.00),
-(5, 'STK-005', 5, 90, 1800000.00, 2200000.00),
-(6, 'STK-006', 6, 100, 950000.00, 1150000.00),
-(7, 'STK-007', 7, 70, 3200000.00, 3800000.00),
-(8, 'STK-008', 8, 180, 450000.00, 550000.00),
+(2, 'STK-002', 2, 153, 850000.00, 1000000.00),
+(3, 'STK-003', 3, 76, 2500000.00, 3000000.00),
+(4, 'STK-004', 4, 122, 750000.00, 900000.00),
+(5, 'STK-005', 5, 102, 1800000.00, 2200000.00),
+(6, 'STK-006', 6, 102, 950000.00, 1150000.00),
+(7, 'STK-007', 7, 68, 3200000.00, 3800000.00),
+(8, 'STK-008', 8, 178, 450000.00, 550000.00),
 (9, 'STK-009', 9, 95, 680000.00, 820000.00),
-(10, 'STK-010', 10, 130, 890000.00, 1050000.00);
+(10, 'STK-010', 10, 144, 890000.00, 1050000.00);
 
 -- --------------------------------------------------------
 
@@ -241,7 +267,7 @@ CREATE TABLE `users` (
 --
 
 INSERT INTO `users` (`id`, `username`, `email`, `name`, `password_hash`, `salt`, `created_at`, `updated_at`) VALUES
-(6, 'rionggo', 'rioclasher4@gmail.com', 'rionggo', '$2a$10$gjuJPewWB6lVripZy54pu.zc/6akz3N5HwWQlFSWo9ObzYrypVzPK', 'a14f99b5-d040-4cf7-b08c-9a4451be', '2024-12-06 07:21:25', '2024-12-06 07:21:25');
+(7, 'admin', 'admin@gmail.com', 'admin', '$2a$10$TjAZyNTZNk1/TBwTIK.uZ.c6eOmcllbWC1dz2Z5EHnpv7Hv6VH.lK', '5b457889-fcda-44da-ac0e-587c07c2', '2025-01-16 16:26:04', '2025-01-16 16:26:04');
 
 --
 -- Indexes for dumped tables
@@ -328,19 +354,19 @@ ALTER TABLE `customers`
 -- AUTO_INCREMENT for table `purchasing`
 --
 ALTER TABLE `purchasing`
-  MODIFY `id` bigint(20) UNSIGNED NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=18;
+  MODIFY `id` bigint(20) UNSIGNED NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=29;
 
 --
 -- AUTO_INCREMENT for table `returns`
 --
 ALTER TABLE `returns`
-  MODIFY `id` bigint(20) UNSIGNED NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=11;
+  MODIFY `id` bigint(20) UNSIGNED NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=19;
 
 --
 -- AUTO_INCREMENT for table `sales`
 --
 ALTER TABLE `sales`
-  MODIFY `id` bigint(20) UNSIGNED NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=12;
+  MODIFY `id` bigint(20) UNSIGNED NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=20;
 
 --
 -- AUTO_INCREMENT for table `stocks`
@@ -358,7 +384,7 @@ ALTER TABLE `suppliers`
 -- AUTO_INCREMENT for table `users`
 --
 ALTER TABLE `users`
-  MODIFY `id` bigint(20) UNSIGNED NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=7;
+  MODIFY `id` bigint(20) UNSIGNED NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=8;
 
 --
 -- Constraints for dumped tables
