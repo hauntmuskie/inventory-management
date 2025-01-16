@@ -23,7 +23,7 @@ import jfxtras.styles.jmetro.Style;
 public class App extends Application {
 
     private static final Logger log = LoggerFactory.getLogger(App.class);
-    private static final String INITIAL_SCENE = "layout";
+    private static final String INITIAL_SCENE = "login";
     private static final int WIDTH = 1200;
     private static final int HEIGHT = 650;
     private static Scene scene;
@@ -31,7 +31,7 @@ public class App extends Application {
     public static SceneManager sceneManager;
     
     // Add theme configuration
-    private static final boolean USE_JMETRO = false;
+    private static final boolean USE_JMETRO = true;
 
     private static final ImmutableSet<String> REPORT_SCENES = ImmutableSet.of(
         SceneManager.REPORT_STOCK,
