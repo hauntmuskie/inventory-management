@@ -8,6 +8,7 @@ import com.lestarieragemilang.desktop.App;
 import com.lestarieragemilang.desktop.model.User;
 import com.lestarieragemilang.desktop.service.UserService;
 import com.lestarieragemilang.desktop.utils.ShowAlert;
+import com.lestarieragemilang.desktop.utils.ThemeManager;
 import com.lestarieragemilang.desktop.utils.HibernateUtil;
 import com.lestarieragemilang.desktop.utils.Redirect;
 
@@ -53,6 +54,7 @@ public class AuthController extends Redirect {
 
     private final UserService userService;
     private final EventBus eventBus;
+    private final ThemeManager themeManager = ThemeManager.getInstance();
 
     public AuthController() {
         this.userService = new UserService();
@@ -82,17 +84,10 @@ public class AuthController extends Redirect {
     void loginToApp(ActionEvent event) {
         try {
             validateLoginInput();
-            
-            if (!ShowAlert.showConfirmation("Konfirmasi Login", "Konfirmasi Masuk", 
-                "Apakah Anda yakin ingin masuk dengan akun ini?")) {
-                return;
-            }
-
             Optional<User> user = authenticateUser();
             user.ifPresentOrElse(
                     u -> {
                         handleSuccessfulLogin(u);
-                        ShowAlert.showSuccess("Berhasil masuk ke sistem");
                     },
                     () -> ShowAlert.showError("Nama pengguna atau kata sandi tidak valid"));
         } catch (IllegalArgumentException e) {
@@ -104,7 +99,8 @@ public class AuthController extends Redirect {
     }
 
     private void validateLoginInput() {
-        Preconditions.checkArgument(!Strings.isNullOrEmpty(loginUsername.getText()), "Nama pengguna tidak boleh kosong");
+        Preconditions.checkArgument(!Strings.isNullOrEmpty(loginUsername.getText()),
+                "Nama pengguna tidak boleh kosong");
         Preconditions.checkArgument(!Strings.isNullOrEmpty(loginPassword.getText()), "Kata sandi tidak boleh kosong");
     }
 
@@ -121,7 +117,9 @@ public class AuthController extends Redirect {
             switchScene(anchorPane, "layout", () -> {
                 try {
                     Parent layoutRoot = App.sceneManager.getScene("layout");
-                    currentStage.setScene(new Scene(layoutRoot));
+                    Scene newScene = new Scene(layoutRoot);
+                    themeManager.applyTheme(newScene);
+                    currentStage.setScene(newScene);
                     currentStage.show();
                 } catch (IOException e) {
                     ShowAlert.showError("Gagal memuat tampilan utama: " + e.getMessage());
@@ -166,8 +164,8 @@ public class AuthController extends Redirect {
 
     @FXML
     void exitApp(ActionEvent event) {
-        if (ShowAlert.showYesNo("Konfirmasi Keluar", 
-            "Apakah Anda yakin ingin keluar dari aplikasi?")) {
+        if (ShowAlert.showYesNo("Konfirmasi Keluar",
+                "Apakah Anda yakin ingin keluar dari aplikasi?")) {
             HibernateUtil.shutdown();
             Platform.exit();
         }

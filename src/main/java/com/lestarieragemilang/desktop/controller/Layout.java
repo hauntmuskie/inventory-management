@@ -5,6 +5,7 @@ import com.lestarieragemilang.desktop.App;
 import com.lestarieragemilang.desktop.utils.HibernateUtil;
 import com.lestarieragemilang.desktop.utils.Redirect;
 import com.lestarieragemilang.desktop.utils.ShowAlert;
+import com.lestarieragemilang.desktop.utils.ThemeManager;
 
 import javafx.animation.KeyFrame;
 import javafx.animation.Timeline;
@@ -63,9 +64,8 @@ public class Layout extends Redirect {
             return;
         }
         if (currentActiveButton != null) {
-            currentActiveButton
-                    .setStyle(
-                            "-fx-background-color: #EEEEEE; -fx-background-radius: 10; -fx-text-fill: #333333; -fx-cursor: hand; -fx-font-weight: bold; -fx-border-radius: 10;");
+            currentActiveButton.setStyle(
+                    "-fx-background-color: #EEEEEE; -fx-background-radius: 10; -fx-text-fill: #333333; -fx-cursor: hand; -fx-font-weight: bold; -fx-border-radius: 10;");
         }
         button.setStyle(
                 "-fx-background-color: #131313; -fx-background-radius: 10; -fx-text-fill: white; -fx-cursor: hand; -fx-font-weight: bold; -fx-border-radius: 10;");
@@ -75,7 +75,6 @@ public class Layout extends Redirect {
     @FXML
     void isExitApp(MouseEvent event) {
         if (ShowAlert.showConfirmation("Exit", "Konfirmasi", "Apakah Anda yakin ingin keluar?")) {
-            // Cleanup before exit
             HibernateUtil.shutdown();
             System.exit(0);
         }
@@ -109,24 +108,18 @@ public class Layout extends Redirect {
                 switchScene(setScene, "login", () -> {
                     try {
                         Stage loginStage = new Stage();
-                        loginStage.initStyle(StageStyle.UNDECORATED); // Add this line
-
-                        // Close current connections before loading new scene
+                        loginStage.initStyle(StageStyle.UNDECORATED);
                         HibernateUtil.shutdown();
-
-                        // Reinitialize database connection for login
                         HibernateUtil.reinitialize();
-
                         Parent loginRoot = App.sceneManager.getScene("login");
                         Scene loginScene = new Scene(loginRoot);
+                        ThemeManager.getInstance().applyTheme(loginScene);
                         loginStage.setScene(loginScene);
                         loginStage.setTitle("Login");
-
                         if (currentStage != null) {
                             currentStage.close();
                         }
                         loginStage.show();
-
                     } catch (IOException e) {
                         ShowAlert.showError("Gagal membuka halaman login");
                         e.printStackTrace();

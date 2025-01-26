@@ -7,14 +7,22 @@
     <version>1.0-SNAPSHOT</version>
 
     <properties>
-        <project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
-        <maven.compiler.release>22</maven.compiler.release>
-        <javafx.version>24-ea+5</javafx.version>
-        <hibernate.version>7.0.0.Beta1</hibernate.version>
-        <mysql.version>8.0.33</mysql.version>
-        <slf4j.version>2.0.7</slf4j.version>
         <main.class>com.lestarieragemilang.desktop.Launcher</main.class>
+        <animatefx.version>1.3.0</animatefx.version>
+        <guava.version>33.3.0-jre</guava.version>
+        <hibernate.version>7.0.0.Beta1</hibernate.version>
         <hikaricp.version>5.1.0</hikaricp.version>
+        <jakarta.annotation.version>3.0.0</jakarta.annotation.version>
+        <jakarta.persistence.version>3.2.0</jakarta.persistence.version>
+        <jasperreports.fonts.version>7.0.1</jasperreports.fonts.version>
+        <jasperreports.version>6.20.6</jasperreports.version>
+        <javafx.version>24-ea+5</javafx.version>
+        <jbcrypt.version>0.4</jbcrypt.version>
+        <jfoenix.version>9.0.10</jfoenix.version>
+        <jmetro.version>11.6.16</jmetro.version>
+        <mysql.version>8.0.33</mysql.version>
+        <project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
+        <slf4j.version>2.0.7</slf4j.version>
     </properties>
 
     <dependencies>
@@ -49,17 +57,17 @@
         <dependency>
             <groupId>com.jfoenix</groupId>
             <artifactId>jfoenix</artifactId>
-            <version>9.0.10</version>
+            <version>${jfoenix.version}</version>
         </dependency>
         <dependency>
             <groupId>io.github.typhon0</groupId>
             <artifactId>AnimateFX</artifactId>
-            <version>1.3.0</version>
+            <version>${animatefx.version}</version>
         </dependency>
         <dependency>
             <groupId>org.jfxtras</groupId>
             <artifactId>jmetro</artifactId>
-            <version>11.6.16</version>
+            <version>${jmetro.version}</version>
         </dependency>
 
         <!-- Hibernate and MySQL -->
@@ -81,7 +89,7 @@
         <dependency>
             <groupId>jakarta.persistence</groupId>
             <artifactId>jakarta.persistence-api</artifactId>
-            <version>3.2.0</version>
+            <version>${jakarta.persistence.version}</version>
         </dependency>
 
         <!-- Hibernate HikariCP Integration -->
@@ -107,30 +115,30 @@
         <dependency>
             <groupId>com.google.guava</groupId>
             <artifactId>guava</artifactId>
-            <version>33.3.0-jre</version>
+            <version>${guava.version}</version>
         </dependency>
         <dependency>
             <groupId>jakarta.annotation</groupId>
             <artifactId>jakarta.annotation-api</artifactId>
-            <version>3.0.0</version>
+            <version>${jakarta.annotation.version}</version>
         </dependency>
         <dependency>
             <groupId>org.mindrot</groupId>
             <artifactId>jbcrypt</artifactId>
-            <version>0.4</version>
+            <version>${jbcrypt.version}</version>
         </dependency>
 
         <!-- Jasper Reports -->
         <dependency>
             <groupId>net.sf.jasperreports</groupId>
             <artifactId>jasperreports</artifactId>
-            <version>6.20.6</version>
+            <version>${jasperreports.version}</version>
         </dependency>
 
         <dependency>
             <groupId>net.sf.jasperreports</groupId>
             <artifactId>jasperreports-fonts</artifactId>
-            <version>7.0.1</version>
+            <version>${jasperreports.fonts.version}</version>
         </dependency>
 
         <!-- Connection Pooling -->
@@ -148,9 +156,12 @@
                 <artifactId>maven-compiler-plugin</artifactId>
                 <version>3.13.0</version>
                 <configuration>
-                    <release>22</release>
-                    <source>22</source>
-                    <target>22</target>
+                    <release>23</release>
+                    <source>23</source>
+                    <target>23</target>
+                    <compilerArgs>
+                        <arg>--enable-preview</arg>
+                    </compilerArgs>
                 </configuration>
             </plugin>
             <plugin>
@@ -164,7 +175,7 @@
             <plugin>
                 <groupId>org.codehaus.mojo</groupId>
                 <artifactId>exec-maven-plugin</artifactId>
-                <version>3.4.1</version>
+                <version>3.5.0</version>
                 <configuration>
                     <mainClass>${main.class}</mainClass>
                     <arguments>
